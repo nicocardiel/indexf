@@ -40,11 +40,11 @@ void showindex(vector< IndexDef > &id)
   cout << "\nUsage:\n"
   "% indexf keyword1=keyval1 keyword2=keyval2 ...\n\nwhere:\n";
 
-  long lsize = strlen("cat ") + strlen(installdirPtr) + strlen("inputcl.dat");
+  long lsize = strlen("cat ") + strlen(installdirPtr) + strlen("/inputcl.dat");
   char *instructionPtr = new char[lsize+1];
   strcpy(instructionPtr,"cat ");
   strcat(instructionPtr,installdirPtr);
-  strcat(instructionPtr,"inputcl.dat");
+  strcat(instructionPtr,"/inputcl.dat");
   system (instructionPtr);
   delete [] instructionPtr;
 
