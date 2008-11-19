@@ -61,7 +61,7 @@ bool measuresp(SciData *imagePtr, IndexParam param, IndexDef myindex)
   const long nseed = param.get_nseed();
   if(nseed == 0)
   {
-    srand(time(0)); //aleatorizamos la semilla de los números aleatorios
+    srand(time(0)); //aleatorizamos la semilla de los numeros aleatorios
   }
   else
   {
@@ -73,10 +73,10 @@ bool measuresp(SciData *imagePtr, IndexParam param, IndexDef myindex)
   const double *const my2Ddata = imagePtr->getdata();
   const double *my2Derror = NULL;
   //my2Derror no puede declararse como "const double *const" porque de lo
-  //contrario no puede modificarse en la siguiente línea
+  //contrario no puede modificarse en la siguiente linea
   if ( lerr ) my2Derror = imagePtr->geterror();
-  //OJO: la inicialización a cero no funciona con el compilador de Solaris;
-  //     por eso están comentados los finales de las siguientes 2 líneas:
+  //OJO: la inicializacion a cero no funciona con el compilador de Solaris;
+  //     por eso estan comentados los finales de las siguientes 2 lineas:
   double *sp_data = new double [imagePtr->getnaxis1()];// = { 0 };
   double *sp_error = new double [imagePtr->getnaxis1()];// = { 0 };
   const double crval1 = imagePtr->getcrval1();
@@ -138,10 +138,10 @@ bool measuresp(SciData *imagePtr, IndexParam param, IndexDef myindex)
                              findex,eindex,sn);
     if ((plotmode != 0) && (plottype >= 1))
     {
-      //nombre del indice que se está midiendo
+      //nombre del indice que se esta midiendo
       cpgsci(3);
       cpgmtxt("t",6.5,0.0,0.0,param.get_index());
-      //número de espectro
+      //numero de espectro
       cpgsci(6);
       ostringstream snumber;
       snumber << param.get_if() << " #" << ns;
@@ -153,7 +153,7 @@ bool measuresp(SciData *imagePtr, IndexParam param, IndexDef myindex)
       cpgsci(1);
       delete [] snumberPtr;
     }
-    //si hay error en velocidad radial, hacemos simulaciones numéricas
+    //si hay error en velocidad radial, hacemos simulaciones numericas
     eindex_rv=0;
     bool leindex_rv = true;
     if( (lfindex) && (rvelerr > 0) && (param.get_nsimul() > 0) )
@@ -193,8 +193,8 @@ bool measuresp(SciData *imagePtr, IndexParam param, IndexDef myindex)
                    rvel,rvelerr,findex_rv,eindex_rv,labelsp,
                    lfindex,lerr,leindex_rv,out_of_limits,negative_error);
     //si se ha solicitado, se realizan las simulaciones con S/N variable
-    //(usamos escala logarítmica en S/N para tener una distribución
-    //homogénea de puntos al calcular las constantes de los errores)
+    //(usamos escala logaritmica en S/N para tener una distribucion
+    //homogenea de puntos al calcular las constantes de los errores)
     eindex_sn=0;
     bool leindex_sn = true;
     if( (lfindex) && (param.get_nsimulsn() > 0) )

@@ -41,7 +41,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
                double &findex, double &eindex, double &sn)
 {
   //---------------------------------------------------------------------------
-  //constantes numéricas
+  //constantes numericas
   const double c = 2.9979246E+5; //velocidad de la luz (km/s)
   const double cte_log_exp = 2.5 * log10 (exp(1.0));
   //(1+z) corregido de efecto relativista
@@ -49,7 +49,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
   const double rcvel1 = (1.0+rcvel)/sqrt(1.0-rcvel*rcvel);
   //longitud de onda inferior del primer pixel
   const double wlmin = crval1-cdelt1/2.0-(crpix1-1.0)*cdelt1;
-  //Nota: recordar que la longitud de onda en un pixel arbitrario j-ésimo 
+  //Nota: recordar que la longitud de onda en un pixel arbitrario j-esimo 
   //se calcula como:
   //lambda=crval1+(j-crpix1)*cdelt1
   //con j definido en el intervalo [1,NAXIS1]
@@ -59,7 +59,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
   negative_error=false;
 
   //---------------------------------------------------------------------------
-  //calculamos parámetros de cada banda a medir
+  //calculamos parametros de cada banda a medir
   double *ca = new double [myindex.getnbands()];
   double *cb = new double [myindex.getnbands()];
   double *c3 = new double [myindex.getnbands()];
@@ -78,7 +78,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     c4[nb] = (cb[nb]-wlmin)/cdelt1;                  //band limit (channel)
     if ( (c3[nb] < 1.0) || (c4[nb] > static_cast<double>(naxis1)) )
     {
-      out_of_limits=true;          //índice fuera de límites: no se puede medir
+      out_of_limits=true;          //indice fuera de limites: no se puede medir
       return(false);
     }
     j1[nb] = static_cast<long>(c3[nb]);         //band limit: integer (channel)
@@ -88,7 +88,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     rl[nb] = cb[nb]-ca[nb];                 //redshifted band width (angstroms)
     rg[nb] = c4[nb]-c3[nb]+1;               //redshifted band width (channels)
   }
-  //calculamos límites en j1 y j2, por si las bandas no están en orden
+  //calculamos limites en j1 y j2, por si las bandas no estan en orden
   long j1min = j1[0];
   long j2max = j2[0];
   for (long nb=0; nb < myindex.getnbands(); nb++ )
@@ -96,7 +96,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     if (j1min > j1[nb]) j1min=j1[nb];
     if (j2max < j2[nb]) j2max=j2[nb];
   }
-  //calculamos límites en longitud de onda (rest frame)
+  //calculamos limites en longitud de onda (rest frame)
   double wvmin= myindex.getldo1(0);
   double wvmax= myindex.getldo2(0);
   double wv1temp,wv2temp;
@@ -109,8 +109,8 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
   }
 
   //---------------------------------------------------------------------------
-  //fijamos los canales a usar para medir el índice (usando la variable
-  //lógica evitamos el problema de la posible superposición de las bandas)
+  //fijamos los canales a usar para medir el indice (usando la variable
+  //logica evitamos el problema de la posible superposicion de las bandas)
   bool *ifchan = new bool [naxis1];
   for (long j=1; j <= naxis1; j++)
   {
@@ -130,7 +130,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
   }
 
   //---------------------------------------------------------------------------
-  //normalizamos datos usando la señal sólo en la región del índice a medir
+  //normalizamos datos usando la senal solo en la region del indice a medir
   double *s = new double [naxis1];
   double *es = new double [naxis1];
   double smean=0.0;
@@ -139,7 +139,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     if (ifchan[j-1]) smean+=sp_data[j-1];
   }
   smean/=static_cast<double>(nceff);
-  smean = ( smean != 0 ? smean : 1.0); //evitamos división por cero
+  smean = ( smean != 0 ? smean : 1.0); //evitamos division por cero
   for (long j=1; j <= naxis1; j++)
   {
     s[j-1]=sp_data[j-1]/smean;
@@ -162,7 +162,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     {
       x[j-1]=static_cast<double>(j);
     }
-    //calculamos límites en el eje X (en pixels)
+    //calculamos limites en el eje X (en pixels)
     double xmin,xmax,dx;
     xmin=(ca[0]-crval1)/cdelt1+crpix1;
     xmax=(cb[0]-crval1)/cdelt1+crpix1;
@@ -177,7 +177,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     dx=xmax-xmin;
     xmin=xmin-dx/3.0;
     xmax=xmax+dx/3.0;
-    //calculamos límites en el eje Y (flujo)
+    //calculamos limites en el eje Y (flujo)
     double ymin,ymax,dy;
     bool firstpixel=true;
     for (long j=1; j<=naxis1; j++)
@@ -289,8 +289,8 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     for (long nb=0; nb<myindex.getnbands(); nb++)
     {
       double ddy=0.00;
-      if((myindex.gettype() == 1) || //........................índice molecular
-         (myindex.gettype() == 2))   //..........................índice atómico
+      if((myindex.gettype() == 1) || //........................indice molecular
+         (myindex.gettype() == 2))   //..........................indice atomico
       {
         ddy=0.04;
         if(nb==0)
@@ -375,7 +375,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
   }//==========================================================================
 
   //---------------------------------------------------------------------------
-  //señal/ruido promedio en las bandas del índice (vigilando que no haya
+  //senal/ruido promedio en las bandas del indice (vigilando que no haya
   //valores de error <= 0)
   sn=0.0;
   if(lerr)
@@ -393,16 +393,16 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       }
     }
     sn/=static_cast<double>(nceff);
-    sn/=sqrt(cdelt1); //calculamos señal/ruido por angstrom
+    sn/=sqrt(cdelt1); //calculamos senal/ruido por angstrom
   }
 
   //---------------------------------------------------------------------------
-  //Si se ha solicitado, introducimos un error sistemático modificando el 
+  //Si se ha solicitado, introducimos un error sistematico modificando el 
   //espectro por un factor aditivo. Para ello calculamos el valor promedio del
-  //pseudocontinuo y añadimos una fracción de dicho flujo a todo el espectro
+  //pseudocontinuo y anadimos una fraccion de dicho flujo a todo el espectro
   if ( fabs(biaserr) != 0.0 )
   {
-    //índice atómico o molecular
+    //indice atomico o molecular
     if ( (myindex.gettype() == 1) || (myindex.gettype() == 2) )
     {
       //cuentas promedio en el continuo azul
@@ -443,7 +443,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       long j = (j1[1]+(j2[1]+1))/2; //pixel central de la banda central
       double wla=static_cast<double>(j-1)*cdelt1+crval1-(crpix1-1.0)*cdelt1;
       double sc = (sb*(mwr-wla)+sr*(wla-mwb))/(mwr-mwb);
-      //añadimos el efecto sistemático al espectro de datos (el espectro de
+      //anadimos el efecto sistematico al espectro de datos (el espectro de
       //errores no se modifica)
       for (long j=1; j <= naxis1; j++)
       {
@@ -485,14 +485,14 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       sr/=rl[1];
       //valor promedio
       double sc = (sb+sr)/2.0;
-      //añadimos el efecto sistemático al espectro de datos (el espectro de
+      //anadimos el efecto sistematico al espectro de datos (el espectro de
       //errores no se modifica)
       for (long j=1; j <= naxis1; j++)
       {
         s[j-1]+=sc*biaserr/100.0;
       }
     }
-    //índices para los cuales no se ha incluido el efecto de biaserr
+    //indices para los cuales no se ha incluido el efecto de biaserr
     else
     {
       cout << "FATAL ERROR: biaserr=" << biaserr
@@ -504,7 +504,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
   //---------------------------------------------------------------------------
   //Si se ha solicitado, introducimos un error de linealidad de la forma:
   //flux_real=flux_observed^(1+linearerr). Modificamos asimismo el espectro 
-  //de errores. Nota: para evitar "NaN", forzamos utilizar una señal positiva.
+  //de errores. Nota: para evitar "NaN", forzamos utilizar una senal positiva.
   if ( fabs(linearerr) != 0.0 )
   {
     double scale_factor;
@@ -524,7 +524,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
   }
 
   //---------------------------------------------------------------------------
-  //Indices atómicos y moleculares
+  //Indices atomicos y moleculares
   //---------------------------------------------------------------------------
   if ( (myindex.gettype() == 1) || (myindex.gettype() == 2) )
   {
@@ -633,19 +633,19 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     }
     tc*=cdelt1;
     etc=sqrt(etc2)*cdelt1;
-    if (myindex.gettype() == 1) //índice molecular
+    if (myindex.gettype() == 1) //indice molecular
     {
       findex = -2.5*log10(tc/rl[1]);
       if(lerr) eindex = cte_log_exp/pow(10,-0.4*findex)*etc/rl[1];
     }
-    else //índice atómico
+    else //indice atomico
     {
-      if(logindex) //índice atómico medido en magnitudes
+      if(logindex) //indice atomico medido en magnitudes
       {
         findex = -2.5*log10(tc/rl[1]);
         if(lerr) eindex = cte_log_exp/pow(10,-0.4*findex)*etc/rl[1];
       }
-      else //índice atómico medido como índice atómico
+      else //indice atomico medido como indice atomico
       {
         findex = (rl[1]-tc)/rcvel1;
         if(lerr) eindex=etc/rcvel1;
@@ -749,7 +749,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       findex=findex*rl[0]/rl[1];
       eindex=eindex*rl[0]/rl[1];
     }
-    if(logindex) //si medimos en escala logarítmica
+    if(logindex) //si medimos en escala logaritmica
     {
       eindex= cte_log_exp*eindex/findex;
       findex=2.5*log10(findex);
@@ -793,19 +793,19 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     }//========================================================================
   }
   //---------------------------------------------------------------------------
-  //Líneas de emisión (se ajusta el continuo a una recta)
+  //Lineas de emision (se ajusta el continuo a una recta)
   //---------------------------------------------------------------------------
   else if (myindex.gettype() == 10)
   {
     long nbands = myindex.getnbands();
     //si no hay errores, hacemos todos iguales a uno para utilizar las mismas
-    //fórmulas
+    //formulas
     if(!lerr)
       for (long j = j1min; j <= j2max+1; j++)
         es[j-1]=1.0;
-    //calculamos la recta del continuo mediante mínimos cuadrados (y=amc*x+bmc)
-    //(para la variable x usamos el número de píxel en lugar de la longitud
-    //de onda porque, en principio, serán números más pequeños)
+    //calculamos la recta del continuo mediante minimos cuadrados (y=amc*x+bmc)
+    //(para la variable x usamos el numero de pixel en lugar de la longitud
+    //de onda porque, en principio, seran numeros mas pequenos)
     double sigma2;
     double sum0=0.0;
     double sumx=0.0;
@@ -988,7 +988,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     delete [] esc2;
   }
   //---------------------------------------------------------------------------
-  //Discontinuidades genéricas
+  //Discontinuidades genericas
   //---------------------------------------------------------------------------
   else if ( (myindex.gettype() >= 11) && (myindex.gettype() <= 99) )
   {
@@ -1021,7 +1021,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       econti2*=cdelt1*cdelt1;
       econti2/=(rltot_conti*rltot_conti);
     }
-    //calculamos flujo promedio en las bandas de absorción
+    //calculamos flujo promedio en las bandas de absorcion
     double flines=0.0;
     double elines2=0.0;
     double rltot_lines=0.0;
@@ -1048,13 +1048,13 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       elines2*=cdelt1*cdelt1;
       elines2/=(rltot_lines*rltot_lines);
     }
-    //calculamos el índice
+    //calculamos el indice
     findex=flines/fconti;
     if(lerr)
     {
       eindex=sqrt(fconti*fconti*elines2+flines*flines*econti2)/(fconti*fconti);
     }
-    if(logindex) //si medimos en escala logarítmica
+    if(logindex) //si medimos en escala logaritmica
     {
       eindex=cte_log_exp*eindex/findex;
       findex=2.5*log10(findex);
@@ -1102,20 +1102,20 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     }//========================================================================
   }
   //---------------------------------------------------------------------------
-  //Indices genéricos
+  //Indices genericos
   //---------------------------------------------------------------------------
   else if ( (myindex.gettype() >= 101) && (myindex.gettype() <= 9999) )
   {
     long nconti = myindex.getnconti();
     long nlines = myindex.getnlines();
     //si no hay errores, hacemos todos iguales a uno para utilizar las mismas
-    //fórmulas
+    //formulas
     if(!lerr)
       for (long j = j1min; j <= j2max+1; j++)
         es[j-1]=1.0;
-    //calculamos la recta del continuo mediante mínimos cuadrados (y=amc*x+bmc)
-    //(para la variable x usamos el número de píxel en lugar de la longitud
-    //de onda porque, en principio, serán números más pequeños)
+    //calculamos la recta del continuo mediante minimos cuadrados (y=amc*x+bmc)
+    //(para la variable x usamos el numero de pixel en lugar de la longitud
+    //de onda porque, en principio, seran numeros mas pequenos)
     double sigma2;
     double sum0=0.0;
     double sumx=0.0;
@@ -1170,7 +1170,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
         }
       }
     }
-    //recorremos las bandas con líneas
+    //recorremos las bandas con lineas
     double tc=0.0;
     double etc=0.0;
     double sumrl=0.0;
@@ -1220,12 +1220,12 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       }
       sumrl+=factor*rl[nb+nconti];
     }
-    if(logindex) //índice genérico medido en magnitudes
+    if(logindex) //indice generico medido en magnitudes
     {
       findex=-2.5*log10(tc*cdelt1/sumrl);
       if(lerr) eindex=cte_log_exp/pow(10,-0.4*findex)*sqrt(etc)*cdelt1/sumrl;
     }
-    else //índice genérico medido como índice atómico
+    else //indice generico medido como indice atomico
     {
       findex=(sumrl-tc*cdelt1)/rcvel1;
       if(lerr) eindex=sqrt(etc)*cdelt1/rcvel1;
@@ -1255,13 +1255,13 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
   {
     long nconti = myindex.getnconti();
     //si no hay errores, hacemos todos iguales a uno para utilizar las mismas
-    //fórmulas
+    //formulas
     if(!lerr)
       for (long j = j1min; j <= j2max+1; j++)
         es[j-1]=1.0;
-    //calculamos la recta del continuo mediante mínimos cuadrados (y=amc*x+bmc)
-    //(para la variable x usamos el número de píxel en lugar de la longitud
-    //de onda porque, en principio, serán números más pequeños)
+    //calculamos la recta del continuo mediante minimos cuadrados (y=amc*x+bmc)
+    //(para la variable x usamos el numero de pixel en lugar de la longitud
+    //de onda porque, en principio, seran numeros mas pequenos)
     double sigma2;
     double sum0=0.0;
     double sumx=0.0;
@@ -1322,7 +1322,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       eindex=sqrt(bmc*bmc*covar_aa+amc*amc*covar_bb-2.0*amc*bmc*covar_ab)*
              (xa-xb)/((amc*xb+bmc)*(amc*xb+bmc));
     }
-    if(logindex) //índice pendiente medido en magnitudes
+    if(logindex) //indice pendiente medido en magnitudes
     {
       eindex=cte_log_exp*eindex/findex;
       findex=2.5*log10(findex);
@@ -1344,7 +1344,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     }//========================================================================
   }
   //---------------------------------------------------------------------------
-  //otros índices futuros
+  //otros indices futuros
   //---------------------------------------------------------------------------
   else
   {
@@ -1354,7 +1354,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
   }
 
   //---------------------------------------------------------------------------
-  //liberamos memoria y retornamos con éxito
+  //liberamos memoria y retornamos con exito
   delete [] ca;
   delete [] cb;
   delete [] c3;

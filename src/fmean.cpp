@@ -49,7 +49,7 @@ bool fmean(long n, const double *x, const bool *ifx,
   else
     return(false);
 
-  //calculamos la desviación típica
+  //calculamos la desviacion tipica
   if (neff <= 1)
   {
     *sigmaPtr=0.0;

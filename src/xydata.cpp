@@ -18,7 +18,7 @@
  * 
  */
 
-//Definición de funciones miembro de la clase XYData, declarada en xydata.h
+//Definicion de funciones miembro de la clase XYData, declarada en xydata.h
 #include "xydata.h"
 
 using namespace std;
@@ -31,7 +31,7 @@ XYData::XYData()
   y=0.0;
 }
 
-//constructor con 2 parámetros
+//constructor con 2 parametros
 XYData::XYData(double x, double y)
 {
   setx(x);

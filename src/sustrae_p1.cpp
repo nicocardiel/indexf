@@ -19,7 +19,7 @@
  */
 
 //Funcion para sustraer la pendiente del ajuste a un polinomio de grado 1
-//(manteniendo la señal promedio) a un vector de XYData.  El vector de entrada
+//(manteniendo la senal promedio) a un vector de XYData.  El vector de entrada
 //es modificado en esta funcion. Como el orden de magnitud de las variables X e
 //Y puede ser muy distinto, antes de realizar el ajuste normalizamos el
 //recorrido de las variables.
@@ -105,7 +105,7 @@ void sustrae_p1(vector<XYData> &region,
     xypair->sety(y);
   }
 
-  //calculamos la señal promedio
+  //calculamos la senal promedio
   mean_signal=meany;
 
   //calculamos el ruido promedio

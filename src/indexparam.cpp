@@ -18,7 +18,7 @@
  * 
  */
 
-//Definición de funciones miembro de la clase IndexParam, declarada en 
+//Definicion de funciones miembro de la clase IndexParam, declarada en 
 //indexparam.h
 #include <iostream>
 #include <string.h>
@@ -62,7 +62,7 @@ IndexParam::IndexParam()
 }
 
 //-----------------------------------------------------------------------------
-//constructor con parámetros
+//constructor con parametros
 IndexParam::IndexParam(
   char *ifile_,long ns1_,long ns2_,//input file, first and last spectrum
   char *index_,                 //index name

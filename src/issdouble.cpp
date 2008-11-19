@@ -19,7 +19,7 @@
  */
 
 //Funcion para transformar una cadena tipo string en un numero double, 
-//comprobando que no hay caracteres extraños
+//comprobando que no hay caracteres extranos
 
 #include <string>
 #include <cstring>

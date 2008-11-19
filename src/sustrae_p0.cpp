@@ -42,7 +42,7 @@ void sustrae_p0(vector<XYData> &region,
   double ndata=static_cast<double>(region.size());
   meany/=ndata;
 
-  //calculamos la señal promedio
+  //calculamos la senal promedio
   mean_signal=meany;
 
   //calculamos el ruido promedio
