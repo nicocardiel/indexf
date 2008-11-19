@@ -1,0 +1,14 @@
+- Explicar el parametro snf=fichero
+donde fichero contiene
+
+w1 w2 ideg          -> w1 w2: longitudes de onda (float)
+                    -> ideg: grado del polinomio (integer)
+
+- Explicar biaserr, linearerr
+
+- Explicar los nuevos indices (multibanda, ej. 11,22)
+
+- Para compilar ahora con arquitectura x86_64, he tenido que insertar a mano en
+  el Makefile el camino a la libreria libg2c.a. Mirar si puedo generar un
+  configure que busque automaticamente dicha libreria (y ya de paso todas las
+  demas) y conseguir que la instalacion sea mucho mas comoda para el usuario.
