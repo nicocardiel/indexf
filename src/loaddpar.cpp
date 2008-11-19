@@ -34,10 +34,10 @@ bool loaddpar(vector< CommandToken > &cl)
   extern const char *installdirPtr;
   //concatenamos el directorio y el nombre del fichero, usando una variable
   //generada con new y eliminada con delete
-  long lsize = strlen(installdirPtr) + strlen("inputcl.dat");
+  long lsize = strlen(installdirPtr) + strlen("/inputcl.dat");
   char *infilenamePtr = new char[lsize+1];
   strcpy(infilenamePtr,installdirPtr); //copiamos directorio
-  strcat(infilenamePtr,"inputcl.dat"); //concatenamos nombre de fichero
+  strcat(infilenamePtr,"/inputcl.dat"); //concatenamos nombre de fichero
   //abrimos el archivo mediante el constructor de ifstream
   ifstream inpfile(infilenamePtr,ios::in);
   if(!inpfile)

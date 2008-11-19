@@ -1,0 +1,5 @@
+./configure AUXDIR=/home/cardiel/x/indexf \
+--bindir=/home/cardiel/bin \
+LDFLAGS="-L/usr/local/cfitsio -L/usr/local/pgplot -L/usr/local/cpgplot" \
+CXXFLAGS="-I/usr/local/cfitsio -I/usr/local/pgplot"
+
