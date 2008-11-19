@@ -18,7 +18,7 @@
  * 
  */
 
-//Definición de funciones miembro de la clase IndexDef, declarada en 
+//Definicion de funciones miembro de la clase IndexDef, declarada en 
 //indexdef.h
 #include <iostream>
 #include <string.h>
@@ -36,13 +36,13 @@ IndexDef::IndexDef(const char *idlabel, const long &idtype)
   strncpy(label,idlabel,length);
   label[length] = '\0';
   type = idtype;
-  if(type == 1) //índices moleculares
+  if(type == 1) //indices moleculares
   {
     nbands=3;
     nconti=2;
     nlines=1;
   }
-  else if(type == 2) //índices atómicos
+  else if(type == 2) //indices atomicos
   {
     nbands=3;
     nconti=2;
@@ -72,19 +72,19 @@ IndexDef::IndexDef(const char *idlabel, const long &idtype)
     nconti=0;
     nlines=0;
   }
-  else if( (type >= 11) && (type <= 99) ) //discontinuidad genérica
+  else if( (type >= 11) && (type <= 99) ) //discontinuidad generica
   {
     nconti=type/10;        //number of blue bands
     nlines=type-nconti*10; //number of red bands
     nbands=nconti+nlines;
   }
-  else if( (type >= 101) && (type <= 9999) ) //índices genéricos
+  else if( (type >= 101) && (type <= 9999) ) //indices genericos
   {
     nconti=type/100;
     nlines=type-nconti*100;
     nbands=nconti+nlines;
   }
-  else if( (type >= -99) && (type <= -2) ) //índices pendiente
+  else if( (type >= -99) && (type <= -2) ) //indices pendiente
   {
     nbands=-type;
     nconti=-type;

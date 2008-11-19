@@ -27,17 +27,17 @@
 
 using namespace std;
 
-//lee las definiciones de los índices del fichero indexdef.dat
+//lee las definiciones de los indices del fichero indexdef.dat
 bool loadidef(vector< IndexDef > &id)
 {
-  //el directorio de instalación está definido como variable global
+  //el directorio de instalacion esta definido como variable global
   extern const char *installdirPtr;
   //concatenamos el directorio y el nombre del fichero, usando una variable
   //generada con new y eliminada con delete
-  long lsize = strlen(installdirPtr) + strlen("indexdef.dat");
+  long lsize = strlen(installdirPtr) + strlen("/indexdef.dat");
   char *infilenamePtr = new char[lsize+1];
   strcpy(infilenamePtr,installdirPtr); //copiamos directorio
-  strcat(infilenamePtr,"indexdef.dat"); //concatenamos nombre de fichero
+  strcat(infilenamePtr,"/indexdef.dat"); //concatenamos nombre de fichero
   //abrimos el archivo mediante el constructor de ifstream
   ifstream inpfile(infilenamePtr,ios::in);
   if(!inpfile)
@@ -51,7 +51,7 @@ bool loadidef(vector< IndexDef > &id)
   char *labelPtr, *valuePtr, *remainderPtr;
   long type, nbands, nconti, nlines;
   double ldo1, ldo2, factor;
-  getline(inpfile,s); //ignoramos dos primeras líneas
+  getline(inpfile,s); //ignoramos dos primeras lineas
   getline(inpfile,s);
   while (getline(inpfile,s))
   {
@@ -60,8 +60,8 @@ bool loadidef(vector< IndexDef > &id)
     char *linePtr = new char[lsize+1];
     s.copy(linePtr,lsize,0);
     linePtr[lsize] = '\0';
-    labelPtr = strtok(linePtr," "); //nombre del índice
-    valuePtr = strtok(NULL," "); // valores siguientes del índice
+    labelPtr = strtok(linePtr," "); //nombre del indice
+    valuePtr = strtok(NULL," "); // valores siguientes del indice
     type = static_cast<long>(strtol(valuePtr,&remainderPtr,0));
     //construimos un objeto de tipo IndexDef
     IndexDef idread(labelPtr,type);
@@ -69,7 +69,7 @@ bool loadidef(vector< IndexDef > &id)
     nconti = idread.getnconti();
     nlines = idread.getnlines();
     //-------------------------------------------------------------------------
-    //índices moleculares, atómicos, D4000, B4000 y colores
+    //indices moleculares, atomicos, D4000, B4000 y colores
     if ( (type >= 1) && (type <= 5) )
     {
       for (long i=1; i <= nbands; i++)
@@ -80,7 +80,7 @@ bool loadidef(vector< IndexDef > &id)
       }
     }
     //-------------------------------------------------------------------------
-    //líneas de emissión
+    //lineas de emission
     else if( type == 10 )
     {
       //como todavia no sabemos cuantas bandas hay, leemos ese numero
@@ -151,7 +151,7 @@ bool loadidef(vector< IndexDef > &id)
       }
     }
     //-------------------------------------------------------------------------
-    //índices genéricos (discontinuidad, atómicos, pendiente)
+    //indices genericos (discontinuidad, atomicos, pendiente)
     else
     {
       if ( nconti < 1 )
@@ -176,7 +176,7 @@ bool loadidef(vector< IndexDef > &id)
         idread.setldo(i,ldo1,ldo2);
         delete [] linePtrAux;
       }
-      //discontinuidad genérica
+      //discontinuidad generica
       if ( (type >= 11) && (type <= 99) )
       {
         if ( nlines < 1 )
@@ -202,7 +202,7 @@ bool loadidef(vector< IndexDef > &id)
           delete [] linePtrAux;
         }
       }
-      //índice genérico
+      //indice generico
       else if ( (type >= 101) && (type <= 9999) )
       {
         if ( nlines < 1 )
@@ -229,7 +229,7 @@ bool loadidef(vector< IndexDef > &id)
           delete [] linePtrAux;
         }
       }
-      //índice pendiente
+      //indice pendiente
       else
       {
         //ya hemos leido todas las bandas; no hay que hacer nada mas

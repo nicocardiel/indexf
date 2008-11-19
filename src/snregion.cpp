@@ -18,7 +18,7 @@
  * 
  */
 
-//Definición de funciones miembro de la clase SNRegion, declarada en snregion.h
+//Definicion de funciones miembro de la clase SNRegion, declarada en snregion.h
 #include "snregion.h"
 
 using namespace std;
@@ -34,7 +34,7 @@ SNRegion::SNRegion()
   sn=0.0;
 }
 
-//constructor con 5 parámetros
+//constructor con 5 parametros
 SNRegion::SNRegion(double wave1, double wave2, 
                    long poldeg, long npixels, double sn)
 {

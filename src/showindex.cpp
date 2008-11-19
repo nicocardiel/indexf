@@ -31,11 +31,11 @@ void showindex(vector< IndexDef > &id)
   long space;
   const char *label;
 
-  //el directorio de instalación está definido como variable global
+  //el directorio de instalacion esta definido como variable global
   extern const char *installdirPtr;
 
-  cout << "\n* Running indexf from: ";
-  cout << installdirPtr << "indexf" << endl;
+  cout << "\n* Reading index definitions from: ";
+  cout << installdirPtr << "/indexdef.dat" << endl;
 
   cout << "\nUsage:\n"
   "% indexf keyword1=keyval1 keyword2=keyval2 ...\n\nwhere:\n";

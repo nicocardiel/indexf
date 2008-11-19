@@ -26,11 +26,11 @@
 
 using namespace std;
 
-//lee los valores por defecto de los parámetros de entrada del fichero
+//lee los valores por defecto de los parametros de entrada del fichero
 //inputcl.dat
 bool loaddpar(vector< CommandToken > &cl)
 {
-  //el directorio de instalación está definido como variable global
+  //el directorio de instalacion esta definido como variable global
   extern const char *installdirPtr;
   //concatenamos el directorio y el nombre del fichero, usando una variable
   //generada con new y eliminada con delete
@@ -60,7 +60,7 @@ bool loaddpar(vector< CommandToken > &cl)
     char *linePtr = new char[lsize+1];
     s.copy(linePtr,lsize,0);
     linePtr[lsize] = '\0';
-    //separamos los dos primeros tokens de cada línea (ignoramos el resto);
+    //separamos los dos primeros tokens de cada linea (ignoramos el resto);
     //notar que esto exige que no haya espacios en blanco dentro de cada token
     labelPtr = strtok(linePtr," ");
     valuePtr = strtok(NULL," ");
@@ -68,7 +68,7 @@ bool loaddpar(vector< CommandToken > &cl)
     CommandToken cpair;
     cpair.setlabel(labelPtr);
     cpair.setvalue(valuePtr);
-    //añadimos un nuevo objeto al vector de CommandToken cl
+    //anadimos un nuevo objeto al vector de CommandToken cl
     cl.push_back(cpair);
     delete [] linePtr;
   }

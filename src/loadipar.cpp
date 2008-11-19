@@ -25,11 +25,11 @@
 
 using namespace std;
 
-//lee los parámetros de entrada introducidos por el usuario en la línea
+//lee los parametros de entrada introducidos por el usuario en la linea
 //de comandos
 bool loadipar(const char *argv[], const int argc,vector< CommandToken > &cl)
 {
-  //concatenamos todos los parámetros en una única variable de tipo string
+  //concatenamos todos los parametros en una unica variable de tipo string
   string list_of_parameters;
   for (long i=1;i<=argc;i++)
   {
@@ -70,10 +70,10 @@ bool loadipar(const char *argv[], const int argc,vector< CommandToken > &cl)
   tokenPtr = strtok(NULL," "); //pasamos al primer argumento (segundo token)
   while (tokenPtr != NULL)
   {
-    //buscamos el carácter '=' comenzando desde el principio y desde el final
+    //buscamos el caracter '=' comenzando desde el principio y desde el final
     equalPtr = strchr(tokenPtr,'=');
     equalrPtr = strrchr(tokenPtr,'=');
-    //comprobamos que existe y es único
+    //comprobamos que existe y es unico
     if (equalPtr == NULL)
     {
       cout << "FATAL ERROR: argument <" << tokenPtr
@@ -90,21 +90,21 @@ bool loadipar(const char *argv[], const int argc,vector< CommandToken > &cl)
       delete [] listPtr;
       return(false);
     }
-    //extraemos label (usamos aritmética de punteros para calcular el tamaño
-    //del label, y así poder realizar un dimensionado dinámico de la variable)
-    keylabelSize = equalPtr - tokenPtr; //usamos aritmética de punteros
+    //extraemos label (usamos aritmetica de punteros para calcular el tamano
+    //del label, y asi poder realizar un dimensionado dinamico de la variable)
+    keylabelSize = equalPtr - tokenPtr; //usamos aritmetica de punteros
     char *keylabelPtr = new char[keylabelSize+1];
     strncpy(keylabelPtr,tokenPtr,keylabelSize);
     keylabelPtr[keylabelSize] = '\0';
-    //extraemos value (aquí también usamos aritmética de punteros; notar que
-    //en la llamada a strncpy también usamos esta aritmética en el segundo
-    //parámetro)
+    //extraemos value (aqui tambien usamos aritmetica de punteros; notar que
+    //en la llamada a strncpy tambien usamos esta aritmetica en el segundo
+    //parametro)
     keyvalueSize = strlen(tokenPtr) - strlen(keylabelPtr) -1;
     char *keyvaluePtr = new char[keyvalueSize+1];
     strncpy(keyvaluePtr,tokenPtr+keylabelSize+1,keyvalueSize);
     keyvaluePtr[keyvalueSize] = '\0';
     //recorremos todos los label por defecto y comprobamos que el label
-    //indicado en la línea de comandos es uno de dichos label esperados
+    //indicado en la linea de comandos es uno de dichos label esperados
     bool labelfound=false;
     for (unsigned long i = 1; i <= cl.size(); i++)
       if (strcmp(cl[i-1].getlabel(),keylabelPtr) == 0)

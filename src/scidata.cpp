@@ -18,7 +18,7 @@
  * 
  */
 
-//Definición de funciones miembro de la clase SciData, declarada en
+//Definicion de funciones miembro de la clase SciData, declarada en
 //scidata.h
 #include <iostream>
 #include <sstream>
@@ -426,7 +426,7 @@ SciData::SciData(IndexParam &param)
       exit(1);
     }
     //en caso necesario, aplicamos cambio de escala en la imagen
-    if (fscale != 1.0) //ya hemos definido fscale más arriba
+    if (fscale != 1.0) //ya hemos definido fscale mas arriba
     {
       for (long i=1; i<=nelements; i++)
       {
@@ -447,13 +447,13 @@ SciData::SciData(IndexParam &param)
   //logaritmica, en el siguiente paso ya los transformamos a escala lineal.
 
   //-------------------------------------------------------------------------
-  //si los espectros están en escala logarítmica, los pasamos a escala lineal
+  //si los espectros estan en escala logaritmica, los pasamos a escala lineal
   //(Nota: asumimos logaritmos decimales)
   //-------------------------------------------------------------------------
   if ( strcmp(ctype1,"WAVE-LOG") == 0)
   {
-    //calculamos parámetros de la transformación lineal conservando el mismo
-    //número de pixels 
+    //calculamos parametros de la transformacion lineal conservando el mismo
+    //numero de pixels 
     double stwv2,disp2;
     double wlmin,wlmax;
     double fnaxis1=static_cast<double>(naxis[1]);
@@ -588,8 +588,8 @@ SciData::SciData(IndexParam &param)
     {
       if(s[0] != '#') //no es un comentario
       {
-        nlines++; //contamos el número de líneas en el fichero
-        //comprobamos que el fichero no contiene demasiadas líneas
+        nlines++; //contamos el numero de lineas en el fichero
+        //comprobamos que el fichero no contiene demasiadas lineas
         if (nlines > naxis[2])
         {
           cout << "FATAL ERROR: number of lines in file " << filename_rvel
@@ -605,7 +605,7 @@ SciData::SciData(IndexParam &param)
         //convertimos string en cadena char * (tipo C)
         long lsize=s.length();
         char *linePtr = new char[lsize+1];
-        char *remainderPtr; //para la función strtod
+        char *remainderPtr; //para la funcion strtod
         s.copy(linePtr,lsize,0);
         linePtr[lsize] = '\0';
         char *tokenPtr;
@@ -638,8 +638,8 @@ SciData::SciData(IndexParam &param)
         //ignoramos porque es un comentario
       }
     }
-    //si el fichero contiene un número de líneas diferente al esperado,
-    //abortamos la ejecución del programa
+    //si el fichero contiene un numero de lineas diferente al esperado,
+    //abortamos la ejecucion del programa
     if (nlines != naxis[2])
     {
       cout << "FATAL ERROR: number of lines in file " << filename_rvel
@@ -711,7 +711,7 @@ SciData::SciData(IndexParam &param)
               (labelsp[nlines])[lsizelabel] = '\0';
             }
           }
-          else //la línea contiene menos caracteres de lo esperado
+          else //la linea contiene menos caracteres de lo esperado
           {
             if(lsize >= nchar1) //podemos leer una etiqueta parcial
             {
@@ -735,7 +735,7 @@ SciData::SciData(IndexParam &param)
             }
           }
           nlines++;
-          //comprobamos que el fichero no contiene demasiadas líneas
+          //comprobamos que el fichero no contiene demasiadas lineas
           if (nlines > naxis[2])
           {
             cout << "FATAL ERROR: number of lines in file " << filename_label
@@ -760,8 +760,8 @@ SciData::SciData(IndexParam &param)
         nlines++;
       }
     }
-    //si el fichero contiene un número de líneas diferente al esperado,
-    //abortamos la ejecución del programa
+    //si el fichero contiene un numero de lineas diferente al esperado,
+    //abortamos la ejecucion del programa
     if (nlines != naxis[2])
     {
       cout << "FATAL ERROR: number of lines in file " << filename_label

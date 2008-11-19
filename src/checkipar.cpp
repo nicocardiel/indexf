@@ -40,7 +40,7 @@ template < typename T >
 bool extract_2numbers(const char *, T &, T &);
 
 //-----------------------------------------------------------------------------
-//función principal: comprueba los parámetros de entrada
+//funcion principal: comprueba los parametros de entrada
 bool checkipar(vector< CommandToken > &cl, IndexParam &param,
                vector< IndexDef > &id)
 {
@@ -117,8 +117,8 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
     }
     if(idfound)
     {
-      param.set_index(valuePtr); //establecemos el índice
-      param.set_nindex(idfound); //número de índice(+1) dentro del vector
+      param.set_index(valuePtr); //establecemos el indice
+      param.set_nindex(idfound); //numero de indice(+1) dentro del vector
     }
     else
     {
@@ -136,7 +136,7 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
   //si el nombre del fichero no es "undef", comprobamos si existe
   if(strcmp(valuePtr,"undef") != 0)
   {
-    ifstream infile(valuePtr, ios::in); //abrimos en modo sólo lectura
+    ifstream infile(valuePtr, ios::in); //abrimos en modo solo lectura
     if (!infile) //error: el fichero no existe
     {
       cout << "FATAL ERROR: the file <" << valuePtr 
@@ -159,7 +159,7 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
            << "> is incompatible with the keyword <ief>" << endl;
       return(false);
     }
-    ifstream infile(valuePtr, ios::in); //abrimos en modo sólo lectura
+    ifstream infile(valuePtr, ios::in); //abrimos en modo solo lectura
     if (!infile) //error: el fichero no existe
     {
       cout << "FATAL ERROR: the file <" << valuePtr 
@@ -219,7 +219,7 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
   valuePtr = cl[6].getvalue();
   for (const char *s=valuePtr; s[0] != '\0'; s++)
   {
-    if (isdigit(s[0]) == 0) //error: no es un dígito válido
+    if (isdigit(s[0]) == 0) //error: no es un digito valido
     {
       cout << "FATAL ERROR: <" << valuePtr
            << "> is an invalid argument for the keyword <" << labelPtr
@@ -287,7 +287,7 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
   valuePtr = cl[9].getvalue();
   for (const char *s=valuePtr; s[0] != '\0'; s++)
   {
-    if (isdigit(s[0]) == 0) //error: no es un dígito válido
+    if (isdigit(s[0]) == 0) //error: no es un digito valido
     {
       cout << "FATAL ERROR: <" << valuePtr
            << "> is an invalid argument for the keyword <" << labelPtr
@@ -398,7 +398,7 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
   valuePtr = cl[12].getvalue();
   for (const char *s=valuePtr; s[0] != '\0'; s++)
   {
-    if (isdigit(s[0]) == 0) //no es un dígito válido
+    if (isdigit(s[0]) == 0) //no es un digito valido
     {
       if ( ( (s[0] == '.') || (s[0] == '+') 
           || (s[0] == 'E') || (s[0] == 'e')
@@ -423,7 +423,7 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
   valuePtr = cl[13].getvalue();
   for (const char *s=valuePtr; s[0] != '\0'; s++)
   {
-    if (isdigit(s[0]) == 0) //no es un dígito válido
+    if (isdigit(s[0]) == 0) //no es un digito valido
     {
       if ( ( (s[0] == '.') || (s[0] == '+') 
           || (s[0] == 'E') || (s[0] == 'e')
@@ -458,7 +458,7 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
   valuePtr = cl[14].getvalue();
   for (const char *s=valuePtr; s[0] != '\0'; s++)
   {
-    if (isdigit(s[0]) == 0) //error: no es un dígito válido
+    if (isdigit(s[0]) == 0) //error: no es un digito valido
     {
       if ((s[0] != '+') && (s[0] != '-')) //error: no es un signo
       {
@@ -515,7 +515,7 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
   valuePtr = cl[17].getvalue();
   for (const char *s=valuePtr; s[0] != '\0'; s++)
   {
-    if (isdigit(s[0]) == 0) //error: no es un dígito válido
+    if (isdigit(s[0]) == 0) //error: no es un digito valido
     {
       if ((s[0] != '+') && (s[0] != '-')) //error: no es un signo
       {
@@ -543,7 +543,7 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
   valuePtr = cl[18].getvalue();
   for (const char *s=valuePtr; s[0] != '\0'; s++)
   {
-    if (isdigit(s[0]) == 0) //error: no es un dígito válido
+    if (isdigit(s[0]) == 0) //error: no es un digito valido
     {
       if ((s[0] != '+') && (s[0] != '-')) //error: no es un signo
       {
@@ -571,7 +571,7 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
   valuePtr = cl[19].getvalue();
   for (const char *s=valuePtr; s[0] != '\0'; s++)
   {
-    if (isdigit(s[0]) == 0) //no es un dígito válido
+    if (isdigit(s[0]) == 0) //no es un digito valido
     {
       if ( ( (s[0] == '.') || (s[0] == '+') 
           || (s[0] == 'E') || (s[0] == 'e')
@@ -599,7 +599,7 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
     return(false);
   }
 
-  //retornamos con éxito
+  //retornamos con exito
   return(true);
 }
 
@@ -608,7 +608,7 @@ bool extract_file_2long(const char *valuePtr,
                        char *filePtr, bool &logfile, long &long1, long &long2)
 {
   //separamos el nombre del fichero de los indicadores de primer y ultimo
-  //número entero
+  //numero entero
   const char *comaPtr = strchr(valuePtr,',');  //primera coma
   if (comaPtr == NULL) //error: no hay coma al final del nombre de fichero
   {
@@ -620,7 +620,7 @@ bool extract_file_2long(const char *valuePtr,
   strncpy(filePtr,valuePtr,fileSize);
   filePtr[fileSize] = '\0';
   //comprobamos que el fichero existe
-  ifstream infile(filePtr, ios::in); //abrimos en modo sólo lectura
+  ifstream infile(filePtr, ios::in); //abrimos en modo solo lectura
   logfile=infile;
   const char *numbersPtr = comaPtr+1;
   if (!extract_2numbers(numbersPtr, long1, long2))
@@ -631,8 +631,8 @@ bool extract_file_2long(const char *valuePtr,
 }
 
 //-----------------------------------------------------------------------------
-//Extrae dos números a partir de una cadena. La función es una plantilla
-//preparada para trabajar con números "long" y números "double".
+//Extrae dos numeros a partir de una cadena. La funcion es una plantilla
+//preparada para trabajar con numeros "long" y numeros "double".
 template < typename T >
 bool extract_2numbers(const char *numbersPtr, T &num1, T &num2)
 {
@@ -652,14 +652,14 @@ bool extract_2numbers(const char *numbersPtr, T &num1, T &num2)
   }
 
   const char *comaPtr = strchr(numbersPtr,',');
-  if (comaPtr == NULL) //error: no hay coma separando números
+  if (comaPtr == NULL) //error: no hay coma separando numeros
   {
     cout << "FATAL ERROR: expected \",\" character is not present" << endl;
     return(false);
   }
-  //tamaño del primer número
+  //tamano del primer numero
   const long num1Size=comaPtr-numbersPtr;
-  if (num1Size == 0) //error: no existe el primer número
+  if (num1Size == 0) //error: no existe el primer numero
   {
     cout << "FATAL ERROR: missing number" << endl;
     return(false);
@@ -667,10 +667,10 @@ bool extract_2numbers(const char *numbersPtr, T &num1, T &num2)
   char *const num1Ptr = new char[num1Size+1];
   strncpy(num1Ptr,numbersPtr,num1Size);
   num1Ptr[num1Size] = '\0';
-  for (long i=1; i <= num1Size; i++) //chequeamos cada dígito
-    if (isdigit(num1Ptr[i-1]) == 0) //no es un dígito válido
+  for (long i=1; i <= num1Size; i++) //chequeamos cada digito
+    if (isdigit(num1Ptr[i-1]) == 0) //no es un digito valido
     {
-      if ( (strcmp(dataType,doubleType) == 0) &&  //posible número real
+      if ( (strcmp(dataType,doubleType) == 0) &&  //posible numero real
            (  (num1Ptr[i-1] == '.') || (num1Ptr[i-1] == '+') 
            || (num1Ptr[i-1] == 'E') || (num1Ptr[i-1] == 'e')
            || (num1Ptr[i-1] == 'D') || (num1Ptr[i-1] == 'd')
@@ -683,8 +683,8 @@ bool extract_2numbers(const char *numbersPtr, T &num1, T &num2)
     }
   if(strcmp(dataType,longType) == 0)
   {
-    num1 = atol(num1Ptr); //atol = 0 si la cadena es inválida
-    if (num1 == 0) //posible error: número inválido
+    num1 = atol(num1Ptr); //atol = 0 si la cadena es invalida
+    if (num1 == 0) //posible error: numero invalido
     {
       for (const char *s=num1Ptr; s < num1Ptr+num1Size; s++)
       {
@@ -700,10 +700,10 @@ bool extract_2numbers(const char *numbersPtr, T &num1, T &num2)
   else if(strcmp(dataType,doubleType) == 0)
   {
     char *restnum1;
-    //nota: static_cast aquí evita un warning que no tiene sentido: 
+    //nota: static_cast aqui evita un warning que no tiene sentido: 
     //assignment to `long' from `double'
     num1 = static_cast< T >(strtod(num1Ptr, &restnum1));
-    if (strlen(restnum1) != 0) //el número no es válido
+    if (strlen(restnum1) != 0) //el numero no es valido
     {
       delete [] num1Ptr;
       cout << "FATAL ERROR: invalid number" << endl;
@@ -711,13 +711,13 @@ bool extract_2numbers(const char *numbersPtr, T &num1, T &num2)
     }
   }
   delete [] num1Ptr;
-  //extraemos segundo número
+  //extraemos segundo numero
   const char *sPtr = comaPtr+1;
-  while (*sPtr != '\0') //chequeamos cada dígito
+  while (*sPtr != '\0') //chequeamos cada digito
   {
-    if (isdigit(sPtr[0]) == 0) //no es un dígito válido
+    if (isdigit(sPtr[0]) == 0) //no es un digito valido
     {
-      if ( (strcmp(dataType,doubleType) == 0) &&  //posible número real
+      if ( (strcmp(dataType,doubleType) == 0) &&  //posible numero real
            (  (sPtr[0] == '.') || (sPtr[0] == '+') 
            || (sPtr[0] == 'E') || (sPtr[0] == 'e')
            || (sPtr[0] == 'D') || (sPtr[0] == 'd')
@@ -732,8 +732,8 @@ bool extract_2numbers(const char *numbersPtr, T &num1, T &num2)
   }
   if(strcmp(dataType,longType) == 0)
   {
-    num2 = atol(comaPtr+1); //atol = 0 si la cadena es inválida
-    if (num2 == 0) //posible error: número inválido
+    num2 = atol(comaPtr+1); //atol = 0 si la cadena es invalida
+    if (num2 == 0) //posible error: numero invalido
     {
       for (const char *s=comaPtr+1; s[0] != '\0'; s++)
       {
@@ -749,15 +749,15 @@ bool extract_2numbers(const char *numbersPtr, T &num1, T &num2)
   else if(strcmp(dataType,doubleType) == 0)
   {
     char *restnum2;
-    //nota: static_cast aquí evita un warning: "assignment to `long' from 
+    //nota: static_cast aqui evita un warning: "assignment to `long' from 
     //`double'", que no tiene sentido
     num2 = static_cast< T >(strtod(comaPtr+1, &restnum2));
-    if (strlen(restnum2) != 0) //el número no es válido
+    if (strlen(restnum2) != 0) //el numero no es valido
     {
       cout << "FATAL ERROR: invalid number" << endl;
       return(false);
     }
   }
-  //retorno con éxito
+  //retorno con exito
   return(true);
 }

@@ -33,7 +33,7 @@ void c123(const double &, const double &,
 
 void verbose(IndexParam param, IndexDef myindex, SciData *imagePtr)
 {
-  //tipo de índice a medir
+  //tipo de indice a medir
   const long type = myindex.gettype();
   //definimos un separador de 79 caracteres
   char separador[80];
@@ -42,10 +42,10 @@ void verbose(IndexParam param, IndexDef myindex, SciData *imagePtr)
     separador[i]='-';
   separador[79]='\0';
 
-  //mostramos información sobre el índice a medir
+  //mostramos informacion sobre el indice a medir
   cout << separador << endl;
   cout << "#Index.........................: " << param.get_index() << endl;
-  if (type == 1) //índices moleculares
+  if (type == 1) //indices moleculares
   {
     cout << "#                        <code>: " << type
          << " (molecular index)" << endl;
@@ -70,7 +70,7 @@ void verbose(IndexParam param, IndexDef myindex, SciData *imagePtr)
     cout << "#c2 (error estimation from S/N): " << c2 << endl;
     cout << "#c3 (error estimation from S/N): " << c3 << endl;
   }
-  else if (type == 2) //índices atómicos
+  else if (type == 2) //indices atomicos
   {
     cout << "#                        <code>: " << type
          << " (atomic index)";
@@ -100,7 +100,7 @@ void verbose(IndexParam param, IndexDef myindex, SciData *imagePtr)
     cout << "#c2 (error estimation from S/N): " << c2 << endl;
     cout << "#c3 (error estimation from S/N): " << c3 << endl;
   }
-  else if (type == 3) //índices tipo D4000
+  else if (type == 3) //indices tipo D4000
   {
     cout << "#                        <code>: " << type
          << " (D4000-like index)";
@@ -120,7 +120,7 @@ void verbose(IndexParam param, IndexDef myindex, SciData *imagePtr)
            << myindex.getldo2(i-1) << endl;
     }
   }
-  else if (type == 4) //índices tipo B4000
+  else if (type == 4) //indices tipo B4000
   {
     cout << "#                        <code>: " << type
          << " (B4000-like index)";
@@ -140,7 +140,7 @@ void verbose(IndexParam param, IndexDef myindex, SciData *imagePtr)
            << myindex.getldo2(i-1) << endl;
     }
   }
-  else if (type == 5) //índices tipo color
+  else if (type == 5) //indices tipo color
   {
     cout << "#                        <code>: " << type
          << " (color-like index)";
@@ -160,7 +160,7 @@ void verbose(IndexParam param, IndexDef myindex, SciData *imagePtr)
            << myindex.getldo2(i-1) << endl;
     }
   }
-  else if ( type == 10 )  //línea de emisión
+  else if ( type == 10 )  //linea de emision
   {
     cout << "#                        <code>: " << type
          << " (emission line)";
@@ -181,7 +181,7 @@ void verbose(IndexParam param, IndexDef myindex, SciData *imagePtr)
            << myindex.getldo2(i-1) << endl;
     }
   }
-  else if ( (type >= 11) && (type <= 99) ) //discontinuidades genéricas
+  else if ( (type >= 11) && (type <= 99) ) //discontinuidades genericas
   {
     cout << "#                        <code>: " << type
          << " (generic discontinuity)";
@@ -205,7 +205,7 @@ void verbose(IndexParam param, IndexDef myindex, SciData *imagePtr)
            << myindex.getldo2(i-1+nconti) << endl;
     }
   }
-  else if ( (type >= 101) && (type <= 9999) ) //índices genéricos
+  else if ( (type >= 101) && (type <= 9999) ) //indices genericos
   {
     cout << "#                        <code>: " << type
          << " (generic index)";
@@ -230,7 +230,7 @@ void verbose(IndexParam param, IndexDef myindex, SciData *imagePtr)
            << myindex.getfactor(i-1) << endl;
     }
   }
-  else if ( (type >= -99) && (type <= -2) ) //índices escalón
+  else if ( (type >= -99) && (type <= -2) ) //indices escalon
   {
     cout << "#                        <code>: " << type
          << " (slope index)";
@@ -265,7 +265,7 @@ void verbose(IndexParam param, IndexDef myindex, SciData *imagePtr)
   //Espectros a medir
   cout << "#First & last spectrum.........: " << param.get_ns1() << ", " 
        << param.get_ns2() << endl;
-  //longitud de onda inicial y dispersión
+  //longitud de onda inicial y dispersion
   cout << "#CRVAL1, CDELT1, CRPIX1........: " << imagePtr->getcrval1()
        << ", " << imagePtr->getcdelt1()
        << ", " << imagePtr->getcrpix1() << endl;
@@ -318,10 +318,10 @@ void verbose(IndexParam param, IndexDef myindex, SciData *imagePtr)
   cout << "#spect.    index    err_phot    S/N    "
           "   RVel.  RVel.err  ind_rvel  err_rvel"<< endl;
 
-  if (type == 1) //índices moleculares
+  if (type == 1) //indices moleculares
     cout << "#number    (mag)      (mag)   per ang  "
             "  (km/s)   (km/s)     (mag)     (mag)" << endl;
-  else if (type == 2) //índices atómicos
+  else if (type == 2) //indices atomicos
     if (param.get_logindex())
     {
       cout << "#number    (mag)      (mag)   per ang  "
@@ -335,10 +335,10 @@ void verbose(IndexParam param, IndexDef myindex, SciData *imagePtr)
   else if ( (type == 3) || (type == 4) || (type == 5) ) //D4000, B4000, color
     cout << "#number    value      value   S/N_ang  "
             "  (km/s)   (km/s)     value     value" << endl;
-  else if ( (type >= 101) && (type <= 9999) ) //índices genéricos
+  else if ( (type >= 101) && (type <= 9999) ) //indices genericos
     cout << "#number    (ang)      (ang)   per ang  "
             "  (km/s)   (km/s)     (ang)     (ang)" << endl;
-  else if ( (type >= -99) && (type <= -2) ) //índices pendiente
+  else if ( (type >= -99) && (type <= -2) ) //indices pendiente
     cout << "#number    value      value   S/N_ang  "
             "  (km/s)   (km/s)     value     value" << endl;
 

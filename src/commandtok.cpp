@@ -18,7 +18,7 @@
  * 
  */
 
-//Definición de funciones miembro de la clase CommandToken, declarada en 
+//Definicion de funciones miembro de la clase CommandToken, declarada en 
 //commandtok.h
 #include <iostream>
 #include <string.h>
@@ -34,7 +34,7 @@ CommandToken::CommandToken()
   value[0] = '\0';
 }
 
-//constructor con 2 parámetros
+//constructor con 2 parametros
 CommandToken::CommandToken(char *keylabel, char *keyvalue)
 {
   setlabel(keylabel);
