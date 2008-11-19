@@ -1,0 +1,23 @@
+           default
+keyword   keyvalues                   keyval description
+=======   ========= ===========================================================
+if        undef,0,0 #input file name,first spectrum,last spectrum (0,0=all)
+index     undef     #index identification name
+ief       undef     #input error file (incompatible with "snguess")
+snf       undef     #S/N estimation file (incompatible with "ief")
+rv        0,0       #radial velocity (km/s),radial velocity error
+rvf       undef,1,0 #radial velocity file name, column data, column error
+nsimul    100       #number of simulations to estimate radial velocity error
+logindex  no        #measure indices in logarithmic units
+verb      yes       #display intermediate information
+nsimulsn  0         #number of simulations with different S/N ratios
+minmaxsn  1.0,100.0 #minimum,maximum S/N ratios per Ang. in simulations
+ilabfile  undef,0,0 #input label file (first and last character (0,0=all)
+biaserr   0         #systematic error (additive % of the continuum level)
+linearerr 0         #linearity error: flux=flux_original^(1+linearerr)
+plotmode  0         #plot mode (0:none; 1:pause, 2:no pause; -:with error bars)
+grdev     /Xserve   #PGPLOT graphic device
+nwindows  1,1       #number of panels (NX,NY) in the plotting device
+plottype  1         #0: simple plot; >0: plot with additional information
+nseed     0         #seed for random numbers (0=use computer time)
+fscale    1.0       #flux scale factor (measured spectrum = original/fscale)
