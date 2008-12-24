@@ -1,3 +1,9 @@
+- Incluir numero de version en output inicial del programa
+
+- Cuando en la linea de comando ejecutamos el programa con un ultimo keyword
+  que termina como "keyword=" (sin ningun valor asignado), ¡el programa asume
+  que dicho valor es cero! Esto es un problema en muchos casos.
+
 - Explicar el parametro snf=fichero
 donde fichero contiene
 

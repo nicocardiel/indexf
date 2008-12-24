@@ -41,6 +41,8 @@ bool extract_2numbers(const char *, T &, T &);
 
 //-----------------------------------------------------------------------------
 //funcion principal: comprueba los parametros de entrada
+//Nota: el orden al chequear los parametros debe coincidir con el que aparece
+//      en el fichero inputcl.dat.
 bool checkipar(vector< CommandToken > &cl, IndexParam &param,
                vector< IndexDef > &id)
 {
@@ -51,8 +53,9 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
   //--------------------------------------------
   //input file name,first spectrum,last spectrum
   //--------------------------------------------
-  labelPtr = cl[0].getlabel();
-  valuePtr = cl[0].getvalue();
+  long nextParameter=0;
+  labelPtr = cl[nextParameter].getlabel();
+  valuePtr = cl[nextParameter].getvalue();
   long ns1,ns2;
   bool logfile_if;
   maxfileSize=strlen(valuePtr);
@@ -101,8 +104,9 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
   //-------------------------
   //index identification name
   //-------------------------
-  labelPtr = cl[1].getlabel();
-  valuePtr = cl[1].getvalue();
+  nextParameter++;
+  labelPtr = cl[nextParameter].getlabel();
+  valuePtr = cl[nextParameter].getvalue();
   if(strcmp(valuePtr,"undef") == 0)
   {
     cout << "FATAL ERROR: you must supply an index identification name" << endl;
@@ -131,8 +135,9 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
   //----------------
   //input error file
   //----------------
-  labelPtr = cl[2].getlabel();
-  valuePtr = cl[2].getvalue();
+  nextParameter++;
+  labelPtr = cl[nextParameter].getlabel();
+  valuePtr = cl[nextParameter].getvalue();
   //si el nombre del fichero no es "undef", comprobamos si existe
   if(strcmp(valuePtr,"undef") != 0)
   {
@@ -146,11 +151,39 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
   }
   param.set_ief(valuePtr);
 
+  //-----------------------------------------
+  //median to estimate mean flux in continuum
+  //-----------------------------------------
+  nextParameter++;
+  labelPtr = cl[nextParameter].getlabel();
+  valuePtr = cl[nextParameter].getvalue();
+  for (const char *s=valuePtr; s[0] != '\0'; s++)
+  {
+    if ((isdigit(s[0]) == 0) && (s[0] != '-')) //error: no es un digito valido
+    {
+      cout << "FATAL ERROR: <" << valuePtr
+           << "> is an invalid argument for the keyword <" << labelPtr
+           << ">" << endl;
+      return(false);
+    }
+  }
+  const long contperc = atol(valuePtr);
+  if( (contperc < -1) || (contperc > 100) )
+  {
+    cout << "FATAL ERROR: <" << valuePtr
+         << "> is an invalid argument for the keyword <" << labelPtr
+         << ">" << endl;
+    cout << "> This number must satisfy 0 <= contperc <= 100" << endl;
+    return(false);
+  }
+  param.set_contperc(contperc);
+
   //---------------------------------
   //estimate S/N from rms in spectrum
   //---------------------------------
-  labelPtr = cl[3].getlabel();
-  valuePtr = cl[3].getvalue();
+  nextParameter++;
+  labelPtr = cl[nextParameter].getlabel();
+  valuePtr = cl[nextParameter].getvalue();
   if(strcmp(valuePtr,"undef") != 0)
   {
     if(strcmp(param.get_ief(),"undef") != 0)
@@ -172,8 +205,9 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
   //---------------------------------------------
   //radial velocity (km/s), radial velocity error
   //---------------------------------------------
-  labelPtr = cl[4].getlabel();
-  valuePtr = cl[4].getvalue();
+  nextParameter++;
+  labelPtr = cl[nextParameter].getlabel();
+  valuePtr = cl[nextParameter].getvalue();
   double rv,rve;
   if(!extract_2numbers(valuePtr,rv,rve))
   {
@@ -187,8 +221,9 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
   //--------------------------------------------------
   //radial velocity file name,column data,column error
   //--------------------------------------------------
-  labelPtr = cl[5].getlabel();
-  valuePtr = cl[5].getvalue();
+  nextParameter++;
+  labelPtr = cl[nextParameter].getlabel();
+  valuePtr = cl[nextParameter].getvalue();
   long rvc,rvce;
   bool logfile_rv;
   maxfileSize=strlen(valuePtr);
@@ -215,8 +250,9 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
   //--------------------------------------------------------
   //number of simultations to estimate radial velocity error
   //--------------------------------------------------------
-  labelPtr = cl[6].getlabel();
-  valuePtr = cl[6].getvalue();
+  nextParameter++;
+  labelPtr = cl[nextParameter].getlabel();
+  valuePtr = cl[nextParameter].getvalue();
   for (const char *s=valuePtr; s[0] != '\0'; s++)
   {
     if (isdigit(s[0]) == 0) //error: no es un digito valido
@@ -241,8 +277,9 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
   //------------------------------------
   //measure indices in logarithmic units
   //------------------------------------
-  labelPtr = cl[7].getlabel();
-  valuePtr = cl[7].getvalue();
+  nextParameter++;
+  labelPtr = cl[nextParameter].getlabel();
+  valuePtr = cl[nextParameter].getvalue();
   if ((strcmp(valuePtr,"yes") == 0)||(strcmp(valuePtr,"y") == 0))
   {
     param.set_logindex(true);
@@ -262,8 +299,9 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
   //--------------------------------
   //display intermediate information
   //--------------------------------
-  labelPtr = cl[8].getlabel();
-  valuePtr = cl[8].getvalue();
+  nextParameter++;
+  labelPtr = cl[nextParameter].getlabel();
+  valuePtr = cl[nextParameter].getvalue();
   if ((strcmp(valuePtr,"yes") == 0)||(strcmp(valuePtr,"y") == 0))
   {
     param.set_verbose(true);
@@ -283,8 +321,9 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
   //------------------------------------------------
   //number of simultations with different S/N ratios
   //------------------------------------------------
-  labelPtr = cl[9].getlabel();
-  valuePtr = cl[9].getvalue();
+  nextParameter++;
+  labelPtr = cl[nextParameter].getlabel();
+  valuePtr = cl[nextParameter].getvalue();
   for (const char *s=valuePtr; s[0] != '\0'; s++)
   {
     if (isdigit(s[0]) == 0) //error: no es un digito valido
@@ -312,8 +351,9 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
   //---------------------------------------------
   //minimum and maximum S/N ratios in simulations
   //---------------------------------------------
-  labelPtr = cl[10].getlabel();
-  valuePtr = cl[10].getvalue();
+  nextParameter++;
+  labelPtr = cl[nextParameter].getlabel();
+  valuePtr = cl[nextParameter].getvalue();
   double minsn,maxsn;
   if(!extract_2numbers(valuePtr,minsn,maxsn))
   {
@@ -344,8 +384,9 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
   //----------------
   //input label file
   //----------------
-  labelPtr = cl[11].getlabel();
-  valuePtr = cl[11].getvalue();
+  nextParameter++;
+  labelPtr = cl[nextParameter].getlabel();
+  valuePtr = cl[nextParameter].getvalue();
   long nchar1,nchar2;
   bool logfile_ilab;
   maxfileSize=strlen(valuePtr);
@@ -394,8 +435,9 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
   //----------------------------------------------------
   //systematic error (additive % of the continuum level)
   //----------------------------------------------------
-  labelPtr = cl[12].getlabel();
-  valuePtr = cl[12].getvalue();
+  nextParameter++;
+  labelPtr = cl[nextParameter].getlabel();
+  valuePtr = cl[nextParameter].getvalue();
   for (const char *s=valuePtr; s[0] != '\0'; s++)
   {
     if (isdigit(s[0]) == 0) //no es un digito valido
@@ -419,8 +461,9 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
   //---------------
   //linearity error
   //---------------
-  labelPtr = cl[13].getlabel();
-  valuePtr = cl[13].getvalue();
+  nextParameter++;
+  labelPtr = cl[nextParameter].getlabel();
+  valuePtr = cl[nextParameter].getvalue();
   for (const char *s=valuePtr; s[0] != '\0'; s++)
   {
     if (isdigit(s[0]) == 0) //no es un digito valido
@@ -454,8 +497,9 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
   //------------------------------------------------------------
   //plotmode (0: none; 1: pause, 2: no pause; -: with error bars
   //------------------------------------------------------------
-  labelPtr = cl[14].getlabel();
-  valuePtr = cl[14].getvalue();
+  nextParameter++;
+  labelPtr = cl[nextParameter].getlabel();
+  valuePtr = cl[nextParameter].getvalue();
   for (const char *s=valuePtr; s[0] != '\0'; s++)
   {
     if (isdigit(s[0]) == 0) //error: no es un digito valido
@@ -482,15 +526,17 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
   //----------------------
   //PGPLOT graphics device
   //----------------------
-  labelPtr = cl[15].getlabel();
-  valuePtr = cl[15].getvalue();
+  nextParameter++;
+  labelPtr = cl[nextParameter].getlabel();
+  valuePtr = cl[nextParameter].getvalue();
   param.set_grdev(valuePtr);
 
   //-----------------------------------------------
   //number of panels (NX,NY) in the plotting device
   //-----------------------------------------------
-  labelPtr = cl[16].getlabel();
-  valuePtr = cl[16].getvalue();
+  nextParameter++;
+  labelPtr = cl[nextParameter].getlabel();
+  valuePtr = cl[nextParameter].getvalue();
   long nwinx,nwiny;
   if(!extract_2numbers(valuePtr,nwinx,nwiny))
   {
@@ -511,8 +557,9 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
   //--------------------------------------------------------------
   //plottype (0: simple plot; 1: plot with additional information)
   //--------------------------------------------------------------
-  labelPtr = cl[17].getlabel();
-  valuePtr = cl[17].getvalue();
+  nextParameter++;
+  labelPtr = cl[nextParameter].getlabel();
+  valuePtr = cl[nextParameter].getvalue();
   for (const char *s=valuePtr; s[0] != '\0'; s++)
   {
     if (isdigit(s[0]) == 0) //error: no es un digito valido
@@ -539,8 +586,9 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
   //----------------------------
   //nseed (0: use computer time)
   //----------------------------
-  labelPtr = cl[18].getlabel();
-  valuePtr = cl[18].getvalue();
+  nextParameter++;
+  labelPtr = cl[nextParameter].getlabel();
+  valuePtr = cl[nextParameter].getvalue();
   for (const char *s=valuePtr; s[0] != '\0'; s++)
   {
     if (isdigit(s[0]) == 0) //error: no es un digito valido
@@ -567,8 +615,9 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
   //-----------------
   //flux scale factor
   //-----------------
-  labelPtr = cl[19].getlabel();
-  valuePtr = cl[19].getvalue();
+  nextParameter++;
+  labelPtr = cl[nextParameter].getlabel();
+  valuePtr = cl[nextParameter].getvalue();
   for (const char *s=valuePtr; s[0] != '\0'; s++)
   {
     if (isdigit(s[0]) == 0) //no es un digito valido

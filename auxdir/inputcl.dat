@@ -4,6 +4,7 @@ keyword   keyvalues                   keyval description
 if        undef,0,0 #input file name,first spectrum,last spectrum (0,0=all)
 index     undef     #index identification name
 ief       undef     #input error file (incompatible with "snguess")
+contperc  -1        #if greater than zero, indicates percentile for continuum
 snf       undef     #S/N estimation file (incompatible with "ief")
 rv        0,0       #radial velocity (km/s),radial velocity error
 rvf       undef,1,0 #radial velocity file name, column data, column error

@@ -306,6 +306,8 @@ void verbose(IndexParam param, IndexDef myindex, SciData *imagePtr)
   {
     cout << "#Seed for random number........: " << param.get_nseed() << endl;
   }
+  //percentile for continuum estimation
+  cout << "#Percentile for continuum (%)..: " << param.get_contperc() << endl;
   //systematic error (additive % of the continuum level)
   cout << "#Systematic error (additive %).: " << param.get_biaserr() << endl;
   //linearity error
