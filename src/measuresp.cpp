@@ -36,7 +36,8 @@ using namespace std;
 bool mideindex(const bool &, const double *, const double *, 
                const long &,
                const double &, const double &, const double &,
-               const IndexDef &, 
+               const IndexDef &,
+               const long &,
                const bool &,
                const double &, const double &,
                const double &, const double &,
@@ -44,7 +45,7 @@ bool mideindex(const bool &, const double *, const double *,
                bool &, bool &,
                double &, double &, double &);
 
-bool fmean(long, const double *, const bool *, double *, double *);
+bool fmean(const long, const double *, const bool *, double *, double *);
 
 void outmeasurement(const long &,
                     const double &, const double &, 
@@ -82,10 +83,12 @@ bool measuresp(SciData *imagePtr, IndexParam param, IndexDef myindex)
   const double crval1 = imagePtr->getcrval1();
   const double cdelt1 = imagePtr->getcdelt1();
   const double crpix1 = imagePtr->getcrpix1();
-  //recorremos, extraemos y medimos los espectros requeridos
-  double findex, eindex, sn, findex_rv, eindex_rv, findex_sn, eindex_sn;
+  //definimos parametros adicionales
+  const long contperc = param.get_contperc();
   const long plotmode = param.get_plotmode();
   const long plottype = param.get_plottype();
+  //recorremos, extraemos y medimos los espectros requeridos
+  double findex, eindex, sn, findex_rv, eindex_rv, findex_sn, eindex_sn;
   if (plotmode != 0)
   {
     const long nwinx=param.get_nwinx();
@@ -131,6 +134,7 @@ bool measuresp(SciData *imagePtr, IndexParam param, IndexDef myindex)
     const double linearerr = param.get_linearerr();
     bool lfindex = mideindex(lerr,sp_data,sp_error,imagePtr->getnaxis1(),
                              crval1,cdelt1,crpix1,myindex,
+                             contperc,
                              logindex,rvel,rvelerr,
                              biaserr,linearerr,
                              plotmode,plottype,
@@ -177,6 +181,7 @@ bool measuresp(SciData *imagePtr, IndexParam param, IndexDef myindex)
         iffindex_sim[nsimul-1]=
           mideindex(lerr,sp_data,sp_error,imagePtr->getnaxis1(),
                     crval1,cdelt1,crpix1,myindex,
+                    contperc,
                     logindex,rvel_eff,rvelerr,
                     biaserr,linearerr,
                     0,plottype, //no queremos plots (salvo continuo)
@@ -232,6 +237,7 @@ bool measuresp(SciData *imagePtr, IndexParam param, IndexDef myindex)
           iffindex_sim[nsimul-1]=
             mideindex(lerr,sp_data_eff,sp_error,imagePtr->getnaxis1(),
                       crval1,cdelt1,crpix1,myindex,
+                      contperc,
                       logindex,rvel,rvelerr,
                       biaserr,linearerr,
                       0,0, //no queremos plots

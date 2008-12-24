@@ -35,6 +35,7 @@ IndexParam::IndexParam()
   ns2 = 1;
   index[0] = '\0';
   iefile[0] = '\0';
+  contperc = -1;
   snfile[0] = '\0';
   rv = 0.0;
   rve = 0.0;
@@ -67,6 +68,7 @@ IndexParam::IndexParam(
   char *ifile_,long ns1_,long ns2_,//input file, first and last spectrum
   char *index_,                 //index name
   char *iefile_,                //input error file
+  long contperc_,               //percentile for continuum (-1=use normal mean)
   char *snfile_,                //sn estimation file
   double rv_,double rve_,       //radial velocity and error
   char *rvfile_,long rvc_,long rvce_,//rad. vel. file name, column data & error
@@ -91,6 +93,7 @@ IndexParam::IndexParam(
   set_ns2(ns2_);
   set_index(index_);
   set_ief(iefile_);
+  set_contperc(contperc_);
   set_snf(snfile_);
   set_rv(rv_,rve_);
   set_rvf(rvfile_,rvc_,rvce_);
@@ -143,6 +146,12 @@ void IndexParam::set_ief(const char *iefile_)
 {
   strncpy(iefile,iefile_,strlen(iefile_));
   iefile[strlen(iefile_)]='\0';
+}
+
+//-----------------------------------------------------------------------------
+void IndexParam::set_contperc(const long contperc_)
+{
+  contperc = contperc_;
 }
 
 //-----------------------------------------------------------------------------
@@ -288,6 +297,9 @@ char *IndexParam::get_index() {return(index);}
 
 //-----------------------------------------------------------------------------
 char *IndexParam::get_ief() {return(iefile);}
+
+//-----------------------------------------------------------------------------
+long IndexParam::get_contperc() {return(contperc);}
 
 //-----------------------------------------------------------------------------
 char *IndexParam::get_snf() {return(snfile);}

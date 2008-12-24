@@ -24,7 +24,7 @@
 
 using namespace std;
 
-bool fmean(long n, const double *x, const bool *ifx, 
+bool fmean(const long n, const double *x, const bool *ifx, 
            double *fmeanPtr, double *sigmaPtr)
 {
   if (n <= 0)

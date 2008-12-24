@@ -21,18 +21,24 @@
 #include <iostream>
 #include <cmath>
 #include <cstdlib>
+#include <vector>
 #include "indexdef.h"
 #include "cpgplot.h"
 #include "cpgplot_d.h"
+#include "genericpixel.h"
 
 using namespace std;
+
+bool fpercent(vector <GenericPixel> &, const long, const bool, 
+              double *, double *);
 
 bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error, 
                const long &naxis1,
                const double &crval1, 
                const double &cdelt1, 
                const double &crpix1,
-               const IndexDef &myindex, 
+               const IndexDef &myindex,
+               const long &contperc,
                const bool &logindex,
                const double &rvel, const double &rvelerr,
                const double &biaserr, const double &linearerr,
@@ -402,6 +408,13 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
   //pseudocontinuo y anadimos una fraccion de dicho flujo a todo el espectro
   if ( fabs(biaserr) != 0.0 )
   {
+    //proteccion
+    if ( contperc >= 0 )
+    {
+      cout << "ERROR: biaserr and contperc cannot be used simultaneously"
+           << endl;
+      exit(1);
+    }
     //indice atomico o molecular
     if ( (myindex.gettype() == 1) || (myindex.gettype() == 2) )
     {
@@ -507,6 +520,13 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
   //de errores. Nota: para evitar "NaN", forzamos utilizar una senal positiva.
   if ( fabs(linearerr) != 0.0 )
   {
+    //proteccion
+    if ( contperc >= 0 )
+    {
+      cout << "ERROR: linearerr and contperc cannot be used simultaneously"
+           << endl;
+      exit(1);
+    }
     double scale_factor;
     for (long j=1; j <= naxis1; j++)
     {
@@ -528,49 +548,123 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
   //---------------------------------------------------------------------------
   if ( (myindex.gettype() == 1) || (myindex.gettype() == 2) )
   {
+    //proteccion
+    if ( contperc >= 0 )
+    {
+      cout << "WARNING: contperc is being implemented for this index"
+           << endl;
+    }
     //cuentas promedio en la banda azul
     double sb=0.0;
     double esb2=0.0;
-    for (long j=j1[0]; j<=j2[0]+1; j++)
+    if (contperc >= 0)
     {
-      double f;
-      if (j == j1[0])
-        f=1.0-d1[0];
-      else if (j == j2[0]+1)
-        f=d2[0];
+      if (j2[0]-j1[0] < 2)
+      {
+        cout << "ERROR: number of pixels in blue continuum bandpass too low "
+             << "to use contperc"
+             << endl;
+        exit(1);
+      }
       else
-        f=1.0;
-      sb+=f*s[j-1];
-      if(lerr) esb2+=f*f*es[j-1]*es[j-1];
+      {
+        vector <GenericPixel> fluxpix;
+        for (long j=j1[0]; j<=j2[0]+1; j++)
+        {
+          double f;
+          if (j == j1[0])
+            f=1.0-d1[0];
+          else if (j == j2[0]+1)
+            f=d2[0];
+          else
+            f=1.0;
+          GenericPixel temppix(s[j-1],es[j-1],f);
+          fluxpix.push_back(temppix);
+        }
+        if(!fpercent(fluxpix,contperc,lerr,&sb,&esb2))
+        {
+          cout << "ERROR: while computing percentile" << endl;
+          exit(1);
+        }
+      }
     }
-    sb*=cdelt1;
-    sb/=rl[0];
-    if(lerr)
+    else
     {
-      esb2*=cdelt1*cdelt1;
-      esb2/=(rl[0]*rl[0]);
+      for (long j=j1[0]; j<=j2[0]+1; j++)
+      {
+        double f;
+        if (j == j1[0])
+          f=1.0-d1[0];
+        else if (j == j2[0]+1)
+          f=d2[0];
+        else
+          f=1.0;
+        sb+=f*s[j-1];
+        if(lerr) esb2+=f*f*es[j-1]*es[j-1];
+      }
+      sb*=cdelt1;
+      sb/=rl[0];
+      if(lerr)
+      {
+        esb2*=cdelt1*cdelt1;
+        esb2/=(rl[0]*rl[0]);
+      }
     }
     //cuentas promedio en la banda roja
     double sr=0.0;
     double esr2=0.0;
-    for (long j=j1[2]; j<=j2[2]+1; j++)
+    if (contperc >= 0)
     {
-      double f;
-      if (j == j1[2])
-        f=1.0-d1[2];
-      else if (j == j2[2]+1)
-        f=d2[2];
+      if (j2[2]-j1[2] < 2)
+      {
+        cout << "ERROR: number of pixels in red continuum bandpass too low "
+             << "to use contperc"
+             << endl;
+        exit(1);
+      }
       else
-        f=1.0;
-      sr+=f*s[j-1];
-      if(lerr) esr2+=f*f*es[j-1]*es[j-1];
+      {
+        vector <GenericPixel> fluxpix;
+        for (long j=j1[2]; j<=j2[2]+1; j++)
+        {
+          double f;
+          if (j == j1[2])
+            f=1.0-d1[2];
+          else if (j == j2[2]+1)
+            f=d2[2];
+          else
+            f=1.0;
+          GenericPixel temppix(s[j-1],es[j-1],f);
+          fluxpix.push_back(temppix);
+        }
+        if(!fpercent(fluxpix,contperc,lerr,&sr,&esr2))
+        {
+          cout << "ERROR: while computing percentile" << endl;
+          exit(1);
+        }
+      }
     }
-    sr*=cdelt1;
-    sr/=rl[2];
-    if(lerr)
+    else
     {
-      esr2*=cdelt1*cdelt1;
-      esr2/=(rl[2]*rl[2]);
+      for (long j=j1[2]; j<=j2[2]+1; j++)
+      {
+        double f;
+        if (j == j1[2])
+          f=1.0-d1[2];
+        else if (j == j2[2]+1)
+          f=d2[2];
+        else
+          f=1.0;
+        sr+=f*s[j-1];
+        if(lerr) esr2+=f*f*es[j-1]*es[j-1];
+      }
+      sr*=cdelt1;
+      sr/=rl[2];
+      if(lerr)
+      {
+        esr2*=cdelt1*cdelt1;
+        esr2/=(rl[2]*rl[2]);
+      }
     }
     //calculamos pseudo-continuo
     double mwb = (myindex.getldo1(0)+myindex.getldo2(0))/2.0;
@@ -696,6 +790,13 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
             (myindex.gettype() == 4) || 
             (myindex.gettype() == 5) )
   {
+    //proteccion
+    if ( contperc >= 0 )
+    {
+      cout << "ERROR: contperc has not been implemented yet for this index"
+           << endl;
+      exit(1);
+    }
     //pesos para la discontinuidad
     double *wl = new double [naxis1];
     double *wl2 = new double [naxis1];
@@ -797,6 +898,13 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
   //---------------------------------------------------------------------------
   else if (myindex.gettype() == 10)
   {
+    //proteccion
+    if ( contperc >= 0 )
+    {
+      cout << "ERROR: contperc has not been implemented yet for this index"
+           << endl;
+      exit(1);
+    }
     long nbands = myindex.getnbands();
     //si no hay errores, hacemos todos iguales a uno para utilizar las mismas
     //formulas
@@ -992,6 +1100,13 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
   //---------------------------------------------------------------------------
   else if ( (myindex.gettype() >= 11) && (myindex.gettype() <= 99) )
   {
+    //proteccion
+    if ( contperc >= 0 )
+    {
+      cout << "ERROR: contperc has not been implemented yet for this index"
+           << endl;
+      exit(1);
+    }
     long nconti = myindex.getnconti();
     long nlines = myindex.getnlines();
     //calculamos flujo promedio en las bandas de continuo
@@ -1106,6 +1221,13 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
   //---------------------------------------------------------------------------
   else if ( (myindex.gettype() >= 101) && (myindex.gettype() <= 9999) )
   {
+    //proteccion
+    if ( contperc >= 0 )
+    {
+      cout << "ERROR: contperc has not been implemented yet for this index"
+           << endl;
+      exit(1);
+    }
     long nconti = myindex.getnconti();
     long nlines = myindex.getnlines();
     //si no hay errores, hacemos todos iguales a uno para utilizar las mismas
@@ -1253,6 +1375,13 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
   //---------------------------------------------------------------------------
   else if ( (myindex.gettype() >= -99) && (myindex.gettype() <= -2) )
   {
+    //proteccion
+    if ( contperc >= 0 )
+    {
+      cout << "ERROR: contperc has not been implemented yet for this index"
+           << endl;
+      exit(1);
+    }
     long nconti = myindex.getnconti();
     //si no hay errores, hacemos todos iguales a uno para utilizar las mismas
     //formulas
