@@ -27,14 +27,17 @@
 class GenericPixel{
   public:
     GenericPixel(); //constructor por defecto
-    GenericPixel(double, double, double);//constructor con 3 parámetros
+    GenericPixel(double, double, double, double);//constructor con 4 parámetros
+    void setwave(const double);
     void setflux(const double);
     void seteflux(const double);
     void setpixelfraction(const double);
+    double getwave();
     double getflux();
     double geteflux();
     double getpixelfraction();
   private:
+    double wave;        //wavelength
     double flux;        //flux
     double eflux;       //uncertainty in flux
     double pixelfraction; //pixel fraction

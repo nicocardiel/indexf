@@ -38,6 +38,7 @@ bool mideindex(const bool &, const double *, const double *,
                const double &, const double &, const double &,
                const IndexDef &,
                const long &,
+               const long &,
                const bool &,
                const double &, const double &,
                const double &, const double &,
@@ -85,6 +86,7 @@ bool measuresp(SciData *imagePtr, IndexParam param, IndexDef myindex)
   const double crpix1 = imagePtr->getcrpix1();
   //definimos parametros adicionales
   const long contperc = param.get_contperc();
+  const long boundfit = param.get_boundfit();
   const long plotmode = param.get_plotmode();
   const long plottype = param.get_plottype();
   //recorremos, extraemos y medimos los espectros requeridos
@@ -134,7 +136,7 @@ bool measuresp(SciData *imagePtr, IndexParam param, IndexDef myindex)
     const double linearerr = param.get_linearerr();
     bool lfindex = mideindex(lerr,sp_data,sp_error,imagePtr->getnaxis1(),
                              crval1,cdelt1,crpix1,myindex,
-                             contperc,
+                             contperc,boundfit,
                              logindex,rvel,rvelerr,
                              biaserr,linearerr,
                              plotmode,plottype,
@@ -181,7 +183,7 @@ bool measuresp(SciData *imagePtr, IndexParam param, IndexDef myindex)
         iffindex_sim[nsimul-1]=
           mideindex(lerr,sp_data,sp_error,imagePtr->getnaxis1(),
                     crval1,cdelt1,crpix1,myindex,
-                    contperc,
+                    contperc,boundfit,
                     logindex,rvel_eff,rvelerr,
                     biaserr,linearerr,
                     0,plottype, //no queremos plots (salvo continuo)
@@ -237,7 +239,7 @@ bool measuresp(SciData *imagePtr, IndexParam param, IndexDef myindex)
           iffindex_sim[nsimul-1]=
             mideindex(lerr,sp_data_eff,sp_error,imagePtr->getnaxis1(),
                       crval1,cdelt1,crpix1,myindex,
-                      contperc,
+                      contperc,boundfit,
                       logindex,rvel,rvelerr,
                       biaserr,linearerr,
                       0,0, //no queremos plots

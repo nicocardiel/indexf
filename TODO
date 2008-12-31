@@ -1,5 +1,11 @@
 - Incluir numero de version en output inicial del programa
 
+- La forma en la que se estima el error en el continuo cuando se emplea
+  contperc seguramente sobreestima el valor correcto por un factor sqrt(2). Hay
+  que estudiar si se puede compensar dicho efecto (¡notar que seguramente hay
+  otro factor sqrt(2) que cancela al anterior debido a que normalmente la
+  resolucion espectral es del orden dos dos pixeles!).
+
 - Cuando en la linea de comando ejecutamos el programa con un ultimo keyword
   que termina como "keyword=" (sin ningun valor asignado), ¡el programa asume
   que dicho valor es cero! Esto es un problema en muchos casos.

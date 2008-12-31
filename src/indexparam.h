@@ -31,7 +31,8 @@ class IndexParam{
       char *,long,long, //input file, first and last spectrum (0,0=all)
       char *,           //index name
       char *,           //input error file
-      long,             //percentile for continuum (0=use mean fluxes)
+      long,             //percentile for continuum (-1=use mean fluxes)
+      long,             //boundary fit for continuum (0=use mean fluxes)
       char *,           //sn estimation file
       double,double,    //radial velocity and error
       char *,long,long, //rad. vel. file name, column data & error
@@ -56,6 +57,7 @@ class IndexParam{
     void set_index(const char *);
     void set_ief(const char *);
     void set_contperc(const long);
+    void set_boundfit(const long);
     void set_snf(const char *);
     void set_rv(const double, const double);
     void set_rvf(const char *,const long, const long);
@@ -83,6 +85,7 @@ class IndexParam{
     char *get_index();
     char *get_ief();
     long get_contperc();
+    long get_boundfit();
     char *get_snf();
     double get_rv();
     double get_rve();
@@ -114,6 +117,7 @@ class IndexParam{
     long ns1,ns2;
     char iefile[256];
     long contperc;
+    long boundfit;
     char snfile[256];
     double rv,rve;
     char rvfile[256];
