@@ -419,10 +419,16 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
   //pseudocontinuo y anadimos una fraccion de dicho flujo a todo el espectro
   if ( fabs(biaserr) != 0.0 )
   {
-    //proteccion
+    //protecciones
     if ( contperc >= 0 )
     {
       cout << "ERROR: biaserr and contperc cannot be used simultaneously"
+           << endl;
+      exit(1);
+    }
+    if ( boundfit > 0 )
+    {
+      cout << "ERROR: biaserr and boundfit cannot be used simultaneously"
            << endl;
       exit(1);
     }
@@ -538,6 +544,12 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
            << endl;
       exit(1);
     }
+    if ( boundfit > 0 )
+    {
+      cout << "ERROR: linearerr and boundfit cannot be used simultaneously"
+           << endl;
+      exit(1);
+    }
     double scale_factor;
     for (long j=1; j <= naxis1; j++)
     {
@@ -559,10 +571,15 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
   //---------------------------------------------------------------------------
   if ( (myindex.gettype() == 1) || (myindex.gettype() == 2) )
   {
-    //proteccion
+    //protecciones
     if ( contperc >= 0 )
     {
       cout << "WARNING: contperc is being implemented for this index"
+           << endl;
+    }
+    if ( boundfit > 0 )
+    {
+      cout << "WARNING: boundfit is being implemented for this index"
            << endl;
     }
     //cuentas promedio en la banda azul
@@ -869,10 +886,16 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
             (myindex.gettype() == 4) || 
             (myindex.gettype() == 5) )
   {
-    //proteccion
+    //protecciones
     if ( contperc >= 0 )
     {
       cout << "ERROR: contperc has not been implemented yet for this index"
+           << endl;
+      exit(1);
+    }
+    if ( boundfit > 0 )
+    {
+      cout << "ERROR: boundfit has not been implemented yet for this index"
            << endl;
       exit(1);
     }
@@ -977,10 +1000,16 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
   //---------------------------------------------------------------------------
   else if (myindex.gettype() == 10)
   {
-    //proteccion
+    //protecciones
     if ( contperc >= 0 )
     {
       cout << "ERROR: contperc has not been implemented yet for this index"
+           << endl;
+      exit(1);
+    }
+    if ( boundfit > 0 )
+    {
+      cout << "ERROR: boundfit has not been implemented yet for this index"
            << endl;
       exit(1);
     }
@@ -1179,10 +1208,16 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
   //---------------------------------------------------------------------------
   else if ( (myindex.gettype() >= 11) && (myindex.gettype() <= 99) )
   {
-    //proteccion
+    //protecciones
     if ( contperc >= 0 )
     {
       cout << "ERROR: contperc has not been implemented yet for this index"
+           << endl;
+      exit(1);
+    }
+    if ( boundfit > 0 )
+    {
+      cout << "ERROR: boundfit has not been implemented yet for this index"
            << endl;
       exit(1);
     }
@@ -1300,10 +1335,16 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
   //---------------------------------------------------------------------------
   else if ( (myindex.gettype() >= 101) && (myindex.gettype() <= 9999) )
   {
-    //proteccion
+    //protecciones
     if ( contperc >= 0 )
     {
       cout << "ERROR: contperc has not been implemented yet for this index"
+           << endl;
+      exit(1);
+    }
+    if ( boundfit > 0 )
+    {
+      cout << "ERROR: boundfit has not been implemented yet for this index"
            << endl;
       exit(1);
     }
@@ -1454,10 +1495,16 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
   //---------------------------------------------------------------------------
   else if ( (myindex.gettype() >= -99) && (myindex.gettype() <= -2) )
   {
-    //proteccion
+    //protecciones
     if ( contperc >= 0 )
     {
       cout << "ERROR: contperc has not been implemented yet for this index"
+           << endl;
+      exit(1);
+    }
+    if ( boundfit > 0 )
+    {
+      cout << "ERROR: boundfit has not been implemented yet for this index"
            << endl;
       exit(1);
     }
