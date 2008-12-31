@@ -31,6 +31,8 @@ using namespace std;
 
 bool fpercent(vector <GenericPixel> &, const long, const bool, 
               double *, double *);
+bool boundaryfit(vector <GenericPixel> &, const bool, 
+                 double *, double *);
 
 bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error, 
                const long &naxis1,
@@ -39,6 +41,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
                const double &crpix1,
                const IndexDef &myindex,
                const long &contperc,
+               const long &boundfit,
                const bool &logindex,
                const double &rvel, const double &rvelerr,
                const double &biaserr, const double &linearerr,
@@ -46,6 +49,14 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
                bool &out_of_limits, bool &negative_error,
                double &findex, double &eindex, double &sn)
 {
+  //---------------------------------------------------------------------------
+  //protecciones
+  if ( ( contperc >= 0 ) && ( boundfit > 0) )
+  {
+    cout << "ERROR: contperc and boundfit cannot be used simultaneously"
+         << endl;
+    exit(1);
+  }
   //---------------------------------------------------------------------------
   //constantes numericas
   const double c = 2.9979246E+5; //velocidad de la luz (km/s)
@@ -557,7 +568,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     //cuentas promedio en la banda azul
     double sb=0.0;
     double esb2=0.0;
-    if (contperc >= 0)
+    if (contperc >= 0) //......................................usamos percentil
     {
       if (j2[0]-j1[0] < 2)
       {
@@ -578,7 +589,9 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
             f=d2[0];
           else
             f=1.0;
-          GenericPixel temppix(s[j-1],es[j-1],f);
+          double wave=static_cast<double>(j-1)*cdelt1+
+                      crval1-(crpix1-1.0)*cdelt1;
+          GenericPixel temppix(wave,s[j-1],es[j-1],f);
           fluxpix.push_back(temppix);
         }
         if(!fpercent(fluxpix,contperc,lerr,&sb,&esb2))
@@ -588,7 +601,39 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
         }
       }
     }
-    else
+    else if ( boundfit > 0 ) //.............................usamos boundary fit
+    {
+      if(boundfit == 1)
+      {
+        vector <GenericPixel> fluxpix;
+        for (long j=j1[0]; j<=j2[0]+1; j++)
+        {
+          double f;
+          if (j == j1[0])
+            f=1.0-d1[0];
+          else if (j == j2[0]+1)
+            f=d2[0];
+          else
+            f=1.0;
+          double wave=static_cast<double>(j-1)*cdelt1+
+                      crval1-(crpix1-1.0)*cdelt1;
+          GenericPixel temppix(wave,s[j-1],es[j-1],f);
+          fluxpix.push_back(temppix);
+        }
+        if(!boundaryfit(fluxpix,lerr,&sb,&esb2))
+        {
+          cout << "ERROR: while computing percentile" << endl;
+          exit(1);
+        }
+      }
+      else
+      {
+        cout << "ERROR: invalid boundfit value" << endl;
+        cout << "boundfit=" << boundfit << endl;
+        exit(1);
+      }
+    }
+    else //...............................................usamos metodo clasico
     {
       for (long j=j1[0]; j<=j2[0]+1; j++)
       {
@@ -613,7 +658,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     //cuentas promedio en la banda roja
     double sr=0.0;
     double esr2=0.0;
-    if (contperc >= 0)
+    if (contperc >= 0) //......................................usamos percentil
     {
       if (j2[2]-j1[2] < 2)
       {
@@ -634,17 +679,51 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
             f=d2[2];
           else
             f=1.0;
-          GenericPixel temppix(s[j-1],es[j-1],f);
+          double wave=static_cast<double>(j-1)*cdelt1+
+                      crval1-(crpix1-1.0)*cdelt1;
+          GenericPixel temppix(wave,s[j-1],es[j-1],f);
           fluxpix.push_back(temppix);
         }
         if(!fpercent(fluxpix,contperc,lerr,&sr,&esr2))
         {
-          cout << "ERROR: while computing percentile" << endl;
+          cout << "ERROR: while computing boundary fit" << endl;
           exit(1);
         }
       }
     }
-    else
+    else if ( boundfit > 0 ) //.............................usamos boundary fit
+    {
+      if(boundfit == 1)
+      {
+        vector <GenericPixel> fluxpix;
+        for (long j=j1[2]; j<=j2[2]+1; j++)
+        {
+          double f;
+          if (j == j1[2])
+            f=1.0-d1[2];
+          else if (j == j2[2]+1)
+            f=d2[2];
+          else
+            f=1.0;
+          double wave=static_cast<double>(j-1)*cdelt1+
+                      crval1-(crpix1-1.0)*cdelt1;
+          GenericPixel temppix(wave,s[j-1],es[j-1],f);
+          fluxpix.push_back(temppix);
+        }
+        if(!boundaryfit(fluxpix,lerr,&sr,&esr2))
+        {
+          cout << "ERROR: while computing boundary fit" << endl;
+          exit(1);
+        }
+      }
+      else
+      {
+        cout << "ERROR: invalid boundfit value" << endl;
+        cout << "boundfit=" << boundfit << endl;
+        exit(1);
+      }
+    }
+    else //...............................................usamos metodo clasico
     {
       for (long j=j1[2]; j<=j2[2]+1; j++)
       {

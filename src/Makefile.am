@@ -2,6 +2,7 @@
 #
 bin_PROGRAMS = indexf
 indexf_SOURCES =  \
+boundaryfit.cpp \
 c123.cpp \
 checkipar.cpp \
 commandtok.cpp \

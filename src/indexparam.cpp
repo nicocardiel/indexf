@@ -36,6 +36,7 @@ IndexParam::IndexParam()
   index[0] = '\0';
   iefile[0] = '\0';
   contperc = -1;
+  boundfit = 0;
   snfile[0] = '\0';
   rv = 0.0;
   rve = 0.0;
@@ -69,6 +70,7 @@ IndexParam::IndexParam(
   char *index_,                 //index name
   char *iefile_,                //input error file
   long contperc_,               //percentile for continuum (-1=use normal mean)
+  long boundfit_,               //boundary fit for continuum (0=use normal mean)
   char *snfile_,                //sn estimation file
   double rv_,double rve_,       //radial velocity and error
   char *rvfile_,long rvc_,long rvce_,//rad. vel. file name, column data & error
@@ -94,6 +96,7 @@ IndexParam::IndexParam(
   set_index(index_);
   set_ief(iefile_);
   set_contperc(contperc_);
+  set_boundfit(boundfit_);
   set_snf(snfile_);
   set_rv(rv_,rve_);
   set_rvf(rvfile_,rvc_,rvce_);
@@ -152,6 +155,12 @@ void IndexParam::set_ief(const char *iefile_)
 void IndexParam::set_contperc(const long contperc_)
 {
   contperc = contperc_;
+}
+
+//-----------------------------------------------------------------------------
+void IndexParam::set_boundfit(const long boundfit_)
+{
+  boundfit = boundfit_;
 }
 
 //-----------------------------------------------------------------------------
@@ -300,6 +309,9 @@ char *IndexParam::get_ief() {return(iefile);}
 
 //-----------------------------------------------------------------------------
 long IndexParam::get_contperc() {return(contperc);}
+
+//-----------------------------------------------------------------------------
+long IndexParam::get_boundfit() {return(boundfit);}
 
 //-----------------------------------------------------------------------------
 char *IndexParam::get_snf() {return(snfile);}

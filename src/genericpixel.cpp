@@ -28,17 +28,26 @@ using namespace std;
 //constructor por defecto
 GenericPixel::GenericPixel()
 {
+  wave=0.0;
   flux=0.0;
   eflux=0.0;
   pixelfraction=1.0;
 }
 
-//constructor con 3 parametros
-GenericPixel::GenericPixel(double flux, double eflux, double pixelfraction)
+//constructor con 4 parametros
+GenericPixel::GenericPixel(double wave, double flux, double eflux, 
+                           double pixelfraction)
 {
+  setwave(wave);
   setflux(flux);
   seteflux(eflux);
   setpixelfraction(pixelfraction);
+}
+
+//-----------------------------------------------------------------------------
+void GenericPixel::setwave(const double newwave)
+{
+  wave=newwave;
 }
 
 //-----------------------------------------------------------------------------
@@ -58,6 +67,9 @@ void GenericPixel::setpixelfraction(const double newpixelfraction)
 {
   pixelfraction=newpixelfraction;
 }
+
+//-----------------------------------------------------------------------------
+double GenericPixel::getwave() { return wave ; }
 
 //-----------------------------------------------------------------------------
 double GenericPixel::getflux() { return flux ; }

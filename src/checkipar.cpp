@@ -151,9 +151,9 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
   }
   param.set_ief(valuePtr);
 
-  //-----------------------------------------
-  //median to estimate mean flux in continuum
-  //-----------------------------------------
+  //---------------------------------------------
+  //percentile to estimate mean flux in continuum
+  //---------------------------------------------
   nextParameter++;
   labelPtr = cl[nextParameter].getlabel();
   valuePtr = cl[nextParameter].getvalue();
@@ -177,6 +177,33 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
     return(false);
   }
   param.set_contperc(contperc);
+
+  //-----------------------------------------------
+  //boundary fit to estimate mean flux in continuum
+  //-----------------------------------------------
+  nextParameter++;
+  labelPtr = cl[nextParameter].getlabel();
+  valuePtr = cl[nextParameter].getvalue();
+  for (const char *s=valuePtr; s[0] != '\0'; s++)
+  {
+    if ((isdigit(s[0]) == 0) && (s[0] != '-')) //error: no es un digito valido
+    {
+      cout << "FATAL ERROR: <" << valuePtr
+           << "> is an invalid argument for the keyword <" << labelPtr
+           << ">" << endl;
+      return(false);
+    }
+  }
+  const long boundfit = atol(valuePtr);
+  if( (boundfit < 0) || (boundfit > 1) )
+  {
+    cout << "FATAL ERROR: <" << valuePtr
+         << "> is an invalid argument for the keyword <" << labelPtr
+         << ">" << endl;
+    cout << "> This number must satisfy 0 <= boundfit <= 1" << endl;
+    return(false);
+  }
+  param.set_boundfit(boundfit);
 
   //---------------------------------
   //estimate S/N from rms in spectrum
