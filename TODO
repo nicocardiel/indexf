@@ -1,3 +1,13 @@
+- En la nueva opcion boundfit puedo utilizar las siguientes opciones
+  boundfit=0: no se utiliza boundary fit, sino el ajuste clasico
+  boundfit=1: se ajusta en cada banda de continuo un boundary fit, y se estima
+              el flujo promedio
+  boundfit=2: se ajusta un unico boundary fit a todas las bandas de continuo y
+              se estima el flujo en la(s) banda(s) de continuo a partir de este
+              ajuste
+  boundfit=3  igual al anterior, pero usando para el boundary fit todas las
+              bandas, sin distinguir si se trata de continuos o de absorciones
+
 - Incluir numero de version en output inicial del programa
 
 - La forma en la que se estima el error en el continuo cuando se emplea
@@ -20,7 +30,8 @@ w1 w2 ideg          -> w1 w2: longitudes de onda (float)
 
 - Explicar los nuevos indices (multibanda, ej. 11,22)
 
-- Para compilar ahora con arquitectura x86_64, he tenido que insertar a mano en
-  el Makefile el camino a la libreria libg2c.a. Mirar si puedo generar un
-  configure que busque automaticamente dicha libreria (y ya de paso todas las
-  demas) y conseguir que la instalacion sea mucho mas comoda para el usuario.
+- (OBSOLETO) Para compilar ahora con arquitectura x86_64, he tenido que
+  insertar a mano en el Makefile el camino a la libreria libg2c.a. Mirar si
+  puedo generar un configure que busque automaticamente dicha libreria (y ya de
+  paso todas las demas) y conseguir que la instalacion sea mucho mas comoda
+  para el usuario.
