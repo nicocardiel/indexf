@@ -582,46 +582,16 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       cout << "WARNING: boundfit is being implemented for this index"
            << endl;
     }
-    //cuentas promedio en la banda azul
-    double sb=0.0;
-    double esb2=0.0;
-    if (contperc >= 0) //......................................usamos percentil
+    if (boundfit > 0) //....................................usamos boundary fit
     {
-      if (j2[0]-j1[0] < 2)
+      if (boundfit == 1)
       {
-        cout << "ERROR: number of pixels in blue continuum bandpass too low "
-             << "to use contperc"
-             << endl;
-        exit(1);
-      }
-      else
-      {
-        vector <GenericPixel> fluxpix;
-        for (long j=j1[0]; j<=j2[0]+1; j++)
-        {
-          double f;
-          if (j == j1[0])
-            f=1.0-d1[0];
-          else if (j == j2[0]+1)
-            f=d2[0];
-          else
-            f=1.0;
-          double wave=static_cast<double>(j-1)*cdelt1+
-                      crval1-(crpix1-1.0)*cdelt1;
-          GenericPixel temppix(wave,s[j-1],es[j-1],f);
-          fluxpix.push_back(temppix);
-        }
-        if(!fpercent(fluxpix,contperc,lerr,&sb,&esb2))
-        {
-          cout << "ERROR: while computing percentile" << endl;
-          exit(1);
-        }
-      }
-    }
-    else if ( boundfit > 0 ) //.............................usamos boundary fit
-    {
-      if(boundfit == 1)
-      {
+        //segui aqui
+        //segui aqui
+        //segui aqui
+        //cuentas promedio en la banda azul
+        double sb=0.0;
+        double esb2=0.0;
         vector <GenericPixel> fluxpix;
         for (long j=j1[0]; j<=j2[0]+1; j++)
         {
@@ -650,234 +620,243 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
         exit(1);
       }
     }
-    else //...............................................usamos metodo clasico
+    else //..............................................no usamos boundary fit
     {
-      for (long j=j1[0]; j<=j2[0]+1; j++)
+      //cuentas promedio en la banda azul
+      double sb=0.0;
+      double esb2=0.0;
+      if (contperc >= 0) //....................................usamos percentil
       {
-        double f;
-        if (j == j1[0])
-          f=1.0-d1[0];
-        else if (j == j2[0]+1)
-          f=d2[0];
-        else
-          f=1.0;
-        sb+=f*s[j-1];
-        if(lerr) esb2+=f*f*es[j-1]*es[j-1];
-      }
-      sb*=cdelt1;
-      sb/=rl[0];
-      if(lerr)
-      {
-        esb2*=cdelt1*cdelt1;
-        esb2/=(rl[0]*rl[0]);
-      }
-    }
-    //cuentas promedio en la banda roja
-    double sr=0.0;
-    double esr2=0.0;
-    if (contperc >= 0) //......................................usamos percentil
-    {
-      if (j2[2]-j1[2] < 2)
-      {
-        cout << "ERROR: number of pixels in red continuum bandpass too low "
-             << "to use contperc"
-             << endl;
-        exit(1);
-      }
-      else
-      {
-        vector <GenericPixel> fluxpix;
-        for (long j=j1[2]; j<=j2[2]+1; j++)
+        if (j2[0]-j1[0] < 2)
         {
-          double f;
-          if (j == j1[2])
-            f=1.0-d1[2];
-          else if (j == j2[2]+1)
-            f=d2[2];
-          else
-            f=1.0;
-          double wave=static_cast<double>(j-1)*cdelt1+
-                      crval1-(crpix1-1.0)*cdelt1;
-          GenericPixel temppix(wave,s[j-1],es[j-1],f);
-          fluxpix.push_back(temppix);
-        }
-        if(!fpercent(fluxpix,contperc,lerr,&sr,&esr2))
-        {
-          cout << "ERROR: while computing boundary fit" << endl;
+          cout << "ERROR: number of pixels in blue continuum bandpass too low "
+               << "to use contperc"
+               << endl;
           exit(1);
         }
-      }
-    }
-    else if ( boundfit > 0 ) //.............................usamos boundary fit
-    {
-      if(boundfit == 1)
-      {
-        vector <GenericPixel> fluxpix;
-        for (long j=j1[2]; j<=j2[2]+1; j++)
-        {
-          double f;
-          if (j == j1[2])
-            f=1.0-d1[2];
-          else if (j == j2[2]+1)
-            f=d2[2];
-          else
-            f=1.0;
-          double wave=static_cast<double>(j-1)*cdelt1+
-                      crval1-(crpix1-1.0)*cdelt1;
-          GenericPixel temppix(wave,s[j-1],es[j-1],f);
-          fluxpix.push_back(temppix);
-        }
-        if(!boundaryfit(fluxpix,lerr,&sr,&esr2))
-        {
-          cout << "ERROR: while computing boundary fit" << endl;
-          exit(1);
-        }
-      }
-      else
-      {
-        cout << "ERROR: invalid boundfit value" << endl;
-        cout << "boundfit=" << boundfit << endl;
-        exit(1);
-      }
-    }
-    else //...............................................usamos metodo clasico
-    {
-      for (long j=j1[2]; j<=j2[2]+1; j++)
-      {
-        double f;
-        if (j == j1[2])
-          f=1.0-d1[2];
-        else if (j == j2[2]+1)
-          f=d2[2];
         else
-          f=1.0;
-        sr+=f*s[j-1];
-        if(lerr) esr2+=f*f*es[j-1]*es[j-1];
-      }
-      sr*=cdelt1;
-      sr/=rl[2];
-      if(lerr)
-      {
-        esr2*=cdelt1*cdelt1;
-        esr2/=(rl[2]*rl[2]);
-      }
-    }
-    //calculamos pseudo-continuo
-    double mwb = (myindex.getldo1(0)+myindex.getldo2(0))/2.0;
-    mwb*=rcvel1;
-    double mwr = (myindex.getldo1(2)+myindex.getldo2(2))/2.0;
-    mwr*=rcvel1;
-    double *sc = new double [naxis1];
-    double *esc2 = new double [naxis1];
-    for (long j = j1min; j <= j2max+1; j++)
-    {
-      double wla=static_cast<double>(j-1)*cdelt1+crval1-(crpix1-1.0)*cdelt1;
-      sc[j-1] = (sb*(mwr-wla)+sr*(wla-mwb))/(mwr-mwb);
-    }
-    if(lerr)
-    {
-      for (long j = j1min; j <= j2max+1; j++)
-      {
-        double wla=static_cast<double>(j-1)*cdelt1+crval1-(crpix1-1.0)*cdelt1;
-        esc2[j-1] = (esb2*(mwr-wla)*(mwr-wla)+esr2*(wla-mwb)*(wla-mwb))/
-                    ((mwr-mwb)*(mwr-mwb));
-      }
-    }
-    //recorremos la banda central
-    double tc=0.0;
-    double etc2=0.0,etc=0.0;
-    for (long j=j1[1]; j<=j2[1]+1; j++)
-    {
-      double f;
-      if (j == j1[1])
-        f=1.0-d1[1];
-      else if (j == j2[1]+1)
-        f=d2[1];
-      else
-        f=1.0;
-      tc+=f*s[j-1]/sc[j-1];
-      if(lerr) 
-      {
-        etc2+=f*f*(s[j-1]*s[j-1]*esc2[j-1]+sc[j-1]*sc[j-1]*es[j-1]*es[j-1])/
-        (sc[j-1]*sc[j-1]*sc[j-1]*sc[j-1]);
-        double wla1=static_cast<double>(j-1)*cdelt1+crval1-(crpix1-1.0)*cdelt1;
-        for (long jj=j1[1]; jj<=j2[1]+1; jj++)
         {
-          if (jj != j)
+          vector <GenericPixel> fluxpix;
+          for (long j=j1[0]; j<=j2[0]+1; j++)
           {
-            double ff;
-            if (jj == j1[1])
-              ff=1.0-d1[1];
-            else if (j == j2[1]+1)
-              ff=d2[1];
+            double f;
+            if (j == j1[0])
+              f=1.0-d1[0];
+            else if (j == j2[0]+1)
+              f=d2[0];
             else
-              ff=1.0;
-            double wla2=static_cast<double>(jj-1)*cdelt1+crval1
-                        -(crpix1-1.0)*cdelt1;
-            double cov=((mwr-wla1)*(mwr-wla2)*esb2+(wla1-mwb)*(wla2-mwb)*esr2)/
-                       ((mwr-mwb)*(mwr-mwb));
-            etc2+=ff*f*s[j-1]*s[jj-1]*cov/(sc[j-1]*sc[j-1]*sc[jj-1]*sc[jj-1]);
+              f=1.0;
+            double wave=static_cast<double>(j-1)*cdelt1+
+                        crval1-(crpix1-1.0)*cdelt1;
+            GenericPixel temppix(wave,s[j-1],es[j-1],f);
+            fluxpix.push_back(temppix);
+          }
+          if(!fpercent(fluxpix,contperc,lerr,&sb,&esb2))
+          {
+            cout << "ERROR: while computing percentile" << endl;
+            exit(1);
           }
         }
       }
-    }
-    tc*=cdelt1;
-    etc=sqrt(etc2)*cdelt1;
-    if (myindex.gettype() == 1) //indice molecular
-    {
-      findex = -2.5*log10(tc/rl[1]);
-      if(lerr) eindex = cte_log_exp/pow(10,-0.4*findex)*etc/rl[1];
-    }
-    else //indice atomico
-    {
-      if(logindex) //indice atomico medido en magnitudes
+      else //.............................................usamos metodo clasico
+      {
+        for (long j=j1[0]; j<=j2[0]+1; j++)
+        {
+          double f;
+          if (j == j1[0])
+            f=1.0-d1[0];
+          else if (j == j2[0]+1)
+            f=d2[0];
+          else
+            f=1.0;
+          sb+=f*s[j-1];
+          if(lerr) esb2+=f*f*es[j-1]*es[j-1];
+        }
+        sb*=cdelt1;
+        sb/=rl[0];
+        if(lerr)
+        {
+          esb2*=cdelt1*cdelt1;
+          esb2/=(rl[0]*rl[0]);
+        }
+      }
+      //cuentas promedio en la banda roja
+      double sr=0.0;
+      double esr2=0.0;
+      if (contperc >= 0) //....................................usamos percentil
+      {
+        if (j2[2]-j1[2] < 2)
+        {
+          cout << "ERROR: number of pixels in red continuum bandpass too low "
+               << "to use contperc"
+               << endl;
+          exit(1);
+        }
+        else
+        {
+          vector <GenericPixel> fluxpix;
+          for (long j=j1[2]; j<=j2[2]+1; j++)
+          {
+            double f;
+            if (j == j1[2])
+              f=1.0-d1[2];
+            else if (j == j2[2]+1)
+              f=d2[2];
+            else
+              f=1.0;
+            double wave=static_cast<double>(j-1)*cdelt1+
+                        crval1-(crpix1-1.0)*cdelt1;
+            GenericPixel temppix(wave,s[j-1],es[j-1],f);
+            fluxpix.push_back(temppix);
+          }
+          if(!fpercent(fluxpix,contperc,lerr,&sr,&esr2))
+          {
+            cout << "ERROR: while computing boundary fit" << endl;
+            exit(1);
+          }
+        }
+      }
+      else //.............................................usamos metodo clasico
+      {
+        for (long j=j1[2]; j<=j2[2]+1; j++)
+        {
+          double f;
+          if (j == j1[2])
+            f=1.0-d1[2];
+          else if (j == j2[2]+1)
+            f=d2[2];
+          else
+            f=1.0;
+          sr+=f*s[j-1];
+          if(lerr) esr2+=f*f*es[j-1]*es[j-1];
+        }
+        sr*=cdelt1;
+        sr/=rl[2];
+        if(lerr)
+        {
+          esr2*=cdelt1*cdelt1;
+          esr2/=(rl[2]*rl[2]);
+        }
+      }
+      //calculamos pseudo-continuo
+      double mwb = (myindex.getldo1(0)+myindex.getldo2(0))/2.0;
+      mwb*=rcvel1;
+      double mwr = (myindex.getldo1(2)+myindex.getldo2(2))/2.0;
+      mwr*=rcvel1;
+      double *sc = new double [naxis1];
+      double *esc2 = new double [naxis1];
+      for (long j = j1min; j <= j2max+1; j++)
+      {
+        double wla=static_cast<double>(j-1)*cdelt1+crval1-(crpix1-1.0)*cdelt1;
+        sc[j-1] = (sb*(mwr-wla)+sr*(wla-mwb))/(mwr-mwb);
+      }
+      if(lerr)
+      {
+        for (long j = j1min; j <= j2max+1; j++)
+        {
+          double wla=static_cast<double>(j-1)*cdelt1+crval1-(crpix1-1.0)*cdelt1;
+          esc2[j-1] = (esb2*(mwr-wla)*(mwr-wla)+esr2*(wla-mwb)*(wla-mwb))/
+                      ((mwr-mwb)*(mwr-mwb));
+        }
+      }
+      //recorremos la banda central
+      double tc=0.0;
+      double etc2=0.0,etc=0.0;
+      for (long j=j1[1]; j<=j2[1]+1; j++)
+      {
+        double f;
+        if (j == j1[1])
+          f=1.0-d1[1];
+        else if (j == j2[1]+1)
+          f=d2[1];
+        else
+          f=1.0;
+        tc+=f*s[j-1]/sc[j-1];
+        if(lerr) 
+        {
+          etc2+=f*f*(s[j-1]*s[j-1]*esc2[j-1]+sc[j-1]*sc[j-1]*es[j-1]*es[j-1])/
+          (sc[j-1]*sc[j-1]*sc[j-1]*sc[j-1]);
+          double wla1=static_cast<double>(j-1)*cdelt1
+                      +crval1-(crpix1-1.0)*cdelt1;
+          for (long jj=j1[1]; jj<=j2[1]+1; jj++)
+          {
+            if (jj != j)
+            {
+              double ff;
+              if (jj == j1[1])
+                ff=1.0-d1[1];
+              else if (j == j2[1]+1)
+                ff=d2[1];
+              else
+                ff=1.0;
+              double wla2=static_cast<double>(jj-1)*cdelt1
+                          +crval1-(crpix1-1.0)*cdelt1;
+              double cov=((mwr-wla1)*(mwr-wla2)*esb2+
+                          (wla1-mwb)*(wla2-mwb)*esr2)/
+                         ((mwr-mwb)*(mwr-mwb));
+              etc2+=ff*f*s[j-1]*s[jj-1]*cov/(sc[j-1]*sc[j-1]*sc[jj-1]*sc[jj-1]);
+            }
+          }
+        }
+      }
+      tc*=cdelt1;
+      etc=sqrt(etc2)*cdelt1;
+      if (myindex.gettype() == 1) //indice molecular
       {
         findex = -2.5*log10(tc/rl[1]);
         if(lerr) eindex = cte_log_exp/pow(10,-0.4*findex)*etc/rl[1];
       }
-      else //indice atomico medido como indice atomico
+      else //indice atomico
       {
-        findex = (rl[1]-tc)/rcvel1;
-        if(lerr) eindex=etc/rcvel1;
-      }
-    }
-    delete [] sc;
-    delete [] esc2;
-    //=========================================================================
-    //dibujamos
-    if((plotmode !=0) || (plottype == 2))
-    {
-      if(plottype == 2)
-        cpgsci(7);
-      else
-        cpgsci(6);
-      //dibujamos el continuo
-      const double wla=wvmin*rcvel1;
-      const double yduma=sb*(mwr-wla)/(mwr-mwb)+sr*(wla-mwb)/(mwr-mwb);
-      const double xca=(wla-crval1)/cdelt1+crpix1;
-      cpgmove_d(xca,yduma*smean);
-      const double wlb=wvmax*rcvel1;
-      const double ydumb=sb*(mwr-wlb)/(mwr-mwb)+sr*(wlb-mwb)/(mwr-mwb);
-      const double xcb=(wlb-crval1)/cdelt1+crpix1;
-      cpgdraw_d(xcb,ydumb*smean);
-      cpgsci(1);
-      //repetimos el dibujo del espectro si hemos utilizado biaserr o linearerr
-      if ((fabs(biaserr) != 0) || (fabs(linearerr) != 0))
-      {
-        double *x  = new double [naxis1];
-        double *s_ = new double [naxis1];
-        for(long j=1; j<=naxis1; j++)
+        if(logindex) //indice atomico medido en magnitudes
         {
-          x[j-1] = static_cast<double>(j);
-          s_[j-1]=s[j]*smean;
+          findex = -2.5*log10(tc/rl[1]);
+          if(lerr) eindex = cte_log_exp/pow(10,-0.4*findex)*etc/rl[1];
         }
-        cpgsci(15);
-        cpgbin_d(naxis1,x,s_,true);
-        cpgsci(1);
-        delete [] x;
-        delete [] s_;
+        else //indice atomico medido como indice atomico
+        {
+          findex = (rl[1]-tc)/rcvel1;
+          if(lerr) eindex=etc/rcvel1;
+        }
       }
-    }//========================================================================
+      delete [] sc;
+      delete [] esc2;
+      //=======================================================================
+      //dibujamos
+      if((plotmode !=0) || (plottype == 2))
+      {
+        if(plottype == 2)
+          cpgsci(7);
+        else
+          cpgsci(6);
+        //dibujamos el continuo
+        const double wla=wvmin*rcvel1;
+        const double yduma=sb*(mwr-wla)/(mwr-mwb)+sr*(wla-mwb)/(mwr-mwb);
+        const double xca=(wla-crval1)/cdelt1+crpix1;
+        cpgmove_d(xca,yduma*smean);
+        const double wlb=wvmax*rcvel1;
+        const double ydumb=sb*(mwr-wlb)/(mwr-mwb)+sr*(wlb-mwb)/(mwr-mwb);
+        const double xcb=(wlb-crval1)/cdelt1+crpix1;
+        cpgdraw_d(xcb,ydumb*smean);
+        cpgsci(1);
+        //repetimos dibujo del espectro si hemos utilizado biaserr o linearerr
+        if ((fabs(biaserr) != 0) || (fabs(linearerr) != 0))
+        {
+          double *x  = new double [naxis1];
+          double *s_ = new double [naxis1];
+          for(long j=1; j<=naxis1; j++)
+          {
+            x[j-1] = static_cast<double>(j);
+            s_[j-1]=s[j]*smean;
+          }
+          cpgsci(15);
+          cpgbin_d(naxis1,x,s_,true);
+          cpgsci(1);
+          delete [] x;
+          delete [] s_;
+        }
+      }//======================================================================
+    }
   }
   //---------------------------------------------------------------------------
   //D4000, B4000 y colores
