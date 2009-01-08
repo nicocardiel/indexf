@@ -32,7 +32,7 @@ using namespace std;
 bool fpercent(vector <GenericPixel> &, const long, const bool, 
               double *, double *);
 bool boundaryfit(vector <GenericPixel> &, const bool, 
-                 double *, double *);
+                 vector <GenericPixel> &, vector <GenericPixel> &);
 
 bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error, 
                const long &naxis1,
@@ -567,11 +567,12 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     }
   }
 
-  //---------------------------------------------------------------------------
+  //***************************************************************************
   //Indices atomicos y moleculares
-  //---------------------------------------------------------------------------
+  //***************************************************************************
   if ( (myindex.gettype() == 1) || (myindex.gettype() == 2) )
   {
+    //-------------------------------------------------------------------------
     //protecciones
     if ( contperc >= 0 )
     {
@@ -583,17 +584,46 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       cout << "WARNING: boundfit is being implemented for this index"
            << endl;
     }
-    if (boundfit > 0) //....................................usamos boundary fit
+    //-------------------------------------------------------------------------
+    //a la hora de calcular el indice, distinguimos si utilizamos un boundary
+    //fit para calcular la integral en la banda de continuo o no
+    if (boundfit > 3) //.............usamos boundary fit para hacer la integral
     {
-      if (boundfit == 1)
+      if (boundfit == 4) //.....boundary fit unico a las dos bandas de continuo
       {
-        //segui aqui
-        //segui aqui
-        //segui aqui
-        //cuentas promedio en la banda azul
-        double sb=0.0;
-        double esb2=0.0;
-        vector <GenericPixel> fluxpix;
+        //=====================================================================
+        //dibujamos
+        if(plotmode != 0)
+        {
+        }//====================================================================
+      }
+      else if (boundfit ==5)  //boundary fit unico a las tres bandas del indice
+      {
+        //=====================================================================
+        //dibujamos
+        if(plotmode != 0)
+        {
+        }//====================================================================
+      }
+      else
+      {
+        cout << "ERROR: invalid boundfit value" << endl;
+        cout << "boundfit=" << boundfit << endl;
+        exit(1);
+      }
+    }
+    //-------------------------------------------------------------------------
+    else //....................no usamos el boundary fit para hacer la integral
+    {
+      double sb=0.0;               //flujo "promedio" para centro de banda azul
+      double esb2=0.0;             //error en el flujo anterior
+      double sr=0.0;               //flujo "promedio" para centro de banda roja
+      double esr2=0.0;             //error en el flujo anterior
+      if(boundfit == 1) //..boundary fit independiente a cada banda de continuo
+      {
+        //banda azul
+        vector <GenericPixel> fluxpix_blue;  //datos a ajustar
+        vector <GenericPixel> boundfit_blue; //ajuste a los datos
         for (long j=j1[0]; j<=j2[0]+1; j++)
         {
           double f;
@@ -606,28 +636,68 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
           double wave=static_cast<double>(j-1)*cdelt1+
                       crval1-(crpix1-1.0)*cdelt1;
           GenericPixel temppix(wave,s[j-1],es[j-1],f);
-          fluxpix.push_back(temppix);
+          fluxpix_blue.push_back(temppix);
+          temppix.setflux(0.0);
+          temppix.seteflux(0.0);
+          boundfit_blue.push_back(temppix);
         }
-        if(!boundaryfit(fluxpix,lerr,&sb,&esb2))
+        GenericPixel evalpix; //pixel a ser evaluado
+        double mwb = (myindex.getldo1(0)+myindex.getldo2(0))/2.0;
+        mwb*=rcvel1;
+        evalpix.setwave(mwb);
+        vector <GenericPixel> evaluate_blue; //vector de pixeles a evaluar
+        evaluate_blue.push_back(evalpix);
+        if(!boundaryfit(fluxpix_blue,lerr,boundfit_blue,evaluate_blue))
         {
-          cout << "ERROR: while computing percentile" << endl;
+          cout << "ERROR: while computing boundary fit in blue band" << endl;
           exit(1);
         }
+        sb=evaluate_blue[0].getflux();
+        esb2=evaluate_blue[0].geteflux();
+        esb2*=esb2;
+        //banda roja
+        vector <GenericPixel> fluxpix_red;
+        vector <GenericPixel> boundfit_red;
+        for (long j=j1[2]; j<=j2[2]+1; j++)
+        {
+          double f;
+          if (j == j1[2])
+            f=1.0-d1[2];
+          else if (j == j2[2]+1)
+            f=d2[2];
+          else
+            f=1.0;
+          double wave=static_cast<double>(j-1)*cdelt1+
+                      crval1-(crpix1-1.0)*cdelt1;
+          GenericPixel temppix(wave,s[j-1],es[j-1],f);
+          fluxpix_red.push_back(temppix);
+          temppix.setflux(0.0);
+          temppix.seteflux(0.0);
+          boundfit_red.push_back(temppix);
+        }
+        double mwr = (myindex.getldo1(2)+myindex.getldo2(2))/2.0;
+        mwr*=rcvel1;
+        evalpix.setwave(mwr);
+        vector <GenericPixel> evaluate_red; //vector de pixeles a evaluar
+        evaluate_red.push_back(evalpix);
+        if(!boundaryfit(fluxpix_red,lerr,boundfit_red,evaluate_red))
+        {
+          cout << "ERROR: while computing boundary fit in red band" << endl;
+          exit(1);
+        }
+        sr=evaluate_blue[0].getflux();
+        esr2=evaluate_blue[0].geteflux();
+        esr2*=esr2;
       }
-      else
+      else if(boundfit == 2)  //boundary fit unico a las dos bandas de continuo
       {
-        cout << "ERROR: invalid boundfit value" << endl;
-        cout << "boundfit=" << boundfit << endl;
-        exit(1);
       }
-    }
-    else //..............................................no usamos boundary fit
-    {
-      //cuentas promedio en la banda azul
-      double sb=0.0;
-      double esb2=0.0;
-      if (contperc >= 0) //....................................usamos percentil
+      else if(boundfit == 3)  //boundary fit unico a las tres bandas del indice
       {
+      }
+      else if (contperc >= 0) //...............................usamos percentil
+      {
+        //banda azul
         if (j2[0]-j1[0] < 2)
         {
           cout << "ERROR: number of pixels in blue continuum bandpass too low "
@@ -637,7 +707,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
         }
         else
         {
-          vector <GenericPixel> fluxpix;
+          vector <GenericPixel> fluxpix_blue;
           for (long j=j1[0]; j<=j2[0]+1; j++)
           {
             double f;
@@ -650,17 +720,49 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
             double wave=static_cast<double>(j-1)*cdelt1+
                         crval1-(crpix1-1.0)*cdelt1;
             GenericPixel temppix(wave,s[j-1],es[j-1],f);
-            fluxpix.push_back(temppix);
+            fluxpix_blue.push_back(temppix);
           }
-          if(!fpercent(fluxpix,contperc,lerr,&sb,&esb2))
+          if(!fpercent(fluxpix_blue,contperc,lerr,&sb,&esb2))
           {
             cout << "ERROR: while computing percentile" << endl;
+            exit(1);
+          }
+        }
+        //banda roja
+        if (j2[2]-j1[2] < 2)
+        {
+          cout << "ERROR: number of pixels in red continuum bandpass too low "
+               << "to use contperc"
+               << endl;
+          exit(1);
+        }
+        else
+        {
+          vector <GenericPixel> fluxpix_red;
+          for (long j=j1[2]; j<=j2[2]+1; j++)
+          {
+            double f;
+            if (j == j1[2])
+              f=1.0-d1[2];
+            else if (j == j2[2]+1)
+              f=d2[2];
+            else
+              f=1.0;
+            double wave=static_cast<double>(j-1)*cdelt1+
+                        crval1-(crpix1-1.0)*cdelt1;
+            GenericPixel temppix(wave,s[j-1],es[j-1],f);
+            fluxpix_red.push_back(temppix);
+          }
+          if(!fpercent(fluxpix_red,contperc,lerr,&sr,&esr2))
+          {
+            cout << "ERROR: while computing boundary fit" << endl;
             exit(1);
           }
         }
       }
       else //.............................................usamos metodo clasico
       {
+        //banda azul
         for (long j=j1[0]; j<=j2[0]+1; j++)
         {
           double f;
@@ -680,45 +782,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
           esb2*=cdelt1*cdelt1;
           esb2/=(rl[0]*rl[0]);
         }
-      }
-      //cuentas promedio en la banda roja
-      double sr=0.0;
-      double esr2=0.0;
-      if (contperc >= 0) //....................................usamos percentil
-      {
-        if (j2[2]-j1[2] < 2)
-        {
-          cout << "ERROR: number of pixels in red continuum bandpass too low "
-               << "to use contperc"
-               << endl;
-          exit(1);
-        }
-        else
-        {
-          vector <GenericPixel> fluxpix;
-          for (long j=j1[2]; j<=j2[2]+1; j++)
-          {
-            double f;
-            if (j == j1[2])
-              f=1.0-d1[2];
-            else if (j == j2[2]+1)
-              f=d2[2];
-            else
-              f=1.0;
-            double wave=static_cast<double>(j-1)*cdelt1+
-                        crval1-(crpix1-1.0)*cdelt1;
-            GenericPixel temppix(wave,s[j-1],es[j-1],f);
-            fluxpix.push_back(temppix);
-          }
-          if(!fpercent(fluxpix,contperc,lerr,&sr,&esr2))
-          {
-            cout << "ERROR: while computing boundary fit" << endl;
-            exit(1);
-          }
-        }
-      }
-      else //.............................................usamos metodo clasico
-      {
+        //banda roja
         for (long j=j1[2]; j<=j2[2]+1; j++)
         {
           double f;
@@ -826,11 +890,25 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       //dibujamos
       if((plotmode !=0) || (plottype == 2))
       {
+        //dibujamos los dos puntos usados para calcular el continuo
+        if(plottype == 2)
+        {
+          cpgsci(8);
+          double *wdum = new double [2];
+          double *ydum = new double [2];
+          wdum[0]=(mwb-crval1)/cdelt1+crpix1;
+          ydum[0]=sb*smean;
+          wdum[1]=(mwr-crval1)/cdelt1+crpix1;
+          ydum[1]=sr*smean;
+          cpgpt_d(2,wdum,ydum,17);
+          delete [] wdum;
+          delete [] ydum;
+        }
+        //dibujamos el continuo
         if(plottype == 2)
           cpgsci(7);
         else
           cpgsci(6);
-        //dibujamos el continuo
         const double wla=wvmin*rcvel1;
         const double yduma=sb*(mwr-wla)/(mwr-mwb)+sr*(wla-mwb)/(mwr-mwb);
         const double xca=(wla-crval1)/cdelt1+crpix1;
@@ -859,9 +937,9 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       }//======================================================================
     }
   }
-  //---------------------------------------------------------------------------
+  //***************************************************************************
   //D4000, B4000 y colores
-  //---------------------------------------------------------------------------
+  //***************************************************************************
   else if ( (myindex.gettype() == 3) || 
             (myindex.gettype() == 4) || 
             (myindex.gettype() == 5) )
@@ -975,9 +1053,9 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       cpgsci(1);
     }//========================================================================
   }
-  //---------------------------------------------------------------------------
+  //***************************************************************************
   //Lineas de emision (se ajusta el continuo a una recta)
-  //---------------------------------------------------------------------------
+  //***************************************************************************
   else if (myindex.gettype() == 10)
   {
     //protecciones
@@ -1182,9 +1260,9 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     delete [] sc;
     delete [] esc2;
   }
-  //---------------------------------------------------------------------------
+  //***************************************************************************
   //Discontinuidades genericas
-  //---------------------------------------------------------------------------
+  //***************************************************************************
   else if ( (myindex.gettype() >= 11) && (myindex.gettype() <= 99) )
   {
     //protecciones
@@ -1309,9 +1387,9 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       cpgsci(1);
     }//========================================================================
   }
-  //---------------------------------------------------------------------------
+  //***************************************************************************
   //Indices genericos
-  //---------------------------------------------------------------------------
+  //***************************************************************************
   else if ( (myindex.gettype() >= 101) && (myindex.gettype() <= 9999) )
   {
     //protecciones
@@ -1469,9 +1547,9 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       cpgsci(1);
     }//=========================================================================
   }
-  //---------------------------------------------------------------------------
+  //***************************************************************************
   //Indices pendiente
-  //---------------------------------------------------------------------------
+  //***************************************************************************
   else if ( (myindex.gettype() >= -99) && (myindex.gettype() <= -2) )
   {
     //protecciones
@@ -1577,9 +1655,9 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       cpgsci(1);
     }//========================================================================
   }
-  //---------------------------------------------------------------------------
+  //***************************************************************************
   //otros indices futuros
-  //---------------------------------------------------------------------------
+  //***************************************************************************
   else
   {
     cout << "FATAL ERROR: index type=" << myindex.gettype()
