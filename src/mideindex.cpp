@@ -77,17 +77,18 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
 
   //---------------------------------------------------------------------------
   //calculamos parametros de cada banda a medir
-  double *ca = new double [myindex.getnbands()];
-  double *cb = new double [myindex.getnbands()];
-  double *c3 = new double [myindex.getnbands()];
-  double *c4 = new double [myindex.getnbands()];
-  long *j1 = new long [myindex.getnbands()];
-  long *j2 = new long [myindex.getnbands()];
-  double *d1 = new double [myindex.getnbands()];
-  double *d2 = new double [myindex.getnbands()];
-  double *rl = new double [myindex.getnbands()];
-  double *rg = new double [myindex.getnbands()];
-  for (long nb=0; nb < myindex.getnbands(); nb++)
+  const long nbands = myindex.getnbands();
+  double *ca = new double [nbands];
+  double *cb = new double [nbands];
+  double *c3 = new double [nbands];
+  double *c4 = new double [nbands];
+  long *j1 = new long [nbands];
+  long *j2 = new long [nbands];
+  double *d1 = new double [nbands];
+  double *d2 = new double [nbands];
+  double *rl = new double [nbands];
+  double *rg = new double [nbands];
+  for (long nb=0; nb < nbands; nb++)
   {
     ca[nb] = myindex.getldo1(nb)*rcvel1;             //redshifted wavelength
     cb[nb] = myindex.getldo2(nb)*rcvel1;             //redshifted wavelength
@@ -108,7 +109,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
   //calculamos limites en j1 y j2, por si las bandas no estan en orden
   long j1min = j1[0];
   long j2max = j2[0];
-  for (long nb=0; nb < myindex.getnbands(); nb++ )
+  for (long nb=0; nb < nbands; nb++ )
   {
     if (j1min > j1[nb]) j1min=j1[nb];
     if (j2max < j2[nb]) j2max=j2[nb];
@@ -117,7 +118,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
   double wvmin= myindex.getldo1(0);
   double wvmax= myindex.getldo2(0);
   double wv1temp,wv2temp;
-  for (long nb=0; nb < myindex.getnbands(); nb++ )
+  for (long nb=0; nb < nbands; nb++ )
   {
     wv1temp=myindex.getldo1(nb);
     wv2temp=myindex.getldo2(nb);
@@ -133,7 +134,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
   {
     ifchan[j-1] = false;
   }
-  for (long nb=0; nb < myindex.getnbands(); nb++)
+  for (long nb=0; nb < nbands; nb++)
   {
     for (long j=j1[nb]; j <= j2[nb]+1; j++)
     {
@@ -184,7 +185,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     xmin=(ca[0]-crval1)/cdelt1+crpix1;
     xmax=(cb[0]-crval1)/cdelt1+crpix1;
     double chan1, chan2;
-    for (long nb=0; nb < myindex.getnbands(); nb++)
+    for (long nb=0; nb < nbands; nb++)
     {
       chan1=(ca[nb]-crval1)/cdelt1+crpix1;
       chan2=(cb[nb]-crval1)/cdelt1+crpix1;
@@ -303,7 +304,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     cpgbin_d(naxis1,x,sp_data,true);
     //dibujamos bandas
     dy=ymax-ymin;
-    for (long nb=0; nb<myindex.getnbands(); nb++)
+    for (long nb=0; nb<nbands; nb++)
     {
       double ddy=0.00;
       if((myindex.gettype() == 1) || //........................indice molecular
@@ -902,9 +903,9 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       }
     }
     //calculamos las integrales
-    double *fx = new double [myindex.getnbands()];
-    double *efx = new double [myindex.getnbands()];
-    for (long nb=0; nb < myindex.getnbands(); nb++)
+    double *fx = new double [nbands];
+    double *efx = new double [nbands];
+    for (long nb=0; nb < nbands; nb++)
     {
       double tc=0.0;
       double etc=0.0;
@@ -992,7 +993,6 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
            << endl;
       exit(1);
     }
-    long nbands = myindex.getnbands();
     //si no hay errores, hacemos todos iguales a uno para utilizar las mismas
     //formulas
     if(!lerr)
