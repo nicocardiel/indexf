@@ -29,12 +29,14 @@ using namespace std;
 //-----------------------------------------------------------------------------
 //Calcula el boundary fit a los datos en el vector vec
 bool boundaryfit(vector <GenericPixel> &vec, const bool lerr,
-                 double *fboundPtr, double *e2fboundPtr)
+                 vector <GenericPixel> &fit,
+                 vector <GenericPixel> &eval)
 {
   //---------------------------------------------------------------------------
   //valores retornados en caso de error o imposibilidad de calculo
-  *fboundPtr=0;
-  *e2fboundPtr=0;
+  //a rellenar
+  //a rellenar
+  //a rellenar
 
   long num=vec.size();
   if (num <= 0)
@@ -44,7 +46,7 @@ bool boundaryfit(vector <GenericPixel> &vec, const bool lerr,
   }
 
   //valores temporales
-  *fboundPtr=1.0;
-  *e2fboundPtr=0.01;
+  eval[0].setflux(1.0);
+  eval[0].seteflux(0.01);
   return(true);
 }
