@@ -51,7 +51,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
 {
   //---------------------------------------------------------------------------
   //protecciones
-  if ( ( contperc >= 0 ) && ( boundfit > 0) )
+  if ( (contperc >= 0) && (boundfit != 0) )
   {
     cout << "ERROR: contperc and boundfit cannot be used simultaneously"
          << endl;
@@ -427,7 +427,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
            << endl;
       exit(1);
     }
-    if ( boundfit > 0 )
+    if ( boundfit != 0 )
     {
       cout << "ERROR: biaserr and boundfit cannot be used simultaneously"
            << endl;
@@ -545,7 +545,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
            << endl;
       exit(1);
     }
-    if ( boundfit > 0 )
+    if ( boundfit != 0 )
     {
       cout << "ERROR: linearerr and boundfit cannot be used simultaneously"
            << endl;
@@ -579,7 +579,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       cout << "WARNING: contperc is being implemented for this index"
            << endl;
     }
-    if ( boundfit > 0 )
+    if ( boundfit != 0 )
     {
       cout << "WARNING: boundfit is being implemented for this index"
            << endl;
@@ -590,45 +590,276 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     double mwr = (myindex.getldo1(2)+myindex.getldo2(2))/2.0;
     mwr*=rcvel1;
     //-------------------------------------------------------------------------
-    //a la hora de calcular el indice, distinguimos si utilizamos un boundary
-    //fit para calcular la integral en la banda de continuo o no
-    if (boundfit > 3) //.............usamos boundary fit para hacer la integral
+    double sb=0.0;                 //flujo "promedio" para centro de banda azul
+    double esb2=0.0;               //error en el flujo anterior
+    double sr=0.0;                 //flujo "promedio" para centro de banda roja
+    double esr2=0.0;               //error en el flujo anterior
+    if(boundfit == 1) //....boundary fit independiente a cada banda de continuo
     {
-      if (boundfit == 4) //.....boundary fit unico a las dos bandas de continuo
+      //banda azul
+      vector <GenericPixel> fluxpix_blue;  //datos a ajustar
+      vector <GenericPixel> boundfit_blue; //ajuste a los datos
+      for (long j=j1[0]; j<=j2[0]+1; j++)
       {
-        //=====================================================================
-        //dibujamos
-        if(plotmode != 0)
-        {
-        }//====================================================================
+        double f;
+        if (j == j1[0])
+          f=1.0-d1[0];
+        else if (j == j2[0]+1)
+          f=d2[0];
+        else
+          f=1.0;
+        double wave=static_cast<double>(j-1)*cdelt1+
+                    crval1-(crpix1-1.0)*cdelt1;
+        GenericPixel temppix(wave,s[j-1],es[j-1],f);
+        fluxpix_blue.push_back(temppix);
+        temppix.setflux(0.0);
+        temppix.seteflux(0.0);
+        boundfit_blue.push_back(temppix);
       }
-      else if (boundfit ==5)  //boundary fit unico a las tres bandas del indice
+      GenericPixel evalpix; //pixel puntual a ser evaluado
+      vector <GenericPixel> evaluate_blue; //vector de pixeles a evaluar
+      evalpix.setwave(mwb);
+      evaluate_blue.push_back(evalpix);
+      if(!boundaryfit(fluxpix_blue,lerr,boundfit_blue,evaluate_blue))
       {
-        //=====================================================================
-        //dibujamos
-        if(plotmode != 0)
+        cout << "ERROR: while computing boundary fit in blue band" << endl;
+        exit(1);
+      }
+      sb=evaluate_blue[0].getflux();
+      esb2=evaluate_blue[0].geteflux();
+      esb2*=esb2;
+      //=======================================================================
+      //dibujamos boundary fit de la banda azul
+      if((plotmode != 0) && (plottype == 2))
+      {
+        long npixels = boundfit_blue.size();
+        double *x_  = new double [npixels];
+        double *fit_ = new double [npixels];
+        for(long j=0; j<npixels; j++)
         {
-        }//====================================================================
+          x_[j] = (boundfit_blue[j].getwave()-crval1)/cdelt1+crpix1;
+          fit_[j]=boundfit_blue[j].getflux()*smean;
+        }
+        cpgsci(4);
+        cpgbin_d(npixels,x_,fit_,true);
+        cpgsci(1);
+        delete [] x_;
+        delete [] fit_;
+      }//======================================================================
+      //banda roja
+      vector <GenericPixel> fluxpix_red;
+      vector <GenericPixel> boundfit_red;
+      for (long j=j1[2]; j<=j2[2]+1; j++)
+      {
+        double f;
+        if (j == j1[2])
+          f=1.0-d1[2];
+        else if (j == j2[2]+1)
+          f=d2[2];
+        else
+          f=1.0;
+        double wave=static_cast<double>(j-1)*cdelt1+
+                    crval1-(crpix1-1.0)*cdelt1;
+        GenericPixel temppix(wave,s[j-1],es[j-1],f);
+        fluxpix_red.push_back(temppix);
+        temppix.setflux(0.0);
+        temppix.seteflux(0.0);
+        boundfit_red.push_back(temppix);
+      }
+      vector <GenericPixel> evaluate_red; //vector de pixeles a evaluar
+      evalpix.setwave(mwr);
+      evaluate_red.push_back(evalpix);
+      if(!boundaryfit(fluxpix_red,lerr,boundfit_red,evaluate_red))
+      {
+        cout << "ERROR: while computing boundary fit in red band" << endl;
+        exit(1);
+      }
+      sr=evaluate_red[0].getflux();
+      esr2=evaluate_red[0].geteflux();
+      esr2*=esr2;
+      //=======================================================================
+      //dibujamos boundary fit de la banda roja
+      if((plotmode != 0) && (plottype == 2))
+      {
+        long npixels = boundfit_red.size();
+        double *x_  = new double [npixels];
+        double *fit_ = new double [npixels];
+        for(long j=0; j<npixels; j++)
+        {
+          x_[j] = (boundfit_red[j].getwave()-crval1)/cdelt1+crpix1;
+          fit_[j]=boundfit_red[j].getflux()*smean;
+        }
+        cpgsci(2);
+        cpgbin_d(npixels,x_,fit_,true);
+        cpgsci(1);
+        delete [] x_;
+        delete [] fit_;
+      }//======================================================================
+    }
+    else if( (boundfit == 2) || (boundfit == 3) ) //dos o tres bandas
+    {
+      vector <GenericPixel> fluxpix_all;  //datos a ajustar
+      vector <GenericPixel> boundfit_all; //ajuste a los datos
+      for (long j=j1[0]; j<=j2[0]+1; j++) //...............incluimos banda azul
+      {
+        double f;
+        if (j == j1[0])
+          f=1.0-d1[0];
+        else if (j == j2[0]+1)
+          f=d2[0];
+        else
+          f=1.0;
+        double wave=static_cast<double>(j-1)*cdelt1+
+                    crval1-(crpix1-1.0)*cdelt1;
+        GenericPixel temppix(wave,s[j-1],es[j-1],f);
+        fluxpix_all.push_back(temppix);
+        temppix.setflux(0.0);
+        temppix.seteflux(0.0);
+        boundfit_all.push_back(temppix);
+      }
+      if(boundfit == 3) //..............incluimos en el ajuste la banda central
+      {
+        for (long j=j1[1]; j<=j2[1]+1; j++)
+        {
+          double f;
+          if (j == j1[1])
+            f=1.0-d1[1];
+          else if (j == j2[1]+1)
+            f=d2[1];
+          else
+            f=1.0;
+          double wave=static_cast<double>(j-1)*cdelt1+
+                      crval1-(crpix1-1.0)*cdelt1;
+          GenericPixel temppix(wave,s[j-1],es[j-1],f);
+          fluxpix_all.push_back(temppix);
+          temppix.setflux(0.0);
+          temppix.seteflux(0.0);
+          boundfit_all.push_back(temppix);
+        }
+      }
+      for (long j=j1[2]; j<=j2[2]+1; j++) //...............incluimos banda roja
+      {
+        double f;
+        if (j == j1[2])
+          f=1.0-d1[2];
+        else if (j == j2[2]+1)
+          f=d2[2];
+        else
+          f=1.0;
+        double wave=static_cast<double>(j-1)*cdelt1+
+                    crval1-(crpix1-1.0)*cdelt1;
+        GenericPixel temppix(wave,s[j-1],es[j-1],f);
+        fluxpix_all.push_back(temppix);
+        temppix.setflux(0.0);
+        temppix.seteflux(0.0);
+        boundfit_all.push_back(temppix);
+      }
+      GenericPixel evalpix; //pixel puntual a ser evaluado
+      vector <GenericPixel> evaluate; //vector de pixeles a evaluar
+      evalpix.setwave(mwb);
+      evaluate.push_back(evalpix);
+      evalpix.setwave(mwr);
+      evaluate.push_back(evalpix);
+      if(!boundaryfit(fluxpix_all,lerr,boundfit_all,evaluate))
+      {
+        cout << "ERROR: while computing boundary fit in blue band" << endl;
+        exit(1);
+      }
+      sb=evaluate[0].getflux();
+      esb2=evaluate[0].geteflux();
+      esb2*=esb2;
+      sr=evaluate[1].getflux();
+      esr2=evaluate[1].geteflux();
+      esr2*=esr2;
+      //=======================================================================
+      //dibujamos boundary fit
+      if((plotmode != 0) && (plottype == 2))
+      {
+        long npixels = boundfit_all.size();
+        double *x_  = new double [npixels];
+        double *fit_ = new double [npixels];
+        for(long j=0; j<npixels; j++)
+        {
+          x_[j] = (boundfit_all[j].getwave()-crval1)/cdelt1+crpix1;
+          fit_[j]=boundfit_all[j].getflux()*smean;
+        }
+        cpgsci(3);
+        cpgbin_d(npixels,x_,fit_,true);
+        cpgsci(1);
+        delete [] x_;
+        delete [] fit_;
+      }//======================================================================
+    }
+    else if(boundfit == 4) //desde la primera a la tercera banda
+    {
+      vector <GenericPixel> fluxpix_all;  //datos a ajustar
+      vector <GenericPixel> boundfit_all; //ajuste a los datos
+      for (long j=j1[0]; j<=j2[2]+1; j++) //.....................incluimos todo
+      {
+        double f;
+        if (j == j1[0])
+          f=1.0-d1[0];
+        else if (j == j2[2]+1)
+          f=d2[2];
+        else
+          f=1.0;
+        double wave=static_cast<double>(j-1)*cdelt1+
+                    crval1-(crpix1-1.0)*cdelt1;
+        GenericPixel temppix(wave,s[j-1],es[j-1],f);
+        fluxpix_all.push_back(temppix);
+        temppix.setflux(0.0);
+        temppix.seteflux(0.0);
+        boundfit_all.push_back(temppix);
+      }
+      GenericPixel evalpix; //pixel puntual a ser evaluado
+      vector <GenericPixel> evaluate; //vector de pixeles a evaluar
+      evalpix.setwave(mwb);
+      evaluate.push_back(evalpix);
+      evalpix.setwave(mwr);
+      evaluate.push_back(evalpix);
+      if(!boundaryfit(fluxpix_all,lerr,boundfit_all,evaluate))
+      {
+        cout << "ERROR: while computing boundary fit in blue band" << endl;
+        exit(1);
+      }
+      sb=evaluate[0].getflux();
+      esb2=evaluate[0].geteflux();
+      esb2*=esb2;
+      sr=evaluate[1].getflux();
+      esr2=evaluate[1].geteflux();
+      esr2*=esr2;
+      //==============================================..=======================
+      //dibujamos boundary fit
+      if((plotmode != 0) && (plottype == 2))
+      {
+        long npixels = boundfit_all.size();
+        double *x_  = new double [npixels];
+        double *fit_ = new double [npixels];
+        for(long j=0; j<npixels; j++)
+        {
+          x_[j] = (boundfit_all[j].getwave()-crval1)/cdelt1+crpix1;
+          fit_[j]=boundfit_all[j].getflux()*smean;
+        }
+        cpgsci(3);
+        cpgbin_d(npixels,x_,fit_,true);
+        cpgsci(1);
+        delete [] x_;
+        delete [] fit_;
+      }//===========================================..=========================
+    }
+    else if (contperc >= 0) //.................................usamos percentil
+    {
+      //banda azul
+      if (j2[0]-j1[0] < 2)
+      {
+        cout << "ERROR: number of pixels in blue continuum bandpass too low "
+             << "to use contperc"
+             << endl;
+        exit(1);
       }
       else
       {
-        cout << "ERROR: invalid boundfit value" << endl;
-        cout << "boundfit=" << boundfit << endl;
-        exit(1);
-      }
-    }
-    //-------------------------------------------------------------------------
-    else //....................no usamos el boundary fit para hacer la integral
-    {
-      double sb=0.0;               //flujo "promedio" para centro de banda azul
-      double esb2=0.0;             //error en el flujo anterior
-      double sr=0.0;               //flujo "promedio" para centro de banda roja
-      double esr2=0.0;             //error en el flujo anterior
-      if(boundfit == 1) //..boundary fit independiente a cada banda de continuo
-      {
-        //banda azul
-        vector <GenericPixel> fluxpix_blue;  //datos a ajustar
-        vector <GenericPixel> boundfit_blue; //ajuste a los datos
+        vector <GenericPixel> fluxpix_blue;
         for (long j=j1[0]; j<=j2[0]+1; j++)
         {
           double f;
@@ -642,43 +873,24 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
                       crval1-(crpix1-1.0)*cdelt1;
           GenericPixel temppix(wave,s[j-1],es[j-1],f);
           fluxpix_blue.push_back(temppix);
-          temppix.setflux(0.0);
-          temppix.seteflux(0.0);
-          boundfit_blue.push_back(temppix);
         }
-        GenericPixel evalpix; //pixel a ser evaluado
-        evalpix.setwave(mwb);
-        vector <GenericPixel> evaluate_blue; //vector de pixeles a evaluar
-        evaluate_blue.push_back(evalpix);
-        if(!boundaryfit(fluxpix_blue,lerr,boundfit_blue,evaluate_blue))
+        if(!fpercent(fluxpix_blue,contperc,lerr,&sb,&esb2))
         {
-          cout << "ERROR: while computing boundary fit in blue band" << endl;
+          cout << "ERROR: while computing percentile" << endl;
           exit(1);
         }
-        sb=evaluate_blue[0].getflux();
-        esb2=evaluate_blue[0].geteflux();
-        esb2*=esb2;
-        //=====================================================================
-        //dibujamos boundary fit de la banda azul
-        if((plotmode != 0) && (plottype == 2))
-        {
-          long npixels = boundfit_blue.size();
-          double *x_  = new double [npixels];
-          double *fit_ = new double [npixels];
-          for(long j=0; j<npixels; j++)
-          {
-            x_[j] = (boundfit_blue[j].getwave()-crval1)/cdelt1+crpix1;
-            fit_[j]=boundfit_blue[j].getflux()*smean;
-          }
-          cpgsci(4);
-          cpgbin_d(npixels,x_,fit_,true);
-          cpgsci(1);
-          delete [] x_;
-          delete [] fit_;
-        }//====================================================================
-        //banda roja
+      }
+      //banda roja
+      if (j2[2]-j1[2] < 2)
+      {
+        cout << "ERROR: number of pixels in red continuum bandpass too low "
+             << "to use contperc"
+             << endl;
+        exit(1);
+      }
+      else
+      {
         vector <GenericPixel> fluxpix_red;
-        vector <GenericPixel> boundfit_red;
         for (long j=j1[2]; j<=j2[2]+1; j++)
         {
           double f;
@@ -692,283 +904,194 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
                       crval1-(crpix1-1.0)*cdelt1;
           GenericPixel temppix(wave,s[j-1],es[j-1],f);
           fluxpix_red.push_back(temppix);
-          temppix.setflux(0.0);
-          temppix.seteflux(0.0);
-          boundfit_red.push_back(temppix);
         }
-        evalpix.setwave(mwr);
-        vector <GenericPixel> evaluate_red; //vector de pixeles a evaluar
-        evaluate_red.push_back(evalpix);
-        if(!boundaryfit(fluxpix_red,lerr,boundfit_red,evaluate_red))
+        if(!fpercent(fluxpix_red,contperc,lerr,&sr,&esr2))
         {
-          cout << "ERROR: while computing boundary fit in red band" << endl;
+          cout << "ERROR: while computing boundary fit" << endl;
           exit(1);
         }
-        sr=evaluate_red[0].getflux();
-        esr2=evaluate_red[0].geteflux();
-        esr2*=esr2;
-        //=====================================================================
-        //dibujamos boundary fit de la banda roja
-        if((plotmode != 0) && (plottype == 2))
-        {
-          long npixels = boundfit_red.size();
-          double *x_  = new double [npixels];
-          double *fit_ = new double [npixels];
-          for(long j=0; j<npixels; j++)
-          {
-            x_[j] = (boundfit_red[j].getwave()-crval1)/cdelt1+crpix1;
-            fit_[j]=boundfit_red[j].getflux()*smean;
-          }
-          cpgsci(2);
-          cpgbin_d(npixels,x_,fit_,true);
-          cpgsci(1);
-          delete [] x_;
-          delete [] fit_;
-        }//====================================================================
       }
-      else if(boundfit == 2)  //boundary fit unico a las dos bandas de continuo
+    }
+    else //...............................................usamos metodo clasico
+    {
+      //banda azul
+      for (long j=j1[0]; j<=j2[0]+1; j++)
       {
-      }
-      else if(boundfit == 3)  //boundary fit unico a las tres bandas del indice
-      {
-      }
-      else if (contperc >= 0) //...............................usamos percentil
-      {
-        //banda azul
-        if (j2[0]-j1[0] < 2)
-        {
-          cout << "ERROR: number of pixels in blue continuum bandpass too low "
-               << "to use contperc"
-               << endl;
-          exit(1);
-        }
+        double f;
+        if (j == j1[0])
+          f=1.0-d1[0];
+        else if (j == j2[0]+1)
+          f=d2[0];
         else
-        {
-          vector <GenericPixel> fluxpix_blue;
-          for (long j=j1[0]; j<=j2[0]+1; j++)
-          {
-            double f;
-            if (j == j1[0])
-              f=1.0-d1[0];
-            else if (j == j2[0]+1)
-              f=d2[0];
-            else
-              f=1.0;
-            double wave=static_cast<double>(j-1)*cdelt1+
-                        crval1-(crpix1-1.0)*cdelt1;
-            GenericPixel temppix(wave,s[j-1],es[j-1],f);
-            fluxpix_blue.push_back(temppix);
-          }
-          if(!fpercent(fluxpix_blue,contperc,lerr,&sb,&esb2))
-          {
-            cout << "ERROR: while computing percentile" << endl;
-            exit(1);
-          }
-        }
-        //banda roja
-        if (j2[2]-j1[2] < 2)
-        {
-          cout << "ERROR: number of pixels in red continuum bandpass too low "
-               << "to use contperc"
-               << endl;
-          exit(1);
-        }
-        else
-        {
-          vector <GenericPixel> fluxpix_red;
-          for (long j=j1[2]; j<=j2[2]+1; j++)
-          {
-            double f;
-            if (j == j1[2])
-              f=1.0-d1[2];
-            else if (j == j2[2]+1)
-              f=d2[2];
-            else
-              f=1.0;
-            double wave=static_cast<double>(j-1)*cdelt1+
-                        crval1-(crpix1-1.0)*cdelt1;
-            GenericPixel temppix(wave,s[j-1],es[j-1],f);
-            fluxpix_red.push_back(temppix);
-          }
-          if(!fpercent(fluxpix_red,contperc,lerr,&sr,&esr2))
-          {
-            cout << "ERROR: while computing boundary fit" << endl;
-            exit(1);
-          }
-        }
+          f=1.0;
+        sb+=f*s[j-1];
+        if(lerr) esb2+=f*f*es[j-1]*es[j-1];
       }
-      else //.............................................usamos metodo clasico
+      sb*=cdelt1;
+      sb/=rl[0];
+      if(lerr)
       {
-        //banda azul
-        for (long j=j1[0]; j<=j2[0]+1; j++)
-        {
-          double f;
-          if (j == j1[0])
-            f=1.0-d1[0];
-          else if (j == j2[0]+1)
-            f=d2[0];
-          else
-            f=1.0;
-          sb+=f*s[j-1];
-          if(lerr) esb2+=f*f*es[j-1]*es[j-1];
-        }
-        sb*=cdelt1;
-        sb/=rl[0];
-        if(lerr)
-        {
-          esb2*=cdelt1*cdelt1;
-          esb2/=(rl[0]*rl[0]);
-        }
-        //banda roja
-        for (long j=j1[2]; j<=j2[2]+1; j++)
-        {
-          double f;
-          if (j == j1[2])
-            f=1.0-d1[2];
-          else if (j == j2[2]+1)
-            f=d2[2];
-          else
-            f=1.0;
-          sr+=f*s[j-1];
-          if(lerr) esr2+=f*f*es[j-1]*es[j-1];
-        }
-        sr*=cdelt1;
-        sr/=rl[2];
-        if(lerr)
-        {
-          esr2*=cdelt1*cdelt1;
-          esr2/=(rl[2]*rl[2]);
-        }
+        esb2*=cdelt1*cdelt1;
+        esb2/=(rl[0]*rl[0]);
       }
-      //calculamos pseudo-continuo
-      double *sc = new double [naxis1];
-      double *esc2 = new double [naxis1];
+      //banda roja
+      for (long j=j1[2]; j<=j2[2]+1; j++)
+      {
+        double f;
+        if (j == j1[2])
+          f=1.0-d1[2];
+        else if (j == j2[2]+1)
+          f=d2[2];
+        else
+          f=1.0;
+        sr+=f*s[j-1];
+        if(lerr) esr2+=f*f*es[j-1]*es[j-1];
+      }
+      sr*=cdelt1;
+      sr/=rl[2];
+      if(lerr)
+      {
+        esr2*=cdelt1*cdelt1;
+        esr2/=(rl[2]*rl[2]);
+      }
+    }
+    //calculamos pseudo-continuo
+    double *sc = new double [naxis1];
+    double *esc2 = new double [naxis1];
+    for (long j = j1min; j <= j2max+1; j++)
+    {
+      double wla=static_cast<double>(j-1)*cdelt1+crval1-(crpix1-1.0)*cdelt1;
+      sc[j-1] = (sb*(mwr-wla)+sr*(wla-mwb))/(mwr-mwb);
+    }
+    if(lerr)
+    {
       for (long j = j1min; j <= j2max+1; j++)
       {
         double wla=static_cast<double>(j-1)*cdelt1+crval1-(crpix1-1.0)*cdelt1;
-        sc[j-1] = (sb*(mwr-wla)+sr*(wla-mwb))/(mwr-mwb);
+        esc2[j-1] = (esb2*(mwr-wla)*(mwr-wla)+esr2*(wla-mwb)*(wla-mwb))/
+                    ((mwr-mwb)*(mwr-mwb));
       }
-      if(lerr)
+    }
+    //recorremos la banda central
+    double tc=0.0;
+    double etc2=0.0,etc=0.0;
+    for (long j=j1[1]; j<=j2[1]+1; j++)
+    {
+      double f;
+      if (j == j1[1])
+        f=1.0-d1[1];
+      else if (j == j2[1]+1)
+        f=d2[1];
+      else
+        f=1.0;
+      tc+=f*s[j-1]/sc[j-1];
+      //================================================
+      //dibujamos lineas verticales uniendo el flujo en
+      //el continuo con el flujo en el espectro
+      if((plotmode != 0) && (plottype == 2))
       {
-        for (long j = j1min; j <= j2max+1; j++)
-        {
-          double wla=static_cast<double>(j-1)*cdelt1+crval1-(crpix1-1.0)*cdelt1;
-          esc2[j-1] = (esb2*(mwr-wla)*(mwr-wla)+esr2*(wla-mwb)*(wla-mwb))/
-                      ((mwr-mwb)*(mwr-mwb));
-        }
-      }
-      //recorremos la banda central
-      double tc=0.0;
-      double etc2=0.0,etc=0.0;
-      for (long j=j1[1]; j<=j2[1]+1; j++)
+        cpgsci(8);
+        cpgmove_d(static_cast<double>(j),s[j-1]*smean);
+        cpgdraw_d(static_cast<double>(j),sc[j-1]*smean);
+      }//===============================================
+      if(lerr) 
       {
-        double f;
-        if (j == j1[1])
-          f=1.0-d1[1];
-        else if (j == j2[1]+1)
-          f=d2[1];
-        else
-          f=1.0;
-        tc+=f*s[j-1]/sc[j-1];
-        if(lerr) 
+        etc2+=f*f*(s[j-1]*s[j-1]*esc2[j-1]+sc[j-1]*sc[j-1]*es[j-1]*es[j-1])/
+        (sc[j-1]*sc[j-1]*sc[j-1]*sc[j-1]);
+        double wla1=static_cast<double>(j-1)*cdelt1
+                    +crval1-(crpix1-1.0)*cdelt1;
+        for (long jj=j1[1]; jj<=j2[1]+1; jj++)
         {
-          etc2+=f*f*(s[j-1]*s[j-1]*esc2[j-1]+sc[j-1]*sc[j-1]*es[j-1]*es[j-1])/
-          (sc[j-1]*sc[j-1]*sc[j-1]*sc[j-1]);
-          double wla1=static_cast<double>(j-1)*cdelt1
-                      +crval1-(crpix1-1.0)*cdelt1;
-          for (long jj=j1[1]; jj<=j2[1]+1; jj++)
+          if (jj != j)
           {
-            if (jj != j)
-            {
-              double ff;
-              if (jj == j1[1])
-                ff=1.0-d1[1];
-              else if (j == j2[1]+1)
-                ff=d2[1];
-              else
-                ff=1.0;
-              double wla2=static_cast<double>(jj-1)*cdelt1
-                          +crval1-(crpix1-1.0)*cdelt1;
-              double cov=((mwr-wla1)*(mwr-wla2)*esb2+
-                          (wla1-mwb)*(wla2-mwb)*esr2)/
-                         ((mwr-mwb)*(mwr-mwb));
-              etc2+=ff*f*s[j-1]*s[jj-1]*cov/(sc[j-1]*sc[j-1]*sc[jj-1]*sc[jj-1]);
-            }
+            double ff;
+            if (jj == j1[1])
+              ff=1.0-d1[1];
+            else if (j == j2[1]+1)
+              ff=d2[1];
+            else
+              ff=1.0;
+            double wla2=static_cast<double>(jj-1)*cdelt1
+                        +crval1-(crpix1-1.0)*cdelt1;
+            double cov=((mwr-wla1)*(mwr-wla2)*esb2+
+                        (wla1-mwb)*(wla2-mwb)*esr2)/
+                       ((mwr-mwb)*(mwr-mwb));
+            etc2+=ff*f*s[j-1]*s[jj-1]*cov/(sc[j-1]*sc[j-1]*sc[jj-1]*sc[jj-1]);
           }
         }
       }
-      tc*=cdelt1;
-      etc=sqrt(etc2)*cdelt1;
-      if (myindex.gettype() == 1) //indice molecular
+    }
+    tc*=cdelt1;
+    etc=sqrt(etc2)*cdelt1;
+    if (myindex.gettype() == 1) //indice molecular
+    {
+      findex = -2.5*log10(tc/rl[1]);
+      if(lerr) eindex = cte_log_exp/pow(10,-0.4*findex)*etc/rl[1];
+    }
+    else //indice atomico
+    {
+      if(logindex) //indice atomico medido en magnitudes
       {
         findex = -2.5*log10(tc/rl[1]);
         if(lerr) eindex = cte_log_exp/pow(10,-0.4*findex)*etc/rl[1];
       }
-      else //indice atomico
+      else //indice atomico medido como indice atomico
       {
-        if(logindex) //indice atomico medido en magnitudes
-        {
-          findex = -2.5*log10(tc/rl[1]);
-          if(lerr) eindex = cte_log_exp/pow(10,-0.4*findex)*etc/rl[1];
-        }
-        else //indice atomico medido como indice atomico
-        {
-          findex = (rl[1]-tc)/rcvel1;
-          if(lerr) eindex=etc/rcvel1;
-        }
+        findex = (rl[1]-tc)/rcvel1;
+        if(lerr) eindex=etc/rcvel1;
       }
-      delete [] sc;
-      delete [] esc2;
-      //=======================================================================
-      //dibujamos
-      if((plotmode !=0) || (plottype == 2))
-      {
-        //dibujamos los dos puntos usados para calcular el continuo
-        if(plottype == 2)
-        {
-          cpgsci(8);
-          double *wdum = new double [2];
-          double *ydum = new double [2];
-          wdum[0]=(mwb-crval1)/cdelt1+crpix1;
-          ydum[0]=sb*smean;
-          wdum[1]=(mwr-crval1)/cdelt1+crpix1;
-          ydum[1]=sr*smean;
-          cpgpt_d(2,wdum,ydum,17);
-          delete [] wdum;
-          delete [] ydum;
-        }
-        //dibujamos el continuo
-        if(plottype == 2)
-          cpgsci(7);
-        else
-          cpgsci(6);
-        const double wla=wvmin*rcvel1;
-        const double yduma=sb*(mwr-wla)/(mwr-mwb)+sr*(wla-mwb)/(mwr-mwb);
-        const double xca=(wla-crval1)/cdelt1+crpix1;
-        cpgmove_d(xca,yduma*smean);
-        const double wlb=wvmax*rcvel1;
-        const double ydumb=sb*(mwr-wlb)/(mwr-mwb)+sr*(wlb-mwb)/(mwr-mwb);
-        const double xcb=(wlb-crval1)/cdelt1+crpix1;
-        cpgdraw_d(xcb,ydumb*smean);
-        cpgsci(1);
-        //repetimos dibujo del espectro si hemos utilizado biaserr o linearerr
-        if ((fabs(biaserr) != 0) || (fabs(linearerr) != 0))
-        {
-          double *x  = new double [naxis1];
-          double *s_ = new double [naxis1];
-          for(long j=1; j<=naxis1; j++)
-          {
-            x[j-1] = static_cast<double>(j);
-            s_[j-1]=s[j]*smean;
-          }
-          cpgsci(15);
-          cpgbin_d(naxis1,x,s_,true);
-          cpgsci(1);
-          delete [] x;
-          delete [] s_;
-        }
-      }//======================================================================
     }
+    delete [] sc;
+    delete [] esc2;
+    //=======================================================================
+    //dibujamos
+    if((plotmode !=0) || (plottype == 2))
+    {
+      //dibujamos los dos puntos usados para calcular el continuo
+      if(plottype == 2)
+      {
+        cpgsci(8);
+        double *wdum = new double [2];
+        double *ydum = new double [2];
+        wdum[0]=(mwb-crval1)/cdelt1+crpix1;
+        ydum[0]=sb*smean;
+        wdum[1]=(mwr-crval1)/cdelt1+crpix1;
+        ydum[1]=sr*smean;
+        cpgpt_d(2,wdum,ydum,17);
+        delete [] wdum;
+        delete [] ydum;
+      }
+      //dibujamos el continuo
+      if(plottype == 2)
+        cpgsci(7);
+      else
+        cpgsci(6);
+      const double wla=wvmin*rcvel1;
+      const double yduma=sb*(mwr-wla)/(mwr-mwb)+sr*(wla-mwb)/(mwr-mwb);
+      const double xca=(wla-crval1)/cdelt1+crpix1;
+      cpgmove_d(xca,yduma*smean);
+      const double wlb=wvmax*rcvel1;
+      const double ydumb=sb*(mwr-wlb)/(mwr-mwb)+sr*(wlb-mwb)/(mwr-mwb);
+      const double xcb=(wlb-crval1)/cdelt1+crpix1;
+      cpgdraw_d(xcb,ydumb*smean);
+      cpgsci(1);
+      //repetimos dibujo del espectro si hemos utilizado biaserr o linearerr
+      if ((fabs(biaserr) != 0) || (fabs(linearerr) != 0))
+      {
+        double *x  = new double [naxis1];
+        double *s_ = new double [naxis1];
+        for(long j=1; j<=naxis1; j++)
+        {
+          x[j-1] = static_cast<double>(j);
+          s_[j-1]=s[j]*smean;
+        }
+        cpgsci(15);
+        cpgbin_d(naxis1,x,s_,true);
+        cpgsci(1);
+        delete [] x;
+        delete [] s_;
+      }
+    }//======================================================================
   }
   //***************************************************************************
   //D4000, B4000 y colores

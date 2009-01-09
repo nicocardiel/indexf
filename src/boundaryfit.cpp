@@ -45,6 +45,7 @@ bool boundaryfit(vector <GenericPixel> &vec, const bool lerr,
                  vector <GenericPixel> &fit,
                  vector <GenericPixel> &eval)
 {
+  const double magicfactor = 1000.0;
   //---------------------------------------------------------------------------
   //protecciones
   long num=vec.size();
@@ -72,7 +73,8 @@ bool boundaryfit(vector <GenericPixel> &vec, const bool lerr,
   }
   for (long i=0; i<num; i++)
   {
-    outdatafile << vec[i].getwave() << "   " << vec[i].getflux() << endl;
+    outdatafile << vec[i].getwave()/magicfactor 
+                << "   " << vec[i].getflux() << endl;
   }
   outdatafile.close();
   //calculamos ajuste
@@ -88,7 +90,7 @@ bool boundaryfit(vector <GenericPixel> &vec, const bool lerr,
   {
     double tempwave,tempflux;
     inputfitfile >> tempwave >> tempflux;
-    fit[i].setwave(tempwave);
+    fit[i].setwave(tempwave*magicfactor);
     fit[i].setflux(tempflux);
     fit[i].seteflux(0.0);
     fit[i].setpixelfraction(vec[i].getpixelfraction());
@@ -103,13 +105,11 @@ bool boundaryfit(vector <GenericPixel> &vec, const bool lerr,
   }
   long polydeg;
   inputcoeff >> polydeg;
-  cout << "Polynomial degree: " << polydeg << endl;
   double * polycoeff = new double [polydeg+1];
   long idum;
   for (long i=0; i<=polydeg; i++)
   {
     inputcoeff >> idum >> polycoeff[i];
-    cout << "Coeff#" << i << ": " << polycoeff[i] << endl;
   }
   inputcoeff.close();
   //evaluamos el polinomio ajustado en los pixeles solicitados
@@ -118,14 +118,17 @@ bool boundaryfit(vector <GenericPixel> &vec, const bool lerr,
   {
     for (long i=0; i<num_eval; i++)
     {
-      double tempwave=eval[i].getwave();
+      double tempwave=eval[i].getwave()/magicfactor;
       double tempflux=polycoeff[polydeg];
-      for (long k=polydeg; k>=1; k--)
+      if(polydeg > 0)
       {
-        tempflux=tempflux*tempwave+polycoeff[k-1];
+        for (long k=polydeg; k>=1; k--)
+        {
+          tempflux=tempflux*tempwave+polycoeff[k-1];
+        }
       }
       eval[i].setflux(tempflux);
-      eval[i].seteflux(0.01);
+      eval[i].seteflux(0.01); //ToDo: calcular errores
     }
   }
   delete [] polycoeff;
