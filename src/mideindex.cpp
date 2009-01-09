@@ -584,6 +584,11 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       cout << "WARNING: boundfit is being implemented for this index"
            << endl;
     }
+    //calculamos longitudes de onda en el centro de las bandas de continuo
+    double mwb = (myindex.getldo1(0)+myindex.getldo2(0))/2.0;
+    mwb*=rcvel1;
+    double mwr = (myindex.getldo1(2)+myindex.getldo2(2))/2.0;
+    mwr*=rcvel1;
     //-------------------------------------------------------------------------
     //a la hora de calcular el indice, distinguimos si utilizamos un boundary
     //fit para calcular la integral en la banda de continuo o no
@@ -642,8 +647,6 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
           boundfit_blue.push_back(temppix);
         }
         GenericPixel evalpix; //pixel a ser evaluado
-        double mwb = (myindex.getldo1(0)+myindex.getldo2(0))/2.0;
-        mwb*=rcvel1;
         evalpix.setwave(mwb);
         vector <GenericPixel> evaluate_blue; //vector de pixeles a evaluar
         evaluate_blue.push_back(evalpix);
@@ -655,6 +658,24 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
         sb=evaluate_blue[0].getflux();
         esb2=evaluate_blue[0].geteflux();
         esb2*=esb2;
+        //=====================================================================
+        //dibujamos boundary fit de la banda azul
+        if((plotmode != 0) && (plottype == 2))
+        {
+          long npixels = boundfit_blue.size();
+          double *x_  = new double [npixels];
+          double *fit_ = new double [npixels];
+          for(long j=0; j<npixels; j++)
+          {
+            x_[j] = (boundfit_blue[j].getwave()-crval1)/cdelt1+crpix1;
+            fit_[j]=boundfit_blue[j].getflux()*smean;
+          }
+          cpgsci(4);
+          cpgbin_d(npixels,x_,fit_,true);
+          cpgsci(1);
+          delete [] x_;
+          delete [] fit_;
+        }//====================================================================
         //banda roja
         vector <GenericPixel> fluxpix_red;
         vector <GenericPixel> boundfit_red;
@@ -675,8 +696,6 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
           temppix.seteflux(0.0);
           boundfit_red.push_back(temppix);
         }
-        double mwr = (myindex.getldo1(2)+myindex.getldo2(2))/2.0;
-        mwr*=rcvel1;
         evalpix.setwave(mwr);
         vector <GenericPixel> evaluate_red; //vector de pixeles a evaluar
         evaluate_red.push_back(evalpix);
@@ -685,9 +704,27 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
           cout << "ERROR: while computing boundary fit in red band" << endl;
           exit(1);
         }
-        sr=evaluate_blue[0].getflux();
-        esr2=evaluate_blue[0].geteflux();
+        sr=evaluate_red[0].getflux();
+        esr2=evaluate_red[0].geteflux();
         esr2*=esr2;
+        //=====================================================================
+        //dibujamos boundary fit de la banda roja
+        if((plotmode != 0) && (plottype == 2))
+        {
+          long npixels = boundfit_red.size();
+          double *x_  = new double [npixels];
+          double *fit_ = new double [npixels];
+          for(long j=0; j<npixels; j++)
+          {
+            x_[j] = (boundfit_red[j].getwave()-crval1)/cdelt1+crpix1;
+            fit_[j]=boundfit_red[j].getflux()*smean;
+          }
+          cpgsci(2);
+          cpgbin_d(npixels,x_,fit_,true);
+          cpgsci(1);
+          delete [] x_;
+          delete [] fit_;
+        }//====================================================================
       }
       else if(boundfit == 2)  //boundary fit unico a las dos bandas de continuo
       {
@@ -804,10 +841,6 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
         }
       }
       //calculamos pseudo-continuo
-      double mwb = (myindex.getldo1(0)+myindex.getldo2(0))/2.0;
-      mwb*=rcvel1;
-      double mwr = (myindex.getldo1(2)+myindex.getldo2(2))/2.0;
-      mwr*=rcvel1;
       double *sc = new double [naxis1];
       double *esc2 = new double [naxis1];
       for (long j = j1min; j <= j2max+1; j++)
