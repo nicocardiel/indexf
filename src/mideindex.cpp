@@ -596,7 +596,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     double esr2=0.0;               //error en el flujo anterior
     if(boundfit == 1) //....boundary fit independiente a cada banda de continuo
     {
-      //banda azul
+      //...................................................incluimos banda azul
       vector <GenericPixel> fluxpix_blue;  //datos a ajustar
       vector <GenericPixel> boundfit_blue; //ajuste a los datos
       for (long j=j1[0]; j<=j2[0]+1; j++)
@@ -646,7 +646,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
         delete [] x_;
         delete [] fit_;
       }//======================================================================
-      //banda roja
+      //...................................................incluimos banda roja
       vector <GenericPixel> fluxpix_red;
       vector <GenericPixel> boundfit_red;
       for (long j=j1[2]; j<=j2[2]+1; j++)
@@ -698,9 +698,10 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     }
     else if( (boundfit == 2) || (boundfit == 3) ) //dos o tres bandas
     {
+      //...................................................incluimos banda azul
       vector <GenericPixel> fluxpix_all;  //datos a ajustar
       vector <GenericPixel> boundfit_all; //ajuste a los datos
-      for (long j=j1[0]; j<=j2[0]+1; j++) //...............incluimos banda azul
+      for (long j=j1[0]; j<=j2[0]+1; j++)
       {
         double f;
         if (j == j1[0])
@@ -737,7 +738,8 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
           boundfit_all.push_back(temppix);
         }
       }
-      for (long j=j1[2]; j<=j2[2]+1; j++) //...............incluimos banda roja
+      //...................................................incluimos banda roja
+      for (long j=j1[2]; j<=j2[2]+1; j++)
       {
         double f;
         if (j == j1[2])
@@ -790,7 +792,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
         delete [] fit_;
       }//======================================================================
     }
-    else if(boundfit == 4) //desde la primera a la tercera banda
+    else if(boundfit == 4) //...............desde la primera a la tercera banda
     {
       vector <GenericPixel> fluxpix_all;  //datos a ajustar
       vector <GenericPixel> boundfit_all; //ajuste a los datos
@@ -828,7 +830,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       sr=evaluate[1].getflux();
       esr2=evaluate[1].geteflux();
       esr2*=esr2;
-      //==============================================..=======================
+      //=======================================================================
       //dibujamos boundary fit
       if((plotmode != 0) && (plottype == 2))
       {
@@ -845,7 +847,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
         cpgsci(1);
         delete [] x_;
         delete [] fit_;
-      }//===========================================..=========================
+      }//======================================================================
     }
     else if (contperc >= 0) //.................................usamos percentil
     {
