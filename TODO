@@ -7,6 +7,12 @@
               ajuste
   boundfit=3  igual al anterior, pero usando para el boundary fit todas las
               bandas, sin distinguir si se trata de continuos o de absorciones
+  boundfit=4  ajusta desde el extremo azul de la banda azul hasta el extremo
+              rojo de la banda roja; evalua entonces el flujo en el centro de
+              las bandas de continuo y traza una recta para evaluar el
+              pseudo-continuo
+  boundfit=5  igual que boundfit=4, pero calculando el area entre el ajuste al
+              boundary fit y el espectro
 
 - Incluir numero de version en output inicial del programa
 
