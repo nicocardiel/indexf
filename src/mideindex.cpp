@@ -583,12 +583,17 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     {
       cout << "WARNING: boundfit is being implemented for this index"
            << endl;
+      cout << "smean: " << smean << endl;
     }
     //calculamos longitudes de onda en el centro de las bandas de continuo
     double mwb = (myindex.getldo1(0)+myindex.getldo2(0))/2.0;
     mwb*=rcvel1;
     double mwr = (myindex.getldo1(2)+myindex.getldo2(2))/2.0;
     mwr*=rcvel1;
+    //declaramos las variables en las que incluiremos el pseudo-continuo
+    //evaluado en la banda central
+    double *sc = new double [naxis1];
+    double *esc2 = new double [naxis1];
     //-------------------------------------------------------------------------
     double sb=0.0;                 //flujo "promedio" para centro de banda azul
     double esb2=0.0;               //error en el flujo anterior
@@ -764,7 +769,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       evaluate.push_back(evalpix);
       if(!boundaryfit(fluxpix_all,lerr,boundfit_all,evaluate))
       {
-        cout << "ERROR: while computing boundary fit in blue band" << endl;
+        cout << "ERROR: while computing boundary fit in several bands" << endl;
         exit(1);
       }
       sb=evaluate[0].getflux();
@@ -792,7 +797,10 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
         delete [] fit_;
       }//======================================================================
     }
-    else if(boundfit == 4) //...............desde la primera a la tercera banda
+    //..................................desde la primera hasta la tercera banda
+    //boundfit=4 calcula recta entre valores medios en bandas laterales
+    //boundfit=5 calcula integral entre el boundary fit y el espectro
+    else if( (boundfit == 4) || (boundfit == 5) )
     {
       vector <GenericPixel> fluxpix_all;  //datos a ajustar
       vector <GenericPixel> boundfit_all; //ajuste a los datos
@@ -815,21 +823,53 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       }
       GenericPixel evalpix; //pixel puntual a ser evaluado
       vector <GenericPixel> evaluate; //vector de pixeles a evaluar
-      evalpix.setwave(mwb);
-      evaluate.push_back(evalpix);
-      evalpix.setwave(mwr);
-      evaluate.push_back(evalpix);
+      if (boundfit == 4) //evaluamos los puntos centrales de bandas laterales
+      {
+        evalpix.setwave(mwb);
+        evaluate.push_back(evalpix);
+        evalpix.setwave(mwr);
+        evaluate.push_back(evalpix);
+      }
+      else if (boundfit == 5) //evaluamos todos los puntos de la banda central
+      {
+        for (long j=j1[1]; j<=j2[1]+1; j++)
+        {
+          double f;
+          if (j == j1[1])
+            f=1.0-d1[1];
+          else if (j == j2[1]+1)
+            f=d2[1];
+          else
+            f=1.0;
+          double wave=static_cast<double>(j-1)*cdelt1+
+                      crval1-(crpix1-1.0)*cdelt1;
+          evalpix.setwave(wave);
+          evaluate.push_back(evalpix);
+        }
+      }
       if(!boundaryfit(fluxpix_all,lerr,boundfit_all,evaluate))
       {
-        cout << "ERROR: while computing boundary fit in blue band" << endl;
+        cout << "ERROR: while computing boundary fit in several bands" << endl;
         exit(1);
       }
-      sb=evaluate[0].getflux();
-      esb2=evaluate[0].geteflux();
-      esb2*=esb2;
-      sr=evaluate[1].getflux();
-      esr2=evaluate[1].geteflux();
-      esr2*=esr2;
+      if (boundfit == 4)
+      {
+        sb=evaluate[0].getflux();
+        esb2=evaluate[0].geteflux();
+        esb2*=esb2;
+        sr=evaluate[1].getflux();
+        esr2=evaluate[1].geteflux();
+        esr2*=esr2;
+      }
+      else if (boundfit == 5)
+      {
+        for (long j=j1[1]; j<=j2[1]+1; j++)
+        {
+          sc[j-1]=evaluate[j-j1[1]].getflux();
+          esc2[j-1]=evaluate[j-j1[1]].geteflux();
+          esc2[j-1]*=esc2[j-1];
+        }
+      }
       //=======================================================================
       //dibujamos boundary fit
       if((plotmode != 0) && (plottype == 2))
@@ -957,21 +997,23 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
         esr2/=(rl[2]*rl[2]);
       }
     }
-    //calculamos pseudo-continuo
-    double *sc = new double [naxis1];
-    double *esc2 = new double [naxis1];
-    for (long j = j1min; j <= j2max+1; j++)
-    {
-      double wla=static_cast<double>(j-1)*cdelt1+crval1-(crpix1-1.0)*cdelt1;
-      sc[j-1] = (sb*(mwr-wla)+sr*(wla-mwb))/(mwr-mwb);
-    }
-    if(lerr)
+    //calculamos pseudo-continuo como una recta uniendo los flujos "promedio"
+    //en las bandas de continuo
+    if (boundfit != 5) //calculamos la recta
     {
       for (long j = j1min; j <= j2max+1; j++)
       {
         double wla=static_cast<double>(j-1)*cdelt1+crval1-(crpix1-1.0)*cdelt1;
-        esc2[j-1] = (esb2*(mwr-wla)*(mwr-wla)+esr2*(wla-mwb)*(wla-mwb))/
-                    ((mwr-mwb)*(mwr-mwb));
+        sc[j-1] = (sb*(mwr-wla)+sr*(wla-mwb))/(mwr-mwb);
+      }
+      if(lerr)
+      {
+        for (long j = j1min; j <= j2max+1; j++)
+        {
+          double wla=static_cast<double>(j-1)*cdelt1+crval1-(crpix1-1.0)*cdelt1;
+          esc2[j-1] = (esb2*(mwr-wla)*(mwr-wla)+esr2*(wla-mwb)*(wla-mwb))/
+                      ((mwr-mwb)*(mwr-mwb));
+        }
       }
     }
     //recorremos la banda central
@@ -1060,6 +1102,8 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
         wdum[1]=(mwr-crval1)/cdelt1+crpix1;
         ydum[1]=sr*smean;
         cpgpt_d(2,wdum,ydum,17);
+        cout << "Continuum, point #1: " << mwb << ", " << ydum[0] << endl;
+        cout << "Continuum, point #2: " << mwr << ", " << ydum[1] << endl;
         delete [] wdum;
         delete [] ydum;
       }
