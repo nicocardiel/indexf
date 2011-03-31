@@ -6,8 +6,6 @@ c123.cpp \
 checkipar.cpp \
 commandtok.cpp \
 commandtok.h \
-cpgplot_d.cpp \
-cpgplot_d.h \
 fmean.cpp \
 fpercent.cpp \
 genericpixel.cpp \
