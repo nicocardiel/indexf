@@ -1,4 +1,3 @@
-# $Id$
 #
 bin_PROGRAMS = indexf
 indexf_SOURCES =  \

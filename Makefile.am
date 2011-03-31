@@ -1,7 +1,5 @@
 # Process this file with automake to produce Makefile.in
 #
-# $Id$
-#
 
 SUBDIRS = auxdir src m4
 
