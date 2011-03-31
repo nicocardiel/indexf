@@ -1,5 +1,5 @@
 /*
- * Copyright 2008 Nicolas Cardiel
+ * Copyright 2008-2011 Nicolas Cardiel
  *
  * This file is part of indexf.
  *
