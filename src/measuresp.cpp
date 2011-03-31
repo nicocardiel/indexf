@@ -25,11 +25,12 @@
 #include <cmath>
 #include <iomanip>
 #include <time.h>
+
+#include <plplot/plplot.h>
+
 #include "indexparam.h"
 #include "indexdef.h"
 #include "scidata.h"
-#include "cpgplot.h"
-#include "cpgplot_d.h"
 
 using namespace std;
 
@@ -95,7 +96,8 @@ bool measuresp(SciData *imagePtr, IndexParam param, IndexDef myindex)
   {
     const long nwinx=param.get_nwinx();
     const long nwiny=param.get_nwiny();
-    cpgbeg(0,param.get_grdev(),nwinx,nwiny);
+    plstar(nwinx,nwiny);
+    //cpgbeg(0,param.get_grdev(),nwinx,nwiny);
     /*//inicio colores para el poster de la SEA2006
     cpgscr(0,230./255.,225./255.,207./255.);
     cpgscr(1,000./255.,000./255.,000./255.);
@@ -107,11 +109,12 @@ bool measuresp(SciData *imagePtr, IndexParam param, IndexDef myindex)
     cpgscr(7,230./255.,216./255.,207./255.);
     cpgscr(15,230./255.,207./255.,115./255.);
     //fin colores para el poster de la SEA2006 */
-    cpgask(false);
-    cpgsch(1.4);
+    //cpgask(false);
+    //cpgsch(1.4);
+    //plschr (def, 1.4);
     if((nwinx == 1) && (nwiny == 1))
     {
-      cpgslw(2);
+      plwid(2);
     }
   }
   for (long ns = param.get_ns1(); ns <= param.get_ns2(); ns++)
@@ -145,18 +148,18 @@ bool measuresp(SciData *imagePtr, IndexParam param, IndexDef myindex)
     if ((plotmode != 0) && (plottype >= 1))
     {
       //nombre del indice que se esta midiendo
-      cpgsci(3);
-      cpgmtxt("t",6.5,0.0,0.0,param.get_index());
+      plcol0(3);
+      plmtex("t",6.5,0.0,0.0,param.get_index());
       //numero de espectro
-      cpgsci(6);
+      plcol0(6);
       ostringstream snumber;
       snumber << param.get_if() << " #" << ns;
       long lsize = (snumber.str()).length();
       char *snumberPtr = new char[lsize+1];
       (snumber.str()).copy(snumberPtr,lsize,0);
       snumberPtr[lsize]='\0';
-      cpgmtxt("t",6.5,1.0,1.0,snumberPtr);
-      cpgsci(1);
+      plmtex("t",6.5,1.0,1.0,snumberPtr);
+      plcol0(1);
       delete [] snumberPtr;
     }
     //si hay error en velocidad radial, hacemos simulaciones numericas
@@ -270,7 +273,7 @@ bool measuresp(SciData *imagePtr, IndexParam param, IndexDef myindex)
   }
   if (plotmode != 0)
   {
-    cpgend();
+    plend();
   }
   delete [] sp_data;
   delete [] sp_error;

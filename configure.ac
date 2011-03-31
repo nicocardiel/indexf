@@ -10,19 +10,13 @@ AC_CONFIG_SRCDIR([config.h.in])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 
 # Checks for programs
-AC_PROG_F77 # this is required to know which is $F77 (see Checks for libraries)
 AC_PROG_CXX
 
 # Safety check
 AC_CONFIG_SRCDIR([src/indexf.cpp])
 
 # Checks for libraries
-PKG_CHECK_MODULES([PACKAGES], [cfitsio])
-AC_CHECK_LIB([cpgplot], main,,AC_MSG_ERROR(cpgplot library not found))
-# Note: -lgfortran (or -lg77) is required to link the executable file
-AC_CHECK_LIB([$F77], main,,AC_MSG_ERROR($F77 library not found))
-STTL_LIB_PGPLOT
-LIBS="$LIBS $PGPLOT_LIBS"
+PKG_CHECK_MODULES([PACKAGES], [plplotd-c++ cfitsio])
 
 # Definitions
 DEFAULT_AUXDIR="/usr/local/share/indexf"
