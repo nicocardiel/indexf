@@ -22,9 +22,8 @@
 #include <cmath>
 #include <cstdlib>
 #include <vector>
+#include <plplot/plplot.h>
 #include "indexdef.h"
-#include "cpgplot.h"
-#include "cpgplot_d.h"
 #include "genericpixel.h"
 
 using namespace std;
@@ -175,7 +174,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
   if(plotmode != 0)
   {
     //calculamos un array temporal para el eje X (en unidades de pixeles)
-    double *x = new double [naxis1];
+    PLFLT *x = new PLFLT [naxis1];
     for (long j=1; j<=naxis1; j++)
     {
       x[j-1]=static_cast<double>(j);
@@ -250,58 +249,64 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     double xminl,xmaxl;
     xminl=crval1+(xmin-crpix1)*cdelt1;
     xmaxl=crval1+(xmax-crpix1)*cdelt1;
-    cpgenv_d(xminl,xmaxl,ymin,ymax,0,-2);
-    if(plottype)
+    plenv(xminl,xmaxl,ymin,ymax,0,-2);
+    plenv (xminl, xmaxl, ymin, ymax, 0, -2);
+    //if(plottype)
+    if(false)
     {
-      float xv1,xv2,yv1,yv2,dyv;
-      cpgqvp(0,&xv1,&xv2,&yv1,&yv2);
+      PLFLT xv1,xv2,yv1,yv2,dyv;
+      plgvpd(&xv1,&xv2,&yv1,&yv2);
       dyv=yv2-yv1;
-      cpgsvp(xv1,xv2,yv1,yv2-dyv*0.20);
-      cpgswin(xminl,xmaxl,ymin,ymax);
-      cpgbox("btsn",0.0,0,"bctsn",0.0,0);
-      cpgswin(xminl/rcvel1,xmaxl/rcvel1,ymin,ymax);
-      cpgbox("ctsm",0.0,0," ",0.0,0);
-      cpgmtxt("t",2.0,0.5,0.5,"rest-frame wavelength (\\A)");
-      cpgsvp(xv1,xv2,yv1,yv2);
-      cpgswin_d(xmin,xmax,ymin,ymax);
-      cpgsci(15);
-      cpgbox("ctsm",0.0,0," ",0.0,0);
-      float ch;
-      cpgqch(&ch);
-      cpgsch(0.9);
-      cpgmtxt("t",-1.5,0.0,0.0,"pixel (wavelength direction)");
-      cpgmtxt("t",-1.5,1.0,1.0,"pixel (wavelength direction)");
-      cpgsch(ch);
-      cpgsci(1);
-      cpgsvp(xv1,xv2,yv1,yv2-dyv*0.20);
+      plvpor(xv1,xv2,yv1,yv2-dyv*0.20);
+      plwind(xminl,xmaxl,ymin,ymax);
+      plbox("btsn",0.0,0,"bctsn",0.0,0);
+      plwind(xminl/rcvel1,xmaxl/rcvel1,ymin,ymax);
+      plbox("ctsm",0.0,0," ",0.0,0);
+      plmtex("t",2.0,0.5,0.5,"rest-frame wavelength (\\A)");
+      plvpor(xv1,xv2,yv1,yv2);
+      plwind(xmin,xmax,ymin,ymax);
+      plcol0(15);
+      plbox("ctsm",0.0,0," ",0.0,0);
+      PLFLT ch1, ch2;
+      plgchr(&ch1, &ch2);
+      plschr(ch1, 0.9);
+      plmtex("t",-1.5,0.0,0.0,"pixel (wavelength direction)");
+      plmtex("t",-1.5,1.0,1.0,"pixel (wavelength direction)");
+      plschr(ch1, ch2);
+      plcol0(1);
+      plvpor(xv1,xv2,yv1,yv2-dyv*0.20);
     }
     else
     {
-      cpgbox("bctsn",0.0,0,"bctsn",0.0,0);
+      plbox("bctsn",0.0,0,"bctsn",0.0,0);
     }
-    cpglab("observed wavelength (\\A)","flux"," ");
-    cpgswin_d(xmin,xmax,ymin,ymax);
+    pllab("observed wavelength (\\A)","flux"," ");
+    plwind(xmin,xmax,ymin,ymax);
     //dibujamos errores
     if((lerr) && (plotmode < 0))
     {
-      cpgbbuf();
-      cpgsci(15);
-      cpgslw(1);
+      //cpgbbuf();
+      plcol0(15);
+      plwid(1);
       for (long j=1; j<=naxis1; j++)
       {
-        cpgmove_d(x[j-1],sp_data[j-1]-sp_error[j-1]);
-        cpgdraw_d(x[j-1],sp_data[j-1]+sp_error[j-1]);
-        cpgmove_d(x[j-1]-0.2,sp_data[j-1]-sp_error[j-1]);
-        cpgdraw_d(x[j-1]+0.2,sp_data[j-1]-sp_error[j-1]);
-        cpgmove_d(x[j-1]-0.2,sp_data[j-1]+sp_error[j-1]);
-        cpgdraw_d(x[j-1]+0.2,sp_data[j-1]+sp_error[j-1]);
+        pljoin(x[j-1],sp_data[j-1]-sp_error[j-1],
+        x[j-1],sp_data[j-1]+sp_error[j-1]);
+        pljoin(x[j-1]-0.2,sp_data[j-1]-sp_error[j-1],
+        x[j-1]+0.2,sp_data[j-1]-sp_error[j-1]);
+        pljoin(x[j-1]-0.2,sp_data[j-1]+sp_error[j-1],
+        x[j-1]+0.2,sp_data[j-1]+sp_error[j-1]);
       }
-      cpgslw(2);
-      cpgsci(1);
-      cpgebuf();
+      plwid(2);
+      plcol0(1);
+      //cpgebuf();
     }
     //dibujamos el espectro
-    cpgbin_d(naxis1,x,sp_data,true);
+    PLFLT* sp_data_f = new PLFLT[naxis1];
+    std::copy(sp_data, sp_data + naxis1, sp_data_f);
+    plbin(naxis1,x,sp_data_f,true);
+    delete [] sp_data_f;
+
     //dibujamos bandas
     dy=ymax-ymin;
     for (long nb=0; nb<nbands; nb++)
@@ -312,11 +317,11 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       {
         ddy=0.04;
         if(nb==0)
-          cpgsci(4);
+          plcol0(4);
         else if(nb==1)
-          cpgsci(3);
+          plcol0(3);
         else
-          cpgsci(2);
+          plcol0(2);
       }
       else if((myindex.gettype() == 3) || //..............................D4000
               (myindex.gettype() == 4) || //..............................B4000
@@ -324,21 +329,21 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       {
         ddy=0.04;
         if(nb==0)
-          cpgsci(4);
+          plcol0(4);
         else
-          cpgsci(2);
+          plcol0(2);
       }
       else if(myindex.gettype() == 10)//..........................emission line
       {
         if(myindex.getfactor_el(nb) == 0.0) //continuo
         {
           ddy=0.04;
-          cpgsci(5);
+          plcol0(5);
         }
         else //linea
         {
           ddy=0.06;
-          cpgsci(3);
+          plcol0(3);
         }
       }
       else if((myindex.gettype() >= 11) && //...........discontinuidad generica
@@ -347,12 +352,12 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
         if(nb < myindex.getnconti())
         {
           ddy=0.04;
-          cpgsci(5);
+          plcol0(5);
         }
         else
         {
           ddy=0.06;
-          cpgsci(3);
+          plcol0(3);
         }
       }
       else if((myindex.gettype() >= 101) && //..................indice generico
@@ -361,18 +366,18 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
         if(nb < myindex.getnconti())
         {
           ddy=0.04;
-          cpgsci(5);
+          plcol0(5);
         }
         else
         {
           ddy=0.06;
-          cpgsci(3);
+          plcol0(3);
         }
       }
       else if((myindex.gettype() >= -99) && //...........................slopes
               (myindex.gettype()<=-2))
       {
-        cpgsci(5);
+        plcol0(5);
         ddy=0.04;
       }
       else //.......................................................sin definir
@@ -382,12 +387,12 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       }
       const double xc1=(ca[nb]-crval1)/cdelt1+crpix1;
       const double xc2=(cb[nb]-crval1)/cdelt1+crpix1;
-      cpgrect_d(xc1,xc2,ymin+dy*0.04,ymin+dy*0.05);
-      cpgrect_d(xc1,xc2,ymax-dy*(ddy+0.01),ymax-dy*ddy);
-      cpgmove_d(xc1,ymin+dy*0.04); cpgdraw_d(xc1,ymax-dy*ddy);
-      cpgmove_d(xc2,ymin+dy*0.04); cpgdraw_d(xc2,ymax-dy*ddy);
+      //cpgrect_d(xc1,xc2,ymin+dy*0.04,ymin+dy*0.05);
+      //cpgrect_d(xc1,xc2,ymax-dy*(ddy+0.01),ymax-dy*ddy);
+      pljoin(xc1,ymin+dy*0.04, xc1,ymax-dy*ddy);
+      pljoin(xc2,ymin+dy*0.04, xc2,ymax-dy*ddy);
     }
-    cpgsci(1);
+    plcol0(1);
     //borramos array temporal para el eje X
     delete [] x;
   }//==========================================================================
@@ -645,9 +650,9 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
           x_[j] = (boundfit_blue[j].getwave()-crval1)/cdelt1+crpix1;
           fit_[j]=boundfit_blue[j].getflux()*smean;
         }
-        cpgsci(4);
-        cpgbin_d(npixels,x_,fit_,true);
-        cpgsci(1);
+        plcol0(4);
+        plbin(npixels,x_,fit_,true);
+        plcol0(1);
         delete [] x_;
         delete [] fit_;
       }//======================================================================
@@ -694,9 +699,9 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
           x_[j] = (boundfit_red[j].getwave()-crval1)/cdelt1+crpix1;
           fit_[j]=boundfit_red[j].getflux()*smean;
         }
-        cpgsci(2);
-        cpgbin_d(npixels,x_,fit_,true);
-        cpgsci(1);
+        plcol0(2);
+        plbin(npixels,x_,fit_,true);
+        plcol0(1);
         delete [] x_;
         delete [] fit_;
       }//======================================================================
@@ -790,9 +795,9 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
           x_[j] = (boundfit_all[j].getwave()-crval1)/cdelt1+crpix1;
           fit_[j]=boundfit_all[j].getflux()*smean;
         }
-        cpgsci(3);
-        cpgbin_d(npixels,x_,fit_,true);
-        cpgsci(1);
+        plcol0(3);
+        plbin(npixels,x_,fit_,true);
+        plcol0(1);
         delete [] x_;
         delete [] fit_;
       }//======================================================================
@@ -882,9 +887,9 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
           x_[j] = (boundfit_all[j].getwave()-crval1)/cdelt1+crpix1;
           fit_[j]=boundfit_all[j].getflux()*smean;
         }
-        cpgsci(3);
-        cpgbin_d(npixels,x_,fit_,true);
-        cpgsci(1);
+        plcol0(3);
+        plbin(npixels,x_,fit_,true);
+        plcol0(1);
         delete [] x_;
         delete [] fit_;
       }//======================================================================
@@ -1034,9 +1039,9 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       //el continuo con el flujo en el espectro
       if((plotmode != 0) && (plottype == 2))
       {
-        cpgsci(8);
-        cpgmove_d(static_cast<double>(j),s[j-1]*smean);
-        cpgdraw_d(static_cast<double>(j),sc[j-1]*smean);
+        plcol0(8);
+        pljoin(static_cast<double>(j),s[j-1]*smean,
+        static_cast<double>(j),sc[j-1]*smean);
       }//===============================================
       if(lerr) 
       {
@@ -1094,14 +1099,14 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       //dibujamos los dos puntos usados para calcular el continuo
       if(plottype == 2)
       {
-        cpgsci(8);
+        plcol0(8);
         double *wdum = new double [2];
         double *ydum = new double [2];
         wdum[0]=(mwb-crval1)/cdelt1+crpix1;
         ydum[0]=sb*smean;
         wdum[1]=(mwr-crval1)/cdelt1+crpix1;
         ydum[1]=sr*smean;
-        cpgpt_d(2,wdum,ydum,17);
+        plsym(2,wdum,ydum,17);
         cout << "Continuum, point #1: " << mwb << ", " << ydum[0] << endl;
         cout << "Continuum, point #2: " << mwr << ", " << ydum[1] << endl;
         delete [] wdum;
@@ -1109,18 +1114,18 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       }
       //dibujamos el continuo
       if(plottype == 2)
-        cpgsci(7);
+        plcol0(7);
       else
-        cpgsci(6);
+        plcol0(6);
       const double wla=wvmin*rcvel1;
       const double yduma=sb*(mwr-wla)/(mwr-mwb)+sr*(wla-mwb)/(mwr-mwb);
       const double xca=(wla-crval1)/cdelt1+crpix1;
-      cpgmove_d(xca,yduma*smean);
+
       const double wlb=wvmax*rcvel1;
       const double ydumb=sb*(mwr-wlb)/(mwr-mwb)+sr*(wlb-mwb)/(mwr-mwb);
       const double xcb=(wlb-crval1)/cdelt1+crpix1;
-      cpgdraw_d(xcb,ydumb*smean);
-      cpgsci(1);
+      pljoin(xca,yduma*smean, xcb,ydumb*smean);
+      plcol0(1);
       //repetimos dibujo del espectro si hemos utilizado biaserr o linearerr
       if ((fabs(biaserr) != 0) || (fabs(linearerr) != 0))
       {
@@ -1131,9 +1136,9 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
           x[j-1] = static_cast<double>(j);
           s_[j-1]=s[j]*smean;
         }
-        cpgsci(15);
-        cpgbin_d(naxis1,x,s_,true);
-        cpgsci(1);
+        plcol0(15);
+        plbin(naxis1,x,s_,true);
+        plcol0(1);
         delete [] x;
         delete [] s_;
       }
@@ -1225,7 +1230,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     //dibujamos
     if(plotmode !=0)
     {
-      cpgsci(6);
+      plcol0(6);
       //continuo en banda azul
       const double wla=myindex.getldo1(0)*rcvel1;
       double yduma=0.0;
@@ -1235,10 +1240,10 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       }
       yduma/=static_cast<double>(j2[0]-j1[0]+2);
       const double xca=(wla-crval1)/cdelt1+crpix1;
-      cpgmove_d(xca,yduma*smean);
+
       const double wlb=myindex.getldo2(0)*rcvel1;
       const double xcb=(wlb-crval1)/cdelt1+crpix1;
-      cpgdraw_d(xcb,yduma*smean);
+      pljoin(xca,yduma*smean, xcb,yduma*smean);
       //continuo en banda roja
       const double wlc=myindex.getldo1(1)*rcvel1;
       double ydumb=0.0;
@@ -1248,11 +1253,11 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       }
       ydumb/=static_cast<double>(j2[1]-j1[1]+2);
       const double xcc=(wlc-crval1)/cdelt1+crpix1;
-      cpgmove_d(xcc,ydumb*smean);
+      
       const double wld=myindex.getldo2(1)*rcvel1;
       const double xcd=(wld-crval1)/cdelt1+crpix1;
-      cpgdraw_d(xcd,ydumb*smean);
-      cpgsci(1);
+      pljoin(xcc,ydumb*smean, xcd,ydumb*smean);
+      plcol0(1);
     }//========================================================================
   }
   //***************************************************************************
@@ -1324,15 +1329,15 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     //dibujamos continuo
     if (plotmode !=0)
     {
-      cpgsci(6);
-      double fdum = sc[j1min-1]*smean;
-      cpgmove_d(static_cast<double>(j1min),fdum);
+      plcol0(6);
+      double rfdum = sc[j1min-1]*smean;
+
       for (long j = j1min; j <= j2max+1; j++)
       {
-        fdum = sc[j-1]*smean;
-        cpgdraw_d(static_cast<double>(j),fdum);
+        double fdum = sc[j-1]*smean;
+              pljoin(static_cast<double>(j1min),rfdum, static_cast<double>(j),fdum);
       }
-      cpgsci(1);
+      plcol0(1);
     }
     //=======================================================================
     if(lerr)
@@ -1361,24 +1366,24 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       //dibujamos continuo y su error
       if (plotmode < 0)
       {
-        cpgsci(7);
+        plcol0(7);
         //error superior
-        double fdum = (sc[j1min-1]+sqrt(esc2[j1min-1]))*smean;
-        cpgmove_d(static_cast<double>(j1min),fdum);
+        double rfdum = (sc[j1min-1]+sqrt(esc2[j1min-1]))*smean;
+
         for (long j = j1min; j <= j2max+1; j++)
         {
-          fdum = (sc[j-1]+sqrt(esc2[j-1]))*smean;
-          cpgdraw_d(static_cast<double>(j),fdum);
+          double fdum = (sc[j-1]+sqrt(esc2[j-1]))*smean;
+        pljoin(static_cast<double>(j1min),rfdum, static_cast<double>(j),fdum);
         }
         //error inferior
-        fdum = (sc[j1min-1]-sqrt(esc2[j1min-1]))*smean;
-        cpgmove_d(static_cast<double>(j1min),fdum);
+        rfdum = (sc[j1min-1]-sqrt(esc2[j1min-1]))*smean;
+
         for (long j = j1min; j <= j2max+1; j++)
         {
-          fdum = (sc[j-1]-sqrt(esc2[j-1]))*smean;
-          cpgdraw_d(static_cast<double>(j),fdum);
+          double fdum = (sc[j-1]-sqrt(esc2[j-1]))*smean;
+        pljoin(static_cast<double>(j1min),rfdum, static_cast<double>(j),fdum);
         }
-        cpgsci(1);
+        plcol0(1);
       }
       //=======================================================================
     }
@@ -1551,7 +1556,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     //dibujamos
     if(plotmode !=0)
     {
-      cpgsci(6);
+      plcol0(6);
       //flujo medio en las bandas de continuo
       double wlmin=myindex.getldo1(0)*rcvel1;
       double wlmax=myindex.getldo2(0)*rcvel1;
@@ -1567,8 +1572,8 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
             wlmax=wl2;
         }
       }
-      cpgmove_d((wlmin-crval1)/cdelt1+crpix1,fconti*smean);
-      cpgdraw_d((wlmax-crval1)/cdelt1+crpix1,fconti*smean);
+      pljoin((wlmin-crval1)/cdelt1+crpix1,fconti*smean,
+      (wlmax-crval1)/cdelt1+crpix1,fconti*smean);
       //flujo medio en las bandas con lineas
       wlmin=myindex.getldo1(nconti+0)*rcvel1;
       wlmax=myindex.getldo2(nconti+0)*rcvel1;
@@ -1584,9 +1589,9 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
             wlmax=wl2;
         }
       }
-      cpgmove_d((wlmin-crval1)/cdelt1+crpix1,flines*smean);
-      cpgdraw_d((wlmax-crval1)/cdelt1+crpix1,flines*smean);
-      cpgsci(1);
+      pljoin((wlmin-crval1)/cdelt1+crpix1,flines*smean,
+      (wlmax-crval1)/cdelt1+crpix1,flines*smean);
+      plcol0(1);
     }//========================================================================
   }
   //***************************************************************************
@@ -1737,16 +1742,15 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     //dibujamos
     if(plotmode !=0)
     {
-      cpgsci(6);
+      plcol0(6);
       const double wla=wvmin*rcvel1;
       const double wlb=wvmax*rcvel1;
       const double xca=(wla-crval1)/cdelt1+crpix1;
       const double xcb=(wlb-crval1)/cdelt1+crpix1;
       const double yduma=amc*static_cast<double>(xca)+bmc; 
       const double ydumb=amc*static_cast<double>(xcb)+bmc; 
-      cpgmove_d(xca,yduma*smean);
-      cpgdraw_d(xcb,ydumb*smean);
-      cpgsci(1);
+      pljoin(xca,yduma*smean, xcb,ydumb*smean);
+      plcol0(1);
     }//=========================================================================
   }
   //***************************************************************************
@@ -1845,16 +1849,15 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     //dibujamos
     if(plotmode !=0)
     {
-      cpgsci(6);
+      plcol0(6);
       const double wla=wvmin*rcvel1;
       const double wlb=wvmax*rcvel1;
       const double xca=(wla-crval1)/cdelt1+crpix1;
       const double xcb=(wlb-crval1)/cdelt1+crpix1;
       const double yduma=amc*static_cast<double>(xca)+bmc; 
       const double ydumb=amc*static_cast<double>(xcb)+bmc; 
-      cpgmove_d(xca,yduma*smean);
-      cpgdraw_d(xcb,ydumb*smean);
-      cpgsci(1);
+      pljoin(xca,yduma*smean, xcb,ydumb*smean);
+      plcol0(1);
     }//========================================================================
   }
   //***************************************************************************
