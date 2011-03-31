@@ -1,0 +1,43 @@
+- En la nueva opcion boundfit puedo utilizar las siguientes opciones
+  boundfit=0: no se utiliza boundary fit, sino el ajuste clasico
+  boundfit=1: se ajusta en cada banda de continuo un boundary fit, y se estima
+              el flujo promedio
+  boundfit=2: se ajusta un unico boundary fit a todas las bandas de continuo y
+              se estima el flujo en la(s) banda(s) de continuo a partir de este
+              ajuste
+  boundfit=3  igual al anterior, pero usando para el boundary fit todas las
+              bandas, sin distinguir si se trata de continuos o de absorciones
+  boundfit=4  ajusta desde el extremo azul de la banda azul hasta el extremo
+              rojo de la banda roja; evalua entonces el flujo en el centro de
+              las bandas de continuo y traza una recta para evaluar el
+              pseudo-continuo
+  boundfit=5  igual que boundfit=4, pero calculando el area entre el ajuste al
+              boundary fit y el espectro
+
+- Incluir numero de version en output inicial del programa
+
+- La forma en la que se estima el error en el continuo cuando se emplea
+  contperc seguramente sobreestima el valor correcto por un factor sqrt(2). Hay
+  que estudiar si se puede compensar dicho efecto (¡notar que seguramente hay
+  otro factor sqrt(2) que cancela al anterior debido a que normalmente la
+  resolucion espectral es del orden dos dos pixeles!).
+
+- Cuando en la linea de comando ejecutamos el programa con un ultimo keyword
+  que termina como "keyword=" (sin ningun valor asignado), ¡el programa asume
+  que dicho valor es cero! Esto es un problema en muchos casos.
+
+- Explicar el parametro snf=fichero
+donde fichero contiene
+
+w1 w2 ideg          -> w1 w2: longitudes de onda (float)
+                    -> ideg: grado del polinomio (integer)
+
+- Explicar biaserr, linearerr
+
+- Explicar los nuevos indices (multibanda, ej. 11,22)
+
+- (OBSOLETO) Para compilar ahora con arquitectura x86_64, he tenido que
+  insertar a mano en el Makefile el camino a la libreria libg2c.a. Mirar si
+  puedo generar un configure que busque automaticamente dicha libreria (y ya de
+  paso todas las demas) y conseguir que la instalacion sea mucho mas comoda
+  para el usuario.
