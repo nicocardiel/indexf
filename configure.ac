@@ -17,7 +17,7 @@ AC_PROG_CXX
 AC_CONFIG_SRCDIR([src/indexf.cpp])
 
 # Checks for libraries
-AC_CHECK_LIB([cfitsio], main,,AC_MSG_ERROR(cfitsio library not found))
+PKG_CHECK_MODULES([PACKAGES], [cfitsio])
 AC_CHECK_LIB([cpgplot], main,,AC_MSG_ERROR(cpgplot library not found))
 # Note: -lgfortran (or -lg77) is required to link the executable file
 AC_CHECK_LIB([$F77], main,,AC_MSG_ERROR($F77 library not found))

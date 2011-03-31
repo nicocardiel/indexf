@@ -35,3 +35,6 @@ sustrae_p1.cpp \
 verbose.cpp \
 xydata.cpp \
 xydata.h
+
+indexf_LDADD = $(PACKAGES_LIBS) 
+AM_CPPFLAGS = $(PACKAGES_CFLAGS) -I$(top_srcdir)
