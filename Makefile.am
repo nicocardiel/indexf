@@ -3,9 +3,7 @@
 # $Id$
 #
 
-SUBDIRS = auxdir src m4
-
-ACLOCAL_AMFLAGS = -I m4
+SUBDIRS = auxdir src
 
 EXTRA_DIST = autogen.sh
 

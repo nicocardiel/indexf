@@ -1,5 +1,17 @@
+#------------------------------------------------------------------------------
+[Antiguo]
+
 ./configure AUXDIR=/home/cardiel/x/indexf \
 --bindir=/home/cardiel/bin \
-LDFLAGS="-L/usr/local/cfitsio -L/usr/local/pgplot -L/usr/local/cpgplot" \
+LDFLAGS="-L/usr/local/cfitsio -L/usr/local/pgplot" \
 CXXFLAGS="-I/usr/local/cfitsio -I/usr/local/pgplot"
 
+#------------------------------------------------------------------------------
+[Algo más reciente]
+
+En el Mac ha funcionado:
+./configure LDFLAGS="-L/opt/local/lib" CXXFLAGS="-I/opt/local/include"
+
+En Fedora 14 ha funcionado:
+./configure LDFLAGS="-L/usr/local/src/cfitsio/lib -L/usr/local/pgplot" \
+CXXFLAGS="-I/usr/local/src/cfitsio -I/usr/local/pgplot"
