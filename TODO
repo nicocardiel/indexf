@@ -1,5 +1,3 @@
-- Hacer que el programa muestre la versión en pantalla al ejecutarse (esto es
-  muy importante)
 - En la nueva opcion boundfit puedo utilizar las siguientes opciones
   boundfit=0: no se utiliza boundary fit, sino el ajuste clasico
   boundfit=1: se ajusta en cada banda de continuo un boundary fit, y se estima

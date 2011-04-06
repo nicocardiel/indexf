@@ -1,6 +1,5 @@
 # Process this file with autoconf to produce a configure script.
 #
-#
 
 # Prelude
 AC_INIT(indexf,4.1.0,[cardiel@fis.ucm.es])
@@ -52,6 +51,7 @@ AC_ARG_VAR(AUXDIR,[Directory to install auxiliary indexf files])
 # Output files
 AC_CONFIG_FILES([Makefile
                  src/installdir.h
+                 src/version.h
                  src/Makefile
                  auxdir/Makefile])
 AC_OUTPUT

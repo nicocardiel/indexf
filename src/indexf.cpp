@@ -22,6 +22,7 @@
 #include <vector>
 #include "commandtok.h"
 #include "installdir.h"
+#include "version.h"
 #include "indexparam.h"
 #include "indexdef.h"
 #include "scidata.h"
@@ -30,6 +31,7 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 //prototipos de funciones
+void welcome();
 bool loadidef(vector< IndexDef > &);
 void showindex(vector< IndexDef > &);
 bool loaddpar(vector< CommandToken > &);
@@ -46,6 +48,7 @@ int main (const int argc, const char *argv[])
   vector< IndexDef > id;
   IndexParam param;
   
+  welcome();
   if( !loadidef(id) ) return(1);
   if( argc == 1 ) { showindex(id); return(0); }
   if( !loaddpar(cl) ) return(1);
