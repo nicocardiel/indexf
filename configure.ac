@@ -3,35 +3,55 @@
 #
 
 # Prelude
-AC_INIT(indexf,04.01,[ncl@astrax.fis.ucm.es])
+AC_INIT(indexf,4.1.0,[cardiel@fis.ucm.es])
 AC_CONFIG_HEADERS([config.h])
-AC_CONFIG_SRCDIR([config.h.in])
+AC_CONFIG_SRCDIR([src/indexf.cpp])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 
 # Checks for programs
 AC_PROG_F77 # this is required to know which is $F77 (see Checks for libraries)
 AC_PROG_CXX
 
-# Safety check
-AC_CONFIG_SRCDIR([src/indexf.cpp])
+# Define directories to search for libraries
+AC_MSG_CHECKING([uname -s for detecting host operating system])
+OSNAME=`uname -s`
+case "$OSNAME" in
+  Darwin*)
+    AC_MSG_RESULT(Darwin)
+    LDFLAGS="$LDFLAGS -L/opt/local/lib"
+    CXXFLAGS="$CXXFLAGS -I/opt/local/include"
+  ;;
+  Linux*)
+    AC_MSG_RESULT(Linux)
+    LDFLAGS="$LDFLAGS -L/usr/local/pgplot"
+    CXXFLAGS="$CXXFLAGS -I/usr/local/pgplot"
+  ;;
+esac
 
 # Checks for libraries
-PKG_CHECK_MODULES([PACKAGES], [cfitsio])
+AC_MSG_RESULT(LDFLAGS set to... $LDFLAGS)
+AC_MSG_RESULT(CXXFLAGS set to... $CXXFLAGS)
+AC_CHECK_LIB([X11], main,,AC_MSG_ERROR(X11 library not found))
+AC_CHECK_LIB([pgplot], main,,AC_MSG_ERROR(pgplot library not found))
 AC_CHECK_LIB([cpgplot], main,,AC_MSG_ERROR(cpgplot library not found))
-# Note: -lgfortran (or -lg77) is required to link the executable file
-AC_CHECK_LIB([$F77], main,,AC_MSG_ERROR($F77 library not found))
-STTL_LIB_PGPLOT
-LIBS="$LIBS $PGPLOT_LIBS"
+PKG_CHECK_MODULES([PACKAGES], [cfitsio])
+case "$OSNAME" in
+  Linux*)
+  # Note: -lgfortran (or -lg77) is required to link the executable file
+  AC_CHECK_LIB([$F77], main,,AC_MSG_ERROR($F77 library not found))
+  ;;
+esac
+# Define in LIBS all the previous libraries
+LIBS="$LIBS"
 
 # Definitions
 DEFAULT_AUXDIR="/usr/local/share/indexf"
 AUXDIR=${AUXDIR="$DEFAULT_AUXDIR"}
-AC_ARG_VAR(AUXDIR,[Directory to install auxiliary xpgp files])
+AC_ARG_VAR(AUXDIR,[Directory to install auxiliary indexf files])
 
 # Output files
 AC_CONFIG_FILES([Makefile
                  src/installdir.h
                  src/Makefile
-                 m4/Makefile
                  auxdir/Makefile])
 AC_OUTPUT
