@@ -32,6 +32,7 @@ snregion.h \
 sustrae_p0.cpp \
 sustrae_p1.cpp \
 verbose.cpp \
+welcome.cpp \
 xydata.cpp \
 xydata.h
 
