@@ -42,6 +42,7 @@ case "$OSNAME" in
 esac
 # Define in LIBS all the previous libraries
 LIBS="$LIBS"
+AC_MSG_RESULT(LIBS set to... $LIBS)
 
 # Definitions
 DEFAULT_AUXDIR="/usr/local/share/indexf"
