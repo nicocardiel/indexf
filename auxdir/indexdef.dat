@@ -132,7 +132,7 @@ FeI       202  > para pintar
 CaI_K       2  22450.00  22560.00  22577.00  22692.00  22700.00  22720.00  > Frogel et al. (2001)
 MgI_K       2  22700.00  22720.00  22795.00  22845.00  22850.00  22874.00  > Silva et al (2008)  
 CO_KH       5  22872.83  22925.26  22930.52  22983.22  00000.00  00000.00  > Kleinmann & Hall (1986)
-D_CO       12  > generic CO discontinuity (Marmol-Queralto et al. in preparation)
+D_CO       12  > generic CO discontinuity (Marmol-Queralto et al. 2008)
                22880.00  23010.00
                22460.00  22550.00
                22710.00  22770.00
