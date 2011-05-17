@@ -685,6 +685,12 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
     }
   }
   const double fscale = atof(valuePtr);
+  if (fscale == 0.0) //no es un factor valido
+  {
+    cout << ">>> fscale = 0.0" << endl;
+    cout << "FATAL ERROR: invalid fscale value" << endl;
+    return(false);
+  }
   param.set_fscale(fscale);
 
   //no admitimos ejecutar simultaneamente con biaserr y con linearerr
