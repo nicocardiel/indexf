@@ -76,7 +76,7 @@ bool loadidef(vector< IndexDef > &id)
       {
         ldo1 = strtod(strtok(NULL," "),&remainderPtr);
         ldo2 = strtod(strtok(NULL," "),&remainderPtr);
-        idread.setldo(i,ldo1,ldo2);
+        idread.setldo(i-1,ldo1,ldo2);
       }
     }
     //-------------------------------------------------------------------------
@@ -116,7 +116,7 @@ bool loadidef(vector< IndexDef > &id)
         ldo1 = strtod(strtok(linePtrAux," "),&remainderPtr);
         ldo2 = strtod(strtok(NULL," "),&remainderPtr);
         factor = strtod(strtok(NULL," "),&remainderPtr);
-        idread.setldo(i,ldo1,ldo2,factor);
+        idread.setldo(i-1,ldo1,ldo2,factor);
         if(factor == 0.0)
         {
           nconti++;
@@ -173,7 +173,7 @@ bool loadidef(vector< IndexDef > &id)
         linePtrAux[lsize] = '\0';
         ldo1 = strtod(strtok(linePtrAux," "),&remainderPtr);
         ldo2 = strtod(strtok(NULL," "),&remainderPtr);
-        idread.setldo(i,ldo1,ldo2);
+        idread.setldo(i-1,ldo1,ldo2);
         delete [] linePtrAux;
       }
       //discontinuidad generica
@@ -198,7 +198,7 @@ bool loadidef(vector< IndexDef > &id)
           linePtrAux[lsize] = '\0';
           ldo1 = strtod(strtok(linePtrAux," "),&remainderPtr);
           ldo2 = strtod(strtok(NULL," "),&remainderPtr);
-          idread.setldo(i+nconti,ldo1,ldo2);
+          idread.setldo(i+nconti-1,ldo1,ldo2);
           delete [] linePtrAux;
         }
       }
@@ -225,7 +225,7 @@ bool loadidef(vector< IndexDef > &id)
           ldo1 = strtod(strtok(linePtrAux," "),&remainderPtr);
           ldo2 = strtod(strtok(NULL," "),&remainderPtr);
           factor = strtod(strtok(NULL," "),&remainderPtr);
-          idread.setldo(i+nconti,ldo1,ldo2,factor);
+          idread.setldo(i+nconti-1,ldo1,ldo2,factor);
           delete [] linePtrAux;
         }
       }

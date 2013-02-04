@@ -20,6 +20,8 @@
 
 #include <iostream>
 #include <string.h>
+#include <sstream>
+#include <iomanip>
 #include "indexparam.h"
 #include "indexdef.h"
 #include "scidata.h"
@@ -58,8 +60,12 @@ void verbose(IndexParam param, IndexDef myindex, SciData *imagePtr)
         cout << "#            <central bandpass>: ";
       else
         cout << "#                <red bandpass>: ";
-      cout << myindex.getldo1(i-1) << "  " 
-           << myindex.getldo2(i-1) << endl;
+      ostringstream sldo1, sldo2;
+      sldo1.setf(ios::fixed);
+      sldo1 << setprecision(3) << setw(10) << myindex.getldo1(i-1);
+      sldo2.setf(ios::fixed);
+      sldo2 << setprecision(3) << setw(10) << myindex.getldo2(i-1);
+      cout << sldo1.str() << " " << sldo2.str() << endl;
     }
     double c1, c2, c3;
     c123(myindex.getldo1(0),myindex.getldo2(0),
@@ -88,8 +94,12 @@ void verbose(IndexParam param, IndexDef myindex, SciData *imagePtr)
         cout << "#            <central bandpass>: ";
       else
         cout << "#                <red bandpass>: ";
-      cout << myindex.getldo1(i-1) << "  " 
-           << myindex.getldo2(i-1) << endl;
+      ostringstream sldo1, sldo2;
+      sldo1.setf(ios::fixed);
+      sldo1 << setprecision(3) << setw(10) << myindex.getldo1(i-1);
+      sldo2.setf(ios::fixed);
+      sldo2 << setprecision(3) << setw(10) << myindex.getldo2(i-1);
+      cout << sldo1.str() << " " << sldo2.str() << endl;
     }
     double c1, c2, c3;
     c123(myindex.getldo1(0),myindex.getldo2(0),
@@ -116,8 +126,12 @@ void verbose(IndexParam param, IndexDef myindex, SciData *imagePtr)
         cout << "#               <blue bandpass>: ";
       else if (i == 2)
         cout << "#                <red bandpass>: ";
-      cout << myindex.getldo1(i-1) << "  " 
-           << myindex.getldo2(i-1) << endl;
+      ostringstream sldo1, sldo2;
+      sldo1.setf(ios::fixed);
+      sldo1 << setprecision(3) << setw(10) << myindex.getldo1(i-1);
+      sldo2.setf(ios::fixed);
+      sldo2 << setprecision(3) << setw(10) << myindex.getldo2(i-1);
+      cout << sldo1.str() << " " << sldo2.str() << endl;
     }
   }
   else if (type == 4) //indices tipo B4000
@@ -136,8 +150,12 @@ void verbose(IndexParam param, IndexDef myindex, SciData *imagePtr)
         cout << "#               <blue bandpass>: ";
       else if (i == 2)
         cout << "#                <red bandpass>: ";
-      cout << myindex.getldo1(i-1) << "  " 
-           << myindex.getldo2(i-1) << endl;
+      ostringstream sldo1, sldo2;
+      sldo1.setf(ios::fixed);
+      sldo1 << setprecision(3) << setw(10) << myindex.getldo1(i-1);
+      sldo2.setf(ios::fixed);
+      sldo2 << setprecision(3) << setw(10) << myindex.getldo2(i-1);
+      cout << sldo1.str() << " " << sldo2.str() << endl;
     }
   }
   else if (type == 5) //indices tipo color
@@ -156,8 +174,12 @@ void verbose(IndexParam param, IndexDef myindex, SciData *imagePtr)
         cout << "#               <blue bandpass>: ";
       else if (i == 2)
         cout << "#                <red bandpass>: ";
-      cout << myindex.getldo1(i-1) << "  "
-           << myindex.getldo2(i-1) << endl;
+      ostringstream sldo1, sldo2;
+      sldo1.setf(ios::fixed);
+      sldo1 << setprecision(3) << setw(10) << myindex.getldo1(i-1);
+      sldo2.setf(ios::fixed);
+      sldo2 << setprecision(3) << setw(10) << myindex.getldo2(i-1);
+      cout << sldo1.str() << " " << sldo2.str() << endl;
     }
   }
   else if ( type == 10 )  //linea de emision
@@ -177,8 +199,12 @@ void verbose(IndexParam param, IndexDef myindex, SciData *imagePtr)
       {
         cout << "#               <line bandpass>: ";
       }
-      cout << myindex.getldo1(i-1) << "  " 
-           << myindex.getldo2(i-1) << endl;
+      ostringstream sldo1, sldo2;
+      sldo1.setf(ios::fixed);
+      sldo1 << setprecision(3) << setw(10) << myindex.getldo1(i-1);
+      sldo2.setf(ios::fixed);
+      sldo2 << setprecision(3) << setw(10) << myindex.getldo2(i-1);
+      cout << sldo1.str() << " " << sldo2.str() << endl;
     }
   }
   else if ( (type >= 11) && (type <= 99) ) //discontinuidades genericas
@@ -193,16 +219,24 @@ void verbose(IndexParam param, IndexDef myindex, SciData *imagePtr)
     const long nconti = myindex.getnconti();
     for (int i=1; i <= nconti; i++)
     {
-      cout << "#          <continuum bandpass>: " 
-           << myindex.getldo1(i-1) << "  " 
-           << myindex.getldo2(i-1) << endl;
+      cout << "#          <continuum bandpass>: ";
+      ostringstream sldo1, sldo2;
+      sldo1.setf(ios::fixed);
+      sldo1 << setprecision(3) << setw(10) << myindex.getldo1(i-1);
+      sldo2.setf(ios::fixed);
+      sldo2 << setprecision(3) << setw(10) << myindex.getldo2(i-1);
+      cout << sldo1.str() << " " << sldo2.str() << endl;
     }
     const long nlines = myindex.getnlines();
     for (int i=1; i <= nlines; i++)
     {
-      cout << "#   <spectral-feature bandpass>: " 
-           << myindex.getldo1(i-1+nconti) << "  " 
-           << myindex.getldo2(i-1+nconti) << endl;
+      cout << "#   <spectral-feature bandpass>: ";
+      ostringstream sldo1, sldo2;
+      sldo1.setf(ios::fixed);
+      sldo1 << setprecision(3) << setw(10) << myindex.getldo1(i-1+nconti);
+      sldo2.setf(ios::fixed);
+      sldo2 << setprecision(3) << setw(10) << myindex.getldo2(i-1+nconti);
+      cout << sldo1.str() << " " << sldo2.str() << endl;
     }
   }
   else if ( (type >= 101) && (type <= 9999) ) //indices genericos
@@ -217,16 +251,24 @@ void verbose(IndexParam param, IndexDef myindex, SciData *imagePtr)
     const long nconti = myindex.getnconti();
     for (int i=1; i <= nconti; i++)
     {
-      cout << "#          <continuum bandpass>: " 
-           << myindex.getldo1(i-1) << "  " 
-           << myindex.getldo2(i-1) << endl;
+      cout << "#          <continuum bandpass>: "; 
+      ostringstream sldo1, sldo2;
+      sldo1.setf(ios::fixed);
+      sldo1 << setprecision(3) << setw(10) << myindex.getldo1(i-1);
+      sldo2.setf(ios::fixed);
+      sldo2 << setprecision(3) << setw(10) << myindex.getldo2(i-1);
+      cout << sldo1.str() << " " << sldo2.str() << endl;
     }
     const long nlines = myindex.getnlines();
     for (int i=1; i <= nlines; i++)
     {
-      cout << "#   <spectral-feature bandpass>: " 
-           << myindex.getldo1(i-1+nconti) << "  " 
-           << myindex.getldo2(i-1+nconti) << "  "
+      cout << "#   <spectral-feature bandpass>: "; 
+      ostringstream sldo1, sldo2;
+      sldo1.setf(ios::fixed);
+      sldo1 << setprecision(3) << setw(10) << myindex.getldo1(i-1+nconti);
+      sldo2.setf(ios::fixed);
+      sldo2 << setprecision(3) << setw(10) << myindex.getldo2(i-1+nconti);
+      cout << sldo1.str() << " " << sldo2.str() << "  "
            << myindex.getfactor(i-1) << endl;
     }
   }
@@ -242,11 +284,26 @@ void verbose(IndexParam param, IndexDef myindex, SciData *imagePtr)
     const long nconti = myindex.getnconti();
     for (int i=1; i <= nconti; i++)
     {
-      cout << "#          <continuum bandpass>: " 
-           << myindex.getldo1(i-1) << "  " 
-           << myindex.getldo2(i-1) << endl;
+      cout << "#          <continuum bandpass>: "; 
+      ostringstream sldo1, sldo2;
+      sldo1.setf(ios::fixed);
+      sldo1 << setprecision(3) << setw(10) << myindex.getldo1(i-1);
+      sldo2.setf(ios::fixed);
+      sldo2 << setprecision(3) << setw(10) << myindex.getldo2(i-1);
+      cout << sldo1.str() << " " << sldo2.str() << endl;
     }
   }
+  //Indicamos si estamos utilizando longitudes de onda en vacio
+  cout << "#Wavelength reference system...: ";
+  if (param.get_vacuum())
+  {
+    cout << "vacuum";
+  }
+  else
+  {
+    cout << "air";
+  }
+  cout << endl;
   //Input FITS file,and NAXIS1, NAXIS2 and OBJECT keywords
   cout << "#Input FITS file...............: " << param.get_if() << endl;
   cout << "#                      <NAXIS1>: " << imagePtr->getnaxis1() 
