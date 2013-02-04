@@ -18,13 +18,20 @@
  * 
  */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
+
 #include <iostream>
 #include <cmath>
 #include <cstdlib>
 #include <vector>
 #include "indexdef.h"
+
+#ifdef HAVE_CPGPLOT_H
 #include "cpgplot.h"
 #include "cpgplot_d.h"
+#endif /* HAVE_CPGPLOT_H */
 #include "genericpixel.h"
 
 using namespace std;
@@ -172,6 +179,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
 
   //===========================================================================
   //dibujamos
+#ifdef HAVE_CPGPLOT_H
   if(plotmode != 0)
   {
     //calculamos un array temporal para el eje X (en unidades de pixeles)
@@ -391,7 +399,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     //borramos array temporal para el eje X
     delete [] x;
   }//==========================================================================
-
+#endif /* HAVE_CPGPLOT_H */
   //---------------------------------------------------------------------------
   //senal/ruido promedio en las bandas del indice (vigilando que no haya
   //valores de error <= 0)
@@ -635,6 +643,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       esb2*=esb2;
       //=======================================================================
       //dibujamos boundary fit de la banda azul
+#ifdef HAVE_CPGPLOT_H
       if((plotmode != 0) && (plottype == 2))
       {
         long npixels = boundfit_blue.size();
@@ -651,6 +660,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
         delete [] x_;
         delete [] fit_;
       }//======================================================================
+#endif /* HAVE_CPGPLOT_H */     
       //...................................................incluimos banda roja
       vector <GenericPixel> fluxpix_red;
       vector <GenericPixel> boundfit_red;
@@ -684,6 +694,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       esr2*=esr2;
       //=======================================================================
       //dibujamos boundary fit de la banda roja
+#ifdef HAVE_CPGPLOT_H
       if((plotmode != 0) && (plottype == 2))
       {
         long npixels = boundfit_red.size();
@@ -700,8 +711,10 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
         delete [] x_;
         delete [] fit_;
       }//======================================================================
+#endif /* HAVE_CPGPLOT_H */
     }
-    else if( (boundfit == 2) || (boundfit == 3) ) //dos o tres bandas
+    else 
+    if( (boundfit == 2) || (boundfit == 3) ) //dos o tres bandas
     {
       //...................................................incluimos banda azul
       vector <GenericPixel> fluxpix_all;  //datos a ajustar
@@ -779,6 +792,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       esr2=evaluate[1].geteflux();
       esr2*=esr2;
       //=======================================================================
+#ifdef HAVE_CPGPLOT_H
       //dibujamos boundary fit
       if((plotmode != 0) && (plottype == 2))
       {
@@ -796,6 +810,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
         delete [] x_;
         delete [] fit_;
       }//======================================================================
+#endif /* HAVE_CPGPLOT_H */
     }
     //..................................desde la primera hasta la tercera banda
     //boundfit=4 calcula recta entre valores medios en bandas laterales
@@ -871,6 +886,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
         }
       }
       //=======================================================================
+#ifdef HAVE_CPGPLOT_H
       //dibujamos boundary fit
       if((plotmode != 0) && (plottype == 2))
       {
@@ -888,6 +904,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
         delete [] x_;
         delete [] fit_;
       }//======================================================================
+#endif /* HAVE_CPGPLOT_H */    
     }
     else if (contperc >= 0) //.................................usamos percentil
     {
@@ -1029,6 +1046,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       else
         f=1.0;
       tc+=f*s[j-1]/sc[j-1];
+#ifdef HAVE_CPGPLOT_H
       //================================================
       //dibujamos lineas verticales uniendo el flujo en
       //el continuo con el flujo en el espectro
@@ -1038,6 +1056,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
         cpgmove_d(static_cast<double>(j),s[j-1]*smean);
         cpgdraw_d(static_cast<double>(j),sc[j-1]*smean);
       }//===============================================
+#endif /* HAVE_CPGPLOT_H */      
       if(lerr) 
       {
         etc2+=f*f*(s[j-1]*s[j-1]*esc2[j-1]+sc[j-1]*sc[j-1]*es[j-1]*es[j-1])/
@@ -1087,6 +1106,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     }
     delete [] sc;
     delete [] esc2;
+#ifdef HAVE_CPGPLOT_H
     //=======================================================================
     //dibujamos
     if((plotmode !=0) || (plottype == 2))
@@ -1138,6 +1158,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
         delete [] s_;
       }
     }//======================================================================
+#endif /* HAVE_CPGPLOT_H */
   }
   //***************************************************************************
   //D4000, B4000 y colores
@@ -1221,6 +1242,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     delete [] wl2;
     delete [] fx;
     delete [] efx;
+#ifdef HAVE_CPGPLOT_H
     //=========================================================================
     //dibujamos
     if(plotmode !=0)
@@ -1254,6 +1276,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       cpgdraw_d(xcd,ydumb*smean);
       cpgsci(1);
     }//========================================================================
+#endif /* HAVE_CPGPLOT_H */  
   }
   //***************************************************************************
   //Lineas de emision (se ajusta el continuo a una recta)
@@ -1320,6 +1343,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     {
       sc[j-1] = amc*static_cast<double>(j)+bmc;
     }
+#ifdef HAVE_CPGPLOT_H
     //=======================================================================
     //dibujamos continuo
     if (plotmode !=0)
@@ -1335,6 +1359,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       cpgsci(1);
     }
     //=======================================================================
+#endif /* HAVE_CPGPLOT_H */    
     if(lerr)
     {
       for (long j = j1min; j <= j2max+1; j++)
@@ -1357,6 +1382,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
           }
         }
       }
+#ifdef HAVE_CPGPLOT_H
       //=======================================================================
       //dibujamos continuo y su error
       if (plotmode < 0)
@@ -1381,6 +1407,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
         cpgsci(1);
       }
       //=======================================================================
+#endif /* HAVE_CPGPLOT_H */
     }
     //calculamos unos sumatorios auxiliares
     double sumli=0.0; //ver notas a mano
@@ -1547,6 +1574,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       eindex=cte_log_exp*eindex/findex;
       findex=2.5*log10(findex);
     }
+#ifdef HAVE_CPGPLOT_H
     //=========================================================================
     //dibujamos
     if(plotmode !=0)
@@ -1588,6 +1616,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       cpgdraw_d((wlmax-crval1)/cdelt1+crpix1,flines*smean);
       cpgsci(1);
     }//========================================================================
+#endif /* HAVE_CPGPLOT_H */
   }
   //***************************************************************************
   //Indices genericos
@@ -1733,6 +1762,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     }
     delete [] sc;
     delete [] esc2;
+#ifdef HAVE_CPGPLOT_H
     //=========================================================================
     //dibujamos
     if(plotmode !=0)
@@ -1748,6 +1778,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       cpgdraw_d(xcb,ydumb*smean);
       cpgsci(1);
     }//=========================================================================
+#endif /* HAVE_CPGPLOT_H */  
   }
   //***************************************************************************
   //Indices pendiente
@@ -1841,6 +1872,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       eindex=cte_log_exp*eindex/findex;
       findex=2.5*log10(findex);
     }
+#ifdef HAVE_CPGPLOT_H
     //=========================================================================
     //dibujamos
     if(plotmode !=0)
@@ -1856,6 +1888,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       cpgdraw_d(xcb,ydumb*smean);
       cpgsci(1);
     }//========================================================================
+#endif /* HAVE_CPGPLOT_H */  
   }
   //***************************************************************************
   //otros indices futuros
