@@ -18,18 +18,25 @@
  * 
  */
 
+#include "indexparam.h"
 #include "indexdef.h"
 
-double ftovacuum(const double);
+double ftovacuum(const long, const double);
 
-void updatebands(IndexDef &myindex)
+// Verifica si el usuario ha indicado que la calibracion en longitud de onda
+// del espectro ha sido realizada en vacio. Si es asi, se modifican las
+// longitudes de onda de todas las bandas a medir.
+void updatebands(IndexParam param, IndexDef &myindex)
 {
+  const long vacuum = param.get_vacuum();
+  if (vacuum == 0) return; // trabajamos en aire
+  // corregimos a vacio
   const long nbands = myindex.getnbands();
   double ldo1, ldo2;
   for (long i=1; i <= nbands; i++)
   {
     ldo1 = myindex.getldo1(i-1);
     ldo2 = myindex.getldo2(i-1);
-    myindex.setldo(i-1, ftovacuum(ldo1), ftovacuum(ldo2));
+    myindex.setldo(i-1, ftovacuum(vacuum,ldo1), ftovacuum(vacuum,ldo2));
   }
 }

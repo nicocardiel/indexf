@@ -43,7 +43,7 @@ IndexParam::IndexParam()
   rvfile[0] = '\0';
   rvc = 1;
   rvce = 0;
-  vacuum = false;
+  vacuum = 0;
   nsimul = 100;
   logindex = false;
   verbose = true;
@@ -75,7 +75,7 @@ IndexParam::IndexParam(
   char *snfile_,                //sn estimation file
   double rv_,double rve_,       //radial velocity and error
   char *rvfile_,long rvc_,long rvce_,//rad. vel. file name, column data & error
-  bool vacuum_,                 //vacuum wavelength scale in spectra
+  long vacuum_,                 //vacuum wavelength scale in spectra
   long nsimul_,                 //number of simulations (rad. velocity errors)
   bool logindex_,               //logindex
   bool verbose_,                //verbose   
@@ -190,7 +190,7 @@ void IndexParam::set_rvf(const char *rvfile_, const long rvc_, const long rvce_)
 }
 
 //-----------------------------------------------------------------------------
-void IndexParam::set_vacuum(const bool vacuum_)
+void IndexParam::set_vacuum(const long vacuum_)
 {
   vacuum=vacuum_;
 }
@@ -341,7 +341,7 @@ long IndexParam::get_rvc() {return(rvc);}
 long IndexParam::get_rvce() {return(rvce);}
 
 //-----------------------------------------------------------------------------
-bool IndexParam::get_vacuum() {return(vacuum);}
+long IndexParam::get_vacuum() {return(vacuum);}
 
 //-----------------------------------------------------------------------------
 long IndexParam::get_nsimul() {return(nsimul);}
