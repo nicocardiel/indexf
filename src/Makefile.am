@@ -10,6 +10,7 @@ cpgplot_d.cpp \
 cpgplot_d.h \
 fmean.cpp \
 fpercent.cpp \
+ftovacuum.cpp \
 genericpixel.cpp \
 genericpixel.h \
 indexdef.cpp \
@@ -31,6 +32,7 @@ snregion.cpp \
 snregion.h \
 sustrae_p0.cpp \
 sustrae_p1.cpp \
+updatebands.cpp \
 verbose.cpp \
 welcome.cpp \
 xydata.cpp \

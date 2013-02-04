@@ -140,13 +140,13 @@ bool IndexDef::setnlines(const long &nb)
 //-----------------------------------------------------------------------------
 bool IndexDef::setldo(const long &nb, const double &l1, const double &l2)
 {
-  if( (nb < 1) || (nb > nbands) )
+  if( (nb < 0) || (nb > nbands-1) )
   {
-    cout << "FATAL ERROR: nb=" << nb << " (nbands=" << nbands << ")" << endl;
+    cout << "FATAL ERROR: nb=" << nb+1 << " (nbands=" << nbands << ")" << endl;
     exit(1);
   }
-  ldo1[nb-1]=l1;
-  ldo2[nb-1]=l2;
+  ldo1[nb]=l1;
+  ldo2[nb]=l2;
   return(true);
 }
 
@@ -154,24 +154,24 @@ bool IndexDef::setldo(const long &nb, const double &l1, const double &l2)
 bool IndexDef::setldo(const long &nb, const double &l1, const double &l2, 
                       const double &fact)
 {
-  if( (nb < 1) || (nb > nbands) )
+  if( (nb < 0) || (nb > nbands-1) )
   {
     cout << "FATAL ERROR: in indexdef.cpp while defining index " << label 
          << endl;
-    cout << "             nb=" << nb << " (nbands=" << nbands << ")" << endl;
+    cout << "             nb=" << nb+1 << " (nbands=" << nbands << ")" << endl;
     exit(1);
   }
-  ldo1[nb-1]=l1;
-  ldo2[nb-1]=l2;
-  if (nb > nconti)
+  ldo1[nb]=l1;
+  ldo2[nb]=l2;
+  if (nb > nconti-1)
   {
-    factor[nb-nconti-1]=fact;
+    factor[nb-nconti]=fact;
   }
   else
   {
     cout << "FATAL ERROR: in indexdef.cpp while defining index " << label 
          << endl;
-    cout << "             nb=" << nb << " (nconti=" << nconti << ")" << endl;
+    cout << "             nb=" << nb+1 << " (nconti=" << nconti << ")" << endl;
     exit(1);
   }
   return(true);

@@ -33,7 +33,7 @@ AC_MSG_RESULT(CXXFLAGS set to... $CXXFLAGS)
 AC_CHECK_LIB([X11], main,,AC_MSG_ERROR(X11 library not found))
 AC_CHECK_LIB([pgplot], main,,AC_MSG_ERROR(pgplot library not found))
 AC_CHECK_LIB([cpgplot], main,,AC_MSG_ERROR(cpgplot library not found))
-PKG_CHECK_MODULES([PACKAGES], [cfitsio])
+PKG_CHECK_MODULES([CFITSIO], [cfitsio])
 case "$OSNAME" in
   Linux*)
   # Note: -lgfortran (or -lg77) is required to link the executable file
@@ -41,7 +41,7 @@ case "$OSNAME" in
   ;;
 esac
 # Define in LIBS all the previous libraries
-LIBS="$LIBS"
+LIBS="$CFITSIO_LIBS $LIBS"
 AC_MSG_RESULT(LIBS set to... $LIBS)
 
 # Definitions

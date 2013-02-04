@@ -296,6 +296,28 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
   param.set_rvf(filervPtr,rvc,rvce);
   delete [] filervPtr;
 
+  //-----------------------------------------------
+  //wavelength scale in spectra is given for vacuum
+  //-----------------------------------------------
+  nextParameter++;
+  labelPtr = cl[nextParameter].getlabel();
+  valuePtr = cl[nextParameter].getvalue();
+  if ((strcmp(valuePtr,"yes") == 0)||(strcmp(valuePtr,"y") == 0))
+  {
+    param.set_vacuum(true);
+  }
+  else if ((strcmp(valuePtr,"no") == 0)||(strcmp(valuePtr,"n") == 0))
+  {
+    param.set_vacuum(false);
+  }
+  else
+  {
+    cout << "FATAL ERROR: <" << valuePtr
+         << "> is an invalid argument for the keyword <" << labelPtr
+         << ">" << endl;
+    return(false);
+  }
+
   //--------------------------------------------------------
   //number of simultations to estimate radial velocity error
   //--------------------------------------------------------

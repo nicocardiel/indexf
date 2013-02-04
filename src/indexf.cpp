@@ -37,6 +37,7 @@ void showindex(vector< IndexDef > &);
 bool loaddpar(vector< CommandToken > &);
 bool loadipar(const char *[], const int, vector< CommandToken > &);
 bool checkipar(vector< CommandToken > &, IndexParam &, vector< IndexDef > &);
+void updatebands(IndexDef &);
 void verbose(IndexParam, IndexDef, SciData *);
 bool measuresp(SciData *, IndexParam, IndexDef);
 
@@ -56,6 +57,7 @@ int main (const int argc, const char *argv[])
   if( !checkipar(cl, param, id) ) return(1);
   SciData image(param);
   IndexDef myindex = id[param.get_nindex()-1];
+  if (param.get_vacuum()) updatebands(myindex);
   if (param.get_verbose()) verbose(param,myindex,&image);
   if( !measuresp(&image,param,myindex) ) return(1);
   return(0);

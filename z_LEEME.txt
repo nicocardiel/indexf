@@ -15,3 +15,12 @@ En el Mac ha funcionado:
 En Fedora 14 ha funcionado:
 ./configure LDFLAGS="-L/usr/local/src/cfitsio/lib -L/usr/local/pgplot" \
 CXXFLAGS="-I/usr/local/src/cfitsio -I/usr/local/pgplot"
+
+#------------------------------------------------------------------------------
+[Todavía más reciente, 15/09/2011]
+Tras instalar OS Lion, tuve que reinstalar todos los ports (incluyendo PGPLOT)
+y ahora el compilador ya no es g95, sino gfortran-mp-4.4. Así que la
+instrucción del configure es:
+
+./autogen.sh  -> para borrar cualquier resultado anterior del configure
+./configure F77=gfortran-mp-4.4
