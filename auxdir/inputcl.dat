@@ -9,7 +9,7 @@ boundfit  0         #if greater than zero, use boundary fit for continuum
 snf       undef     #S/N estimation file (incompatible with "ief")
 rv        0,0       #radial velocity (km/s),radial velocity error
 rvf       undef,1,0 #radial velocity file name, column data, column error
-vacuum    no        #wavelength scale of spectra is given for vacuum
+vacuum    0         #wavelength scale (0=air, 1=vacuum1, 2=vacuum2)
 nsimul    100       #number of simulations to estimate radial velocity error
 logindex  no        #measure indices in logarithmic units
 verb      yes       #display intermediate information

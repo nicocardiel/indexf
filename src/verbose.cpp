@@ -295,15 +295,15 @@ void verbose(IndexParam param, IndexDef myindex, SciData *imagePtr)
   }
   //Indicamos si estamos utilizando longitudes de onda en vacio
   cout << "#Wavelength reference system...: ";
-  if (param.get_vacuum())
+  const long vacuum = param.get_vacuum();
+  if (vacuum == 0)
   {
-    cout << "vacuum";
+    cout << "air" << endl;
   }
   else
   {
-    cout << "air";
+    cout << "vacuum" << vacuum << endl;
   }
-  cout << endl;
   //Input FITS file,and NAXIS1, NAXIS2 and OBJECT keywords
   cout << "#Input FITS file...............: " << param.get_if() << endl;
   cout << "#                      <NAXIS1>: " << imagePtr->getnaxis1() 

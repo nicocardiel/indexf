@@ -36,7 +36,7 @@ class IndexParam{
       char *,           //sn estimation file
       double,double,    //radial velocity and error
       char *,long,long, //rad. vel. file name, column data & error
-      bool,             //vacuum wavelength scale in spectra
+      long,             //vacuum wavelength scale in spectra
       long,             //number of simulations (radial velocity error)
       bool,             //measure indices in logarithmic units
       bool,             //verbose
@@ -62,7 +62,7 @@ class IndexParam{
     void set_snf(const char *);
     void set_rv(const double, const double);
     void set_rvf(const char *,const long, const long);
-    void set_vacuum(const bool);
+    void set_vacuum(const long);
     void set_nsimul(const long);
     void set_nindex(const long);
     void set_of(const char *);
@@ -94,7 +94,7 @@ class IndexParam{
     char *get_rvfile();
     long get_rvc();
     long get_rvce();
-    bool get_vacuum();
+    long get_vacuum();
     long get_nsimul();
     long get_nindex();
     bool get_logindex();
@@ -125,7 +125,7 @@ class IndexParam{
     double rv,rve;
     char rvfile[256];
     long rvc, rvce;
-    bool vacuum;
+    long vacuum;
     long nsimul;
     long nindex;
     bool logindex;

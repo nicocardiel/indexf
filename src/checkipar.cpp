@@ -302,21 +302,27 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
   nextParameter++;
   labelPtr = cl[nextParameter].getlabel();
   valuePtr = cl[nextParameter].getvalue();
-  if ((strcmp(valuePtr,"yes") == 0)||(strcmp(valuePtr,"y") == 0))
+  for (const char *s=valuePtr; s[0] != '\0'; s++)
   {
-    param.set_vacuum(true);
+    if (isdigit(s[0]) == 0) //error: no es un digito valido
+    {
+      cout << "FATAL ERROR: <" << valuePtr
+           << "> is an invalid argument for the keyword <" << labelPtr
+           << ">" << endl;
+      return(false);
+    }
   }
-  else if ((strcmp(valuePtr,"no") == 0)||(strcmp(valuePtr,"n") == 0))
-  {
-    param.set_vacuum(false);
-  }
-  else
+  const long vacuum = atol(valuePtr);
+  if ( (vacuum < 0) || (vacuum > 3) )
   {
     cout << "FATAL ERROR: <" << valuePtr
          << "> is an invalid argument for the keyword <" << labelPtr
          << ">" << endl;
+    cout << "> this flag must be an integer in the range from 0 to 3" << endl;
     return(false);
   }
+  param.set_vacuum(vacuum);
+
 
   //--------------------------------------------------------
   //number of simultations to estimate radial velocity error

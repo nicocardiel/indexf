@@ -20,21 +20,43 @@
 
 using namespace std;
 
-//Funcion auxiliar para transformar una longitud de onda de aire a vacio.
-//Utilizamos la expresion de Morton (1991, ApJS, 77, 119), citada en la
-//calibracion en longitud de onda de los espectros del Sloan Digital Sky
-//Survey. Invertimos la expresion mediante "fuerza bruta" (iteramos 10 veces,
-//lo que es mas que suficiente).
-double ftovacuum(const double wair)
+//Funcion auxiliar para transformar una longitud de onda de aire a vacio. Las
+//unidades de entrada (y salida) son Angstroms.
+double ftovacuum(const long vacuum, const double wair)
 {
-  double wvac,factor;
-  wvac = wair;
-  for (long i=0; i < 10; i++)
+  double wvac; // valor a retornar (en vacio)
+  if (vacuum == 1)
   {
-    factor = 1.0+2.735182E-4+
-             131.4182/(wvac*wvac)+
-             2.76249E8/(wvac*wvac*wvac*wvac);
-    wvac = wair * factor;
+    //Greisen et al. 2006 (A&A, 446, 747; see Eq. 65, "Representation of 
+    //spectral coordinates in FITS)
+    double n,wmic;
+    wmic = wair/10000.0; //pasamos de Angstroms a micras
+    n=287.6155+1.62887/(wmic*wmic)+0.01360/(wmic*wmic*wmic*wmic);
+    wvac=wair*(1.0+n*1.E-6);
+  }
+  else if (vacuum == 2)
+  {
+    //Utilizamos la expresion de Morton (1991, ApJS, 77, 119; Eq. 3)
+    double sigma=10000.0/wair;
+    double denom1=146.0-sigma*sigma;
+    double denom2=41.0-sigma*sigma;
+    double n=6.4328E-5+2.94981E-2/denom1+2.5540E-4/denom2;
+    wvac=wair*(1.0+n);
+  }
+  else
+  {
+    //Calibracion citada por el SDSS en su web.
+    //Invertimos la expresion mediante "fuerza bruta" (iteramos 10 veces, 
+    //lo que es mas que suficiente).
+    double factor;
+    wvac = wair;
+    for (long i=0; i < 10; i++)
+    {
+      factor = 1.0+2.735182E-4+
+               131.4182/(wvac*wvac)+
+               2.76249E8/(wvac*wvac*wvac*wvac);
+      wvac = wair * factor;
+    }
   }
   return wvac;
 }
