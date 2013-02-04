@@ -18,6 +18,10 @@
  * 
  */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
+
 #include <iostream>
 #include <string.h>
 #include <sstream>
@@ -28,8 +32,11 @@
 #include "indexparam.h"
 #include "indexdef.h"
 #include "scidata.h"
+
+#ifdef HAVE_CPGPLOT_H
 #include "cpgplot.h"
 #include "cpgplot_d.h"
+#endif /* HAVE_CPGPLOT_H */
 
 using namespace std;
 
@@ -91,6 +98,7 @@ bool measuresp(SciData *imagePtr, IndexParam param, IndexDef myindex)
   const long plottype = param.get_plottype();
   //recorremos, extraemos y medimos los espectros requeridos
   double findex, eindex, sn, findex_rv, eindex_rv, findex_sn, eindex_sn;
+#ifdef HAVE_CPGPLOT_H
   if (plotmode != 0)
   {
     const long nwinx=param.get_nwinx();
@@ -114,6 +122,7 @@ bool measuresp(SciData *imagePtr, IndexParam param, IndexDef myindex)
       cpgslw(2);
     }
   }
+#endif /* HAVE_CPGPLOT_H */
   for (long ns = param.get_ns1(); ns <= param.get_ns2(); ns++)
   {
     bool out_of_limits,negative_error;
@@ -142,6 +151,7 @@ bool measuresp(SciData *imagePtr, IndexParam param, IndexDef myindex)
                              plotmode,plottype,
                              out_of_limits,negative_error,
                              findex,eindex,sn);
+#ifdef HAVE_CPGPLOT_H
     if ((plotmode != 0) && (plottype >= 1))
     {
       //nombre del indice que se esta midiendo
@@ -159,6 +169,7 @@ bool measuresp(SciData *imagePtr, IndexParam param, IndexDef myindex)
       cpgsci(1);
       delete [] snumberPtr;
     }
+#endif /* HAVE_CPGPLOT_H */
     //si hay error en velocidad radial, hacemos simulaciones numericas
     eindex_rv=0;
     bool leindex_rv = true;
@@ -258,20 +269,24 @@ bool measuresp(SciData *imagePtr, IndexParam param, IndexDef myindex)
         delete [] iffindex_sim;
       }
     }
+#ifdef HAVE_CPGPLOT_H
     if ((plotmode == 1) || (plotmode == -1))
     {
       char cpause;
       cin.get(cpause);
     }
     else
+#endif /* HAVE_CPGPLOT_H */
     {
       cout << endl;
     }
   }
+#ifdef HAVE_CPGPLOT_H
   if (plotmode != 0)
   {
     cpgend();
   }
+#endif
   delete [] sp_data;
   delete [] sp_error;
   return(true);

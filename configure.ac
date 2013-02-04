@@ -8,31 +8,39 @@ AC_CONFIG_SRCDIR([src/indexf.cpp])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 
 # Checks for programs
-AC_PROG_F77 # this is required to know which is $F77 (see Checks for libraries)
 AC_PROG_CXX
 
-# Define directories to search for libraries
-AC_MSG_CHECKING([uname -s for detecting host operating system])
-OSNAME=`uname -s`
-case "$OSNAME" in
-  Darwin*)
-    AC_MSG_RESULT(Darwin)
-    LDFLAGS="$LDFLAGS -L/opt/local/lib"
-    CXXFLAGS="$CXXFLAGS -I/opt/local/include"
-  ;;
-  Linux*)
-    AC_MSG_RESULT(Linux)
-    LDFLAGS="$LDFLAGS -L/usr/local/pgplot"
-    CXXFLAGS="$CXXFLAGS -I/usr/local/pgplot"
-  ;;
-esac
+AC_ARG_WITH([pgplot],
+            [AS_HELP_STRING([--with-pgplot],
+              [use pgplot (default is yes)])],
+              [],
+              [])
 
-# Checks for libraries
-AC_MSG_RESULT(LDFLAGS set to... $LDFLAGS)
-AC_MSG_RESULT(CXXFLAGS set to... $CXXFLAGS)
-AC_CHECK_LIB([X11], main,,AC_MSG_ERROR(X11 library not found))
-AC_CHECK_LIB([pgplot], main,,AC_MSG_ERROR(pgplot library not found))
-AC_CHECK_LIB([cpgplot], main,,AC_MSG_ERROR(cpgplot library not found))
+AM_CONDITIONAL([WITHPGPLOT], [test x$with_pgplot != xno])
+
+AS_IF([test "x$with_pgplot" != xno],
+    [
+      AC_MSG_CHECKING([uname -s for detecting host operating system])
+      OSNAME=`uname -s`
+      case "$OSNAME" in
+         Darwin*)
+           AC_MSG_RESULT(Darwin)
+           LDFLAGS="$LDFLAGS -L/opt/local/lib"
+           CXXFLAGS="$CXXFLAGS -I/opt/local/include"
+          ;;
+          Linux*)
+            AC_MSG_RESULT(Linux)
+            LDFLAGS="$LDFLAGS -L/usr/local/pgplot"
+            CXXFLAGS="$CXXFLAGS -I/usr/local/pgplot"
+          ;;
+       esac
+     AC_PROG_F77 # this is required to know which is $F77 (see Checks for libraries)
+     AC_CHECK_LIB([X11], main,,AC_MSG_ERROR(X11 library not found))
+     AC_CHECK_LIB([pgplot], main,,AC_MSG_ERROR(pgplot library not found))
+     AC_CHECK_HEADER([cpgplot.h],,AC_MSG_ERROR(cpgplot header not found))
+     AC_CHECK_LIB([cpgplot], main,,AC_MSG_ERROR(cpgplot library not found))
+], [])
+
 PKG_CHECK_MODULES([CFITSIO], [cfitsio])
 case "$OSNAME" in
   Linux*)

@@ -21,6 +21,10 @@
 //Funciones para llamar a PGPLOT con variables en doble precision, y otras
 //funciones auxiliares
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
+
 #include <iostream>
 #include "cpgplot.h"
 
