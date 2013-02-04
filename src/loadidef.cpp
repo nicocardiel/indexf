@@ -32,12 +32,36 @@ bool loadidef(vector< IndexDef > &id)
 {
   //el directorio de instalacion esta definido como variable global
   extern const char *installdirPtr;
+  //el fichero local (de existir) tiene un nombre predefinido
+  const char *localindexfilePtr = "./myindexdef.dat";
+  // comprobamos si hay fichero local
+  bool iflocal;
+  long lsize;
+  ifstream local_file(localindexfilePtr);
+  if (local_file.good())
+  {
+    lsize = strlen(localindexfilePtr);
+    local_file.close();
+    iflocal = true;
+  }
+  else
+  {
+    lsize = strlen(installdirPtr) + strlen("/indexdef.dat");
+    iflocal = false;
+  }
   //concatenamos el directorio y el nombre del fichero, usando una variable
   //generada con new y eliminada con delete
-  long lsize = strlen(installdirPtr) + strlen("/indexdef.dat");
   char *infilenamePtr = new char[lsize+1];
-  strcpy(infilenamePtr,installdirPtr); //copiamos directorio
-  strcat(infilenamePtr,"/indexdef.dat"); //concatenamos nombre de fichero
+  if (iflocal)
+  {
+    strcpy(infilenamePtr,localindexfilePtr);
+  }
+  else
+  {
+    strcpy(infilenamePtr,installdirPtr); //copiamos directorio
+    strcat(infilenamePtr,"/indexdef.dat"); //concatenamos nombre de fichero
+  }
+  cout << "#Definitions: " << infilenamePtr << endl;
   //abrimos el archivo mediante el constructor de ifstream
   ifstream inpfile(infilenamePtr,ios::in);
   if(!inpfile)
