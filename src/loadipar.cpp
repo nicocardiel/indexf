@@ -17,6 +17,9 @@
  * along with indexf.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
 
 #include <iostream>
 #include <string.h>
@@ -125,6 +128,27 @@ bool loadipar(const char *argv[], const int argc,vector< CommandToken > &cl)
       delete [] listPtr;
       return(false);
     }
+#ifndef HAVE_CPGPLOT_H
+    else
+    {
+      bool erroneous_label=false;
+      if (strcmp(keylabelPtr, "plotmode") == 0) erroneous_label=true;
+      if (strcmp(keylabelPtr, "grdev")    == 0) erroneous_label=true;
+      if (strcmp(keylabelPtr, "nwindows") == 0) erroneous_label=true;
+      if (strcmp(keylabelPtr, "plottype") == 0) erroneous_label=true;
+      if(erroneous_label)
+      {
+        cout << "FATAL ERROR: invalid keyword label <" 
+             << keylabelPtr << ">" << endl;
+        cout << "             The program was installed without PGPLOT!" 
+             << endl;
+        delete [] keylabelPtr;
+        delete [] keyvaluePtr;
+        delete [] listPtr;
+        return(false);
+      }
+    }
+#endif
     delete [] keylabelPtr;
     delete [] keyvaluePtr;
     tokenPtr = strtok(NULL," ");
