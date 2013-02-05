@@ -54,14 +54,8 @@ esac
 LIBS="$CFITSIO_LIBS $LIBS"
 AC_MSG_RESULT(LIBS set to... $LIBS)
 
-# Definitions
-DEFAULT_AUXDIR="/usr/local/share/indexf"
-AUXDIR=${AUXDIR="$DEFAULT_AUXDIR"}
-AC_ARG_VAR(AUXDIR,[Directory to install auxiliary indexf files])
-
 # Output files
 AC_CONFIG_FILES([Makefile
-                 src/installdir.h
                  src/version.h
                  src/Makefile
                  auxdir/Makefile])
