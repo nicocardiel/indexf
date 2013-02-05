@@ -11,7 +11,7 @@ void welcome()
   //la version esta definida como variable global
   extern const char *versionPtr;
 
-  cout << "#\n# Using indexf version: " << versionPtr 
+  cout << "#\n#Using indexf version: " << versionPtr 
 #ifdef HAVE_CPGPLOT_H
        << " (PGPLOT enabled)"
 #else

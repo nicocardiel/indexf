@@ -61,7 +61,7 @@ bool loadidef(vector< IndexDef > &id)
     strcpy(infilenamePtr,installdirPtr); //copiamos directorio
     strcat(infilenamePtr,"/indexdef.dat"); //concatenamos nombre de fichero
   }
-  cout << "#Definitions: " << infilenamePtr << endl;
+  cout << "#Definitions: " << infilenamePtr << "\n#" << endl;
   //abrimos el archivo mediante el constructor de ifstream
   ifstream inpfile(infilenamePtr,ios::in);
   if(!inpfile)

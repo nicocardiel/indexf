@@ -34,21 +34,6 @@ void showindex(vector< IndexDef > &id)
 
   //el directorio de instalacion esta definido como variable global
   extern const char *installdirPtr;
-  //el fichero local (de existir) tiene un nombre predefinido
-  const char *localindexfilePtr = "./myindexdef.dat";
-  cout << "\n* Reading index definitions from: ";
-  // comprobamos si hay fichero local o si usamos fichero por defecto
-  ifstream local_file(localindexfilePtr);
-  if (local_file.good())
-  {
-    local_file.close();
-    cout << localindexfilePtr << endl;
-  }
-  else
-  {
-    cout << installdirPtr << "/indexdef.dat" << endl;
-  }
-
 
   cout << "\nUsage:\n"
   "% indexf keyword1=keyval1 keyword2=keyval2 ...\n\nwhere:\n";
