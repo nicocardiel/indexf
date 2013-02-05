@@ -27,11 +27,13 @@ AS_IF([test "x$with_pgplot" != xno],
            AC_MSG_RESULT(Darwin)
            LDFLAGS="$LDFLAGS -L/opt/local/lib"
            CXXFLAGS="$CXXFLAGS -I/opt/local/include"
+           CPPFLAGS="$CXXFLAGS -I/opt/local/include"
           ;;
           Linux*)
             AC_MSG_RESULT(Linux)
             LDFLAGS="$LDFLAGS -L/usr/local/pgplot"
             CXXFLAGS="$CXXFLAGS -I/usr/local/pgplot"
+            CPPFLAGS="$CXXFLAGS -I/usr/local/pgplot"
           ;;
        esac
      AC_PROG_F77 # this is required to know which is $F77 (see Checks for libraries)
