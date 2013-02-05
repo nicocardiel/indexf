@@ -36,10 +36,9 @@ AS_IF([test "x$with_pgplot" != xno],
        esac
      AC_SUBST(PGPLOT_LDFLAGS, $pgplot_ldflags)
      AC_SUBST(PGPLOT_CFLAGS, $pgplot_cflags)
-     AC_PROG_F77 # this is required to know which is $F77 (see Checks for libraries)
      AC_PATH_X
-     AC_CHECK_LIB([pgplot], main, [],
-       AC_MSG_ERROR(pgplot library not found), [$pgplot_ldflags])
+#     AC_CHECK_LIB([pgplot], main, [],
+#       AC_MSG_ERROR(pgplot library not found), [$pgplot_ldflags])
      old_CPPFLAGS=$CPPFLAGS
        CPPFLAGS="${pgplot_cflags} $CPPFLAGS" 
      AC_CHECK_HEADERS([cpgplot.h], [], 
@@ -50,15 +49,6 @@ AS_IF([test "x$with_pgplot" != xno],
 ], [])
 
 PKG_CHECK_MODULES([CFITSIO], [cfitsio])
-case "$OSNAME" in
-  Linux*)
-  # Note: -lgfortran (or -lg77) is required to link the executable file
-  AC_CHECK_LIB([$F77], main,,AC_MSG_ERROR($F77 library not found))
-  ;;
-esac
-# Define in LIBS all the previous libraries
-LIBS="$CFITSIO_LIBS $LIBS"
-AC_MSG_RESULT(LIBS set to... $LIBS)
 
 # Output files
 AC_CONFIG_FILES([Makefile
