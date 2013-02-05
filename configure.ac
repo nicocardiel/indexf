@@ -25,17 +25,17 @@ AS_IF([test "x$with_pgplot" != xno],
       case "$OSNAME" in
          Darwin*)
            AC_MSG_RESULT(Darwin)
-           LDFLAGS="$LDFLAGS -L/opt/local/lib"
-           CXXFLAGS="$CXXFLAGS -I/opt/local/include"
-           CPPFLAGS="$CXXFLAGS -I/opt/local/include"
+           pgplot_ldflags="-L/opt/local/lib"
+           pgplot_cflags="-I/opt/local/include"
           ;;
           Linux*)
             AC_MSG_RESULT(Linux)
-            LDFLAGS="$LDFLAGS -L/usr/local/pgplot"
-            CXXFLAGS="$CXXFLAGS -I/usr/local/pgplot"
-            CPPFLAGS="$CXXFLAGS -I/usr/local/pgplot"
+            pgplot_ldflags="-L/usr/local/pgplot"
+            pgplot_cflags="-I/usr/local/pgplot"
           ;;
        esac
+     AC_SUBST(PGPLOT_LDFLAGS, $pgplot_ldflags)
+     AC_SUBST(PGPLOT_CFLAGS, $pgplot_cflags)
      AC_PROG_F77 # this is required to know which is $F77 (see Checks for libraries)
      AC_CHECK_LIB([X11], main,,AC_MSG_ERROR(X11 library not found))
      AC_CHECK_LIB([pgplot], main,,AC_MSG_ERROR(pgplot library not found))

@@ -76,5 +76,5 @@ xydata.cpp \
 xydata.h
 endif
 
-indexf_LDADD = $(CFITSIO_LIBS) 
-AM_CPPFLAGS = $(CFITSIO_CFLAGS) -I$(top_srcdir)
+indexf_LDADD = $(CFITSIO_LIBS) $(PGPLOT_LDFLAGS)
+AM_CPPFLAGS = $(CFITSIO_CFLAGS) $(PGPLOT_CFLAGS) -I$(top_srcdir)
