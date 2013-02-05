@@ -37,10 +37,16 @@ AS_IF([test "x$with_pgplot" != xno],
      AC_SUBST(PGPLOT_LDFLAGS, $pgplot_ldflags)
      AC_SUBST(PGPLOT_CFLAGS, $pgplot_cflags)
      AC_PROG_F77 # this is required to know which is $F77 (see Checks for libraries)
-     AC_CHECK_LIB([X11], main,,AC_MSG_ERROR(X11 library not found))
-     AC_CHECK_LIB([pgplot], main,,AC_MSG_ERROR(pgplot library not found))
-     AC_CHECK_HEADERS([cpgplot.h],,AC_MSG_ERROR(cpgplot header not found))
-     AC_CHECK_LIB([cpgplot], main,,AC_MSG_ERROR(cpgplot library not found))
+     AC_PATH_X
+     AC_CHECK_LIB([pgplot], main, [],
+       AC_MSG_ERROR(pgplot library not found), [$pgplot_ldflags])
+     old_CPPFLAGS=$CPPFLAGS
+       CPPFLAGS="${pgplot_cflags} $CPPFLAGS" 
+     AC_CHECK_HEADERS([cpgplot.h], [], 
+       AC_MSG_ERROR(cpgplot header not found), [])
+     CPPFLAGS=$old_CPPFLAGS 
+     AC_CHECK_LIB([cpgplot], main, [],
+       AC_MSG_ERROR(cpgplot library not found), [$pgplot_ldflags])
 ], [])
 
 PKG_CHECK_MODULES([CFITSIO], [cfitsio])
