@@ -1,8 +1,27 @@
 This is indexf, a program that measures line-strength indices in wavelength
 calibrated FITS spectra.
 
+Maintainer: ncl@astrax.fis.ucm.es
+Webpage: http://guaix.fis.ucm.es/projects/indexf
+
 This software is distributed under GPL , either version 3 of the License, or
 (at your option) any later version. See the file COPYING for details.
 
-Maintainer: ncl@astrax.fis.ucm.es
-Webpage: http://guaix.fis.ucm.es/projects/indexf
+Linking indexf statically or dynamically with other modules is making a
+combined work based on indexf. Thus, the terms and conditions of the GNU
+General Public License cover the whole combination.
+
+In addition, as a special exception, the copyright holders of indexf give you
+permission to combine indexf program with free software programs or libraries
+that are released under the GNU LGPL and with code included in the standard
+release of Pgplot under the Pgplot license (or modified versions of such code,
+with unchanged license). You may copy and distribute such a system following
+the terms of the GNU GPL for indexf and the licenses of the other code
+concerned, provided that you include the source code of that other code when
+and as the GNU GPL requires distribution of source code.
+
+Note that people who make modified versions of indexf are not obligated to
+grant this special exception for their modified versions; it is their choice
+whether to do so. The GNU General Public License gives permission to release a
+modified version without this exception; this exception also makes it possible
+to release a modified version which carries forward this exception.
