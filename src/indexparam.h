@@ -55,7 +55,8 @@ class IndexParam{
       double,           //ymin for plots
       double,           //ymax for plots
       long,             //seed for random numbers (0=use computer time)
-      double);          //flux scale factor (measured spectrum=original/fscale)
+      double,           //flux scale factor (measured spectrum=original/fscale)
+      bool);            //echo data for communication with python scripts
     void set_if(const char *);
     void set_ns1(const long);
     void set_ns2(const long);
@@ -89,6 +90,7 @@ class IndexParam{
     void set_ymax(const double);
     void set_nseed(const long);
     void set_fscale(const double);
+    void set_pythonout(const bool);
     char *get_if();
     long get_ns1();
     long get_ns2();
@@ -126,6 +128,7 @@ class IndexParam{
     double get_ymax();
     long get_nseed();
     double get_fscale();
+    bool get_pythonout();
   private:
     char ifile[256];
     char index[9];;
@@ -158,6 +161,7 @@ class IndexParam{
     double ymax;
     long nseed;
     double fscale;
+    bool pythonout;
 };
 
 #endif
