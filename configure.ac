@@ -12,9 +12,9 @@ AC_PROG_CXX
 
 AC_ARG_WITH([pgplot],
             [AS_HELP_STRING([--with-pgplot],
-              [use pgplot (default is yes)])],
+              [use pgplot (default is no)])],
               [],
-              [])
+              [with_pgplot=no])
 
 AM_CONDITIONAL([WITHPGPLOT], [test x$with_pgplot != xno])
 
