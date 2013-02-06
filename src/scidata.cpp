@@ -449,6 +449,14 @@ SciData::SciData(IndexParam &param)
   //-------------------------------------------------------------------------
   //si los espectros estan en escala logaritmica, los pasamos a escala lineal
   //(Nota: asumimos logaritmos decimales)
+  //IMPORTANTE: el reescalado preserva el numero de cuentas/pixel, es decir,
+  //que al tomar una dispersion promedio para la escala lineal en longitud de
+  //onda, el flujo en la parte azul del espectro aumenta y en la parte roja
+  //disminuye. Si el flujo de los espectros en escala logaritmica esta dado por
+  //Angstrom (y no por pixel) lo anterior no es lo que uno quiere. En este
+  //ultimo caso, uno deberia interpolar directamente (sin conservar flujo). En
+  //cualquier caso, el efecto en los indices debe ser pequeño si uno no lo hace
+  //bien.
   //-------------------------------------------------------------------------
   if ( strcmp(ctype1,"WAVE-LOG") == 0)
   {
@@ -550,7 +558,8 @@ SciData::SciData(IndexParam &param)
          << "\n#         calibration (assuming base-10 logarithm) with:" 
          << "\n#         > CRVAL1=" << crval1 
          << "\n#         > CDELT1=" << cdelt1
-         << "\n#         > CRPIX1=" << crpix1 << endl;
+         << "\n#         > CRPIX1=" << crpix1
+         << "\n#         and preserving the flux/pixel!" << endl;
   }
 
   //--------------------------------------------
