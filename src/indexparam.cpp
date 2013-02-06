@@ -60,6 +60,10 @@ IndexParam::IndexParam()
   nwinx = 1;
   nwiny = 1;
   plottype = 0;
+  xmin = 0;
+  xmax = 0;
+  ymin = 0;
+  ymax = 0;
   nseed = 0;
   fscale = 1.0;
 }
@@ -89,6 +93,10 @@ IndexParam::IndexParam(
   char *grdev_,                 //PGPLOT graphics device
   long nwinx_,long nwiny_,      //number of panels (NX,NY) in plotting device
   long plottype_,               //number of panels (NX,NY) in plotting device
+  double xmin_,                 //xmin for plots
+  double xmax_,                 //xmax for plots
+  double ymin_,                 //ymin for plots
+  double ymax_,                 //ymax for plots
   long nseed_,                  //seed for random numbers (0=use computer time)
   double fscale_)     //flux scale factor (measured spectrum = original/fscale)
 {
@@ -117,6 +125,10 @@ IndexParam::IndexParam(
   set_grdev(grdev_);
   set_nwindows(nwinx_,nwiny_);
   set_plottype(plottype_);
+  set_xmin(xmin_);
+  set_xmax(xmax_);
+  set_ymin(ymin_);
+  set_ymax(ymax_);
   set_nseed(nseed_);
   set_fscale(fscale_);
 }
@@ -290,6 +302,30 @@ void IndexParam::set_plottype(const long plottype_)
 }
 
 //-----------------------------------------------------------------------------
+void IndexParam::set_xmin(const double xmin_)
+{
+  xmin=xmin_;
+}
+
+//-----------------------------------------------------------------------------
+void IndexParam::set_xmax(const double xmax_)
+{
+  xmax=xmax_;
+}
+
+//-----------------------------------------------------------------------------
+void IndexParam::set_ymin(const double ymin_)
+{
+  ymin=ymin_;
+}
+
+//-----------------------------------------------------------------------------
+void IndexParam::set_ymax(const double ymax_)
+{
+  ymax=ymax_;
+}
+
+//-----------------------------------------------------------------------------
 void IndexParam::set_nseed(const long nseed_)
 {
   nseed=nseed_;
@@ -393,6 +429,18 @@ long IndexParam::get_nwiny() {return(nwiny);}
 
 //-----------------------------------------------------------------------------
 long IndexParam::get_plottype() {return(plottype);}
+
+//-----------------------------------------------------------------------------
+double IndexParam::get_xmin() {return(xmin);}
+
+//-----------------------------------------------------------------------------
+double IndexParam::get_xmax() {return(xmax);}
+
+//-----------------------------------------------------------------------------
+double IndexParam::get_ymin() {return(ymin);}
+
+//-----------------------------------------------------------------------------
+double IndexParam::get_ymax() {return(ymax);}
 
 //-----------------------------------------------------------------------------
 long IndexParam::get_nseed() {return(nseed);}

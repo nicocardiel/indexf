@@ -50,6 +50,8 @@ bool mideindex(const bool &, const double *, const double *,
                const double &, const double &,
                const double &, const double &,
                const long &, const long &,
+               const double &, const double &, 
+               const double &, const double &,
                bool &, bool &,
                double &, double &, double &);
 
@@ -65,7 +67,7 @@ void outmeasurement(const long &,
                     const bool &, const bool &,
                     const bool &, const bool &);
 
-bool measuresp(SciData *imagePtr, IndexParam param, IndexDef myindex)
+bool measuresp(SciData *imagePtr, IndexParam &param, IndexDef &myindex)
 {
   const long nseed = param.get_nseed();
   if(nseed == 0)
@@ -143,12 +145,18 @@ bool measuresp(SciData *imagePtr, IndexParam param, IndexDef myindex)
     const bool logindex = param.get_logindex();
     const double biaserr = param.get_biaserr();
     const double linearerr = param.get_linearerr();
+    const double xmin = param.get_xmin();
+    const double xmax = param.get_xmax();
+    const double ymin = param.get_ymin();
+    const double ymax = param.get_ymax();
     bool lfindex = mideindex(lerr,sp_data,sp_error,imagePtr->getnaxis1(),
                              crval1,cdelt1,crpix1,myindex,
                              contperc,boundfit,
                              logindex,rvel,rvelerr,
                              biaserr,linearerr,
                              plotmode,plottype,
+                             xmin, xmax,
+                             ymin, ymax,
                              out_of_limits,negative_error,
                              findex,eindex,sn);
 #ifdef HAVE_CPGPLOT_H
@@ -198,6 +206,8 @@ bool measuresp(SciData *imagePtr, IndexParam param, IndexDef myindex)
                     logindex,rvel_eff,rvelerr,
                     biaserr,linearerr,
                     0,plottype, //no queremos plots (salvo continuo)
+                    xmin, xmax,
+                    ymin, ymax,
                     out_of_limits_sim,negative_error_sim,
                     findex_sim[nsimul-1],eindex_sim,sn_sim);
       }
@@ -254,6 +264,8 @@ bool measuresp(SciData *imagePtr, IndexParam param, IndexDef myindex)
                       logindex,rvel,rvelerr,
                       biaserr,linearerr,
                       0,0, //no queremos plots
+                      xmin, xmax,
+                      ymin, ymax,
                       out_of_limits_sim,negative_error_sim,
                       findex_sim[nsimul-1],eindex_sim,sn_sim);
           delete [] sp_data_eff;

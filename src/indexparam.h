@@ -50,6 +50,10 @@ class IndexParam{
       char *,           //PGPLOT graphics device
       long,long,        //number of panels (NX,NY) in the plotting device
       long,             //plot type (0: simple plot; 1: with additional info.)
+      double,           //xmin for plots
+      double,           //xmax for plots
+      double,           //ymin for plots
+      double,           //ymax for plots
       long,             //seed for random numbers (0=use computer time)
       double);          //flux scale factor (measured spectrum=original/fscale)
     void set_if(const char *);
@@ -79,6 +83,10 @@ class IndexParam{
     void set_grdev(const char *);
     void set_nwindows(const long, const long);
     void set_plottype(const long);
+    void set_xmin(const double);
+    void set_xmax(const double);
+    void set_ymin(const double);
+    void set_ymax(const double);
     void set_nseed(const long);
     void set_fscale(const double);
     char *get_if();
@@ -112,6 +120,10 @@ class IndexParam{
     long get_nwinx();
     long get_nwiny();
     long get_plottype();
+    double get_xmin();
+    double get_xmax();
+    double get_ymin();
+    double get_ymax();
     long get_nseed();
     double get_fscale();
   private:
@@ -140,6 +152,10 @@ class IndexParam{
     char grdev[256];
     long nwinx,nwiny;
     long plottype;
+    double xmin;
+    double xmax;
+    double ymin;
+    double ymax;
     long nseed;
     double fscale;
 };

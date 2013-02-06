@@ -660,6 +660,40 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
   }
   param.set_plottype(plottype);
 
+  //----------------------
+  //user definied X limits
+  //----------------------
+  nextParameter++;
+  labelPtr = cl[nextParameter].getlabel();
+  valuePtr = cl[nextParameter].getvalue();
+  double xmin,xmax;
+  if(!extract_2numbers(valuePtr,xmin,xmax))
+  {
+    cout << "FATAL ERROR: <" << valuePtr
+         << "> is an invalid argument for the keyword <" << labelPtr
+         << ">" << endl;
+    return(false);
+  }
+  param.set_xmin(xmin);
+  param.set_xmax(xmax);
+
+  //----------------------
+  //user definied Y limits
+  //----------------------
+  nextParameter++;
+  labelPtr = cl[nextParameter].getlabel();
+  valuePtr = cl[nextParameter].getvalue();
+  double ymin,ymax;
+  if(!extract_2numbers(valuePtr,ymin,ymax))
+  {
+    cout << "FATAL ERROR: <" << valuePtr
+         << "> is an invalid argument for the keyword <" << labelPtr
+         << ">" << endl;
+    return(false);
+  }
+  param.set_ymin(ymin);
+  param.set_ymax(ymax);
+
   //----------------------------
   //nseed (0: use computer time)
   //----------------------------

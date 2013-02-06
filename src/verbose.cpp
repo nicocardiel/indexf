@@ -33,7 +33,7 @@ void c123(const double &, const double &,
           const double &, const double &,
           double &, double &, double &);
 
-void verbose(IndexParam param, IndexDef myindex, SciData *imagePtr)
+void verbose(IndexParam &param, IndexDef &myindex, SciData *imagePtr)
 {
   //tipo de indice a medir
   const long type = myindex.gettype();

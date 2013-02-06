@@ -26,7 +26,7 @@ double ftovacuum(const long, const double);
 // Verifica si el usuario ha indicado que la calibracion en longitud de onda
 // del espectro ha sido realizada en vacio. Si es asi, se modifican las
 // longitudes de onda de todas las bandas a medir.
-void updatebands(IndexParam param, IndexDef &myindex)
+void updatebands(IndexParam &param, IndexDef &myindex)
 {
   const long vacuum = param.get_vacuum();
   if (vacuum == 0) return; // trabajamos en aire
