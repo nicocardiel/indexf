@@ -53,6 +53,8 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
                const double &rvel, const double &rvelerr,
                const double &biaserr, const double &linearerr,
                const long &plotmode, const long &plottype,
+               const double &xmin_user, const double &xmax_user,
+               const double &ymin_user, const double &ymax_user,
                bool &out_of_limits, bool &negative_error,
                double &findex, double &eindex, double &sn)
 {
@@ -180,6 +182,8 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
   //===========================================================================
   //dibujamos
 #ifdef HAVE_CPGPLOT_H
+  bool xlim_auto = ((xmin_user == 0) && (xmax_user == 0));
+  bool ylim_auto = ((ymin_user == 0) && (ymax_user == 0));
   if(plotmode != 0)
   {
     //calculamos un array temporal para el eje X (en unidades de pixeles)
@@ -190,70 +194,86 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     }
     //calculamos limites en el eje X (en pixels)
     double xmin,xmax,dx;
-    xmin=(ca[0]-crval1)/cdelt1+crpix1;
-    xmax=(cb[0]-crval1)/cdelt1+crpix1;
-    double chan1, chan2;
-    for (long nb=0; nb < nbands; nb++)
+    if (xlim_auto)
     {
-      chan1=(ca[nb]-crval1)/cdelt1+crpix1;
-      chan2=(cb[nb]-crval1)/cdelt1+crpix1;
-      if(chan1 < xmin) xmin=chan1;
-      if(chan2 > xmax) xmax=chan2;
+      xmin=(ca[0]-crval1)/cdelt1+crpix1;
+      xmax=(cb[0]-crval1)/cdelt1+crpix1;
+      double chan1, chan2;
+      for (long nb=0; nb < nbands; nb++)
+      {
+        chan1=(ca[nb]-crval1)/cdelt1+crpix1;
+        chan2=(cb[nb]-crval1)/cdelt1+crpix1;
+        if(chan1 < xmin) xmin=chan1;
+        if(chan2 > xmax) xmax=chan2;
+      }
+      dx=xmax-xmin;
+      xmin=xmin-dx/3.0;
+      xmax=xmax+dx/3.0;
     }
-    dx=xmax-xmin;
-    xmin=xmin-dx/3.0;
-    xmax=xmax+dx/3.0;
+    else
+    {
+      xmin=crpix1+(xmin_user-crval1)/cdelt1;
+      xmax=crpix1+(xmax_user-crval1)/cdelt1;
+    }
     //calculamos limites en el eje Y (flujo)
     double ymin,ymax,dy;
-    bool firstpixel=true;
-    for (long j=1; j<=naxis1; j++)
+    if (ylim_auto)
     {
-      if((j >= xmin) && (j <= xmax))
+      bool firstpixel=true;
+      for (long j=1; j<=naxis1; j++)
       {
-        if(firstpixel)
+        if((j >= xmin) && (j <= xmax))
         {
-          if((lerr) && (plotmode < 0))
+          if(firstpixel)
           {
-            firstpixel=false;
-            ymin=sp_data[j-1]-sp_error[j-1];
-            ymax=sp_data[j-1]+sp_error[j-1];
+            if((lerr) && (plotmode < 0))
+            {
+              firstpixel=false;
+              ymin=sp_data[j-1]-sp_error[j-1];
+              ymax=sp_data[j-1]+sp_error[j-1];
+            }
+            else
+            {
+              firstpixel=false;
+              ymin=ymax=sp_data[j-1];
+            }
           }
           else
           {
-            firstpixel=false;
-            ymin=ymax=sp_data[j-1];
-          }
-        }
-        else
-        {
-          if((lerr) && (plotmode < 0))
-          {
-            if(ymin > sp_data[j-1]-sp_error[j-1]) 
-             ymin=sp_data[j-1]-sp_error[j-1];
-            if(ymax < sp_data[j-1]+sp_error[j-1]) 
-             ymax=sp_data[j-1]+sp_error[j-1];
-          }
-          else
-          {
-            if(ymin > sp_data[j-1]) ymin=sp_data[j-1];
-            if(ymax < sp_data[j-1]) ymax=sp_data[j-1];
+            if((lerr) && (plotmode < 0))
+            {
+              if(ymin > sp_data[j-1]-sp_error[j-1]) 
+               ymin=sp_data[j-1]-sp_error[j-1];
+              if(ymax < sp_data[j-1]+sp_error[j-1]) 
+               ymax=sp_data[j-1]+sp_error[j-1];
+            }
+            else
+            {
+              if(ymin > sp_data[j-1]) ymin=sp_data[j-1];
+              if(ymax < sp_data[j-1]) ymax=sp_data[j-1];
+            }
           }
         }
       }
+      if(fabs(biaserr) !=0)
+      {
+        if(ymin > ymin*(1+1.5*biaserr/100) ) ymin*=(1+1.5*biaserr/100);
+        if(ymax < ymax*(1+biaserr/100) ) ymax*=(1+biaserr/100);
+      }
+      else if(fabs(linearerr) !=0)
+      {
+        if(ymin > ymin*pow(ymin,linearerr) ) ymin*=pow(ymin,linearerr);
+        if(ymax < ymax*pow(ymax,linearerr) ) ymax*=pow(ymax,linearerr);
+      }
+      dy=ymax-ymin;
+      ymin=ymin-dy/10.0;
+      ymax=ymax+dy/10.0;
     }
-    if(fabs(biaserr) !=0)
+    else
     {
-      if(ymin > ymin*(1+1.5*biaserr/100) ) ymin*=(1+1.5*biaserr/100);
-      if(ymax < ymax*(1+biaserr/100) ) ymax*=(1+biaserr/100);
+      ymin=ymin_user;
+      ymax=ymax_user;
     }
-    else if(fabs(linearerr) !=0)
-    {
-      if(ymin > ymin*pow(ymin,linearerr) ) ymin*=pow(ymin,linearerr);
-      if(ymax < ymax*pow(ymax,linearerr) ) ymax*=pow(ymax,linearerr);
-    }
-    dy=ymax-ymin;
-    ymin=ymin-dy/10.0;
-    ymax=ymax+dy/10.0;
     //dibujamos caja del plot con diferentes escalas en X
     double xminl,xmaxl;
     xminl=crval1+(xmin-crpix1)*cdelt1;

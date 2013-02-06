@@ -9,7 +9,7 @@ boundfit  0         #if greater than zero, use boundary fit for continuum
 snf       undef     #S/N estimation file (incompatible with "ief")
 rv        0,0       #radial velocity (km/s),radial velocity error
 rvf       undef,1,0 #radial velocity file name, column data, column error
-vacuum    0         #wavelength scale (0=air, 1=vacuum1, 2=vacuum2)
+vacuum    0         #wavelength scale (0=air, 1=vacuum1, 2=vacuum2,...)
 nsimul    100       #number of simulations to estimate radial velocity error
 logindex  no        #measure indices in logarithmic units
 verb      yes       #display intermediate information
@@ -22,5 +22,7 @@ plotmode  0         #plot mode (0:none; 1:pause, 2:no pause; -:with error bars)
 grdev     /Xserve   #PGPLOT graphic device
 nwindows  1,1       #number of panels (NX,NY) in the plotting device
 plottype  1         #0: simple plot; >0: plot with additional information
+xlim      0,0       #minimum & maximum X in plots (0,0=automatic)
+ylim      0,0       #minimum & maximum Y in plots (0,0=automatic)
 nseed     0         #seed for random numbers (0=use computer time)
 fscale    1.0       #flux scale factor (measured spectrum = original/fscale)
