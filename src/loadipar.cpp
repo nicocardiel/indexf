@@ -136,6 +136,8 @@ bool loadipar(const char *argv[], const int argc,vector< CommandToken > &cl)
       if (strcmp(keylabelPtr, "grdev")    == 0) erroneous_label=true;
       if (strcmp(keylabelPtr, "nwindows") == 0) erroneous_label=true;
       if (strcmp(keylabelPtr, "plottype") == 0) erroneous_label=true;
+      if (strcmp(keylabelPtr, "xlim")     == 0) erroneous_label=true;
+      if (strcmp(keylabelPtr, "ylim")     == 0) erroneous_label=true;
       if(erroneous_label)
       {
         cout << "FATAL ERROR: invalid keyword label <" 
