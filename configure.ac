@@ -2,7 +2,7 @@
 #
 
 # Prelude
-AC_INIT(indexf,4.2.0,[cardiel@fis.ucm.es])
+AC_INIT(indexf,4.2.1,[cardiel@fis.ucm.es])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_SRCDIR([src/indexf.cpp])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
