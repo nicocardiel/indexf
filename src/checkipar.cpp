@@ -764,6 +764,28 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
             "employed simultaneously" << endl;
     return(false);
   }
+ 
+  //-----------------------------------------------
+  //echo data for communication with python scripts
+  //-----------------------------------------------
+  nextParameter++;
+  labelPtr = cl[nextParameter].getlabel();
+  valuePtr = cl[nextParameter].getvalue();
+  if ((strcmp(valuePtr,"yes") == 0)||(strcmp(valuePtr,"y") == 0))
+  {
+    param.set_pythonout(true);
+  }
+  else if ((strcmp(valuePtr,"no") == 0)||(strcmp(valuePtr,"n") == 0))
+  {
+    param.set_pythonout(false);
+  }
+  else
+  {
+    cout << "FATAL ERROR: <" << valuePtr
+         << "> is an invalid argument for the keyword <" << labelPtr
+         << ">" << endl;
+    return(false);
+  }
 
   //retornamos con exito
   return(true);

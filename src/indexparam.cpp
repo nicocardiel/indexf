@@ -66,6 +66,7 @@ IndexParam::IndexParam()
   ymax = 0;
   nseed = 0;
   fscale = 1.0;
+  pythonout = false;
 }
 
 //-----------------------------------------------------------------------------
@@ -98,7 +99,8 @@ IndexParam::IndexParam(
   double ymin_,                 //ymin for plots
   double ymax_,                 //ymax for plots
   long nseed_,                  //seed for random numbers (0=use computer time)
-  double fscale_)     //flux scale factor (measured spectrum = original/fscale)
+  double fscale_,     //flux scale factor (measured spectrum = original/fscale)
+  bool pythonout_)            //echo data for communication with python scripts
 {
   set_if(ifile_);
   set_ns1(ns1_);
@@ -131,6 +133,7 @@ IndexParam::IndexParam(
   set_ymax(ymax_);
   set_nseed(nseed_);
   set_fscale(fscale_);
+  set_pythonout(pythonout_);
 }
 
 //-----------------------------------------------------------------------------
@@ -338,6 +341,12 @@ void IndexParam::set_fscale(const double fscale_)
 }
 
 //-----------------------------------------------------------------------------
+void IndexParam::set_pythonout(const bool pythonout_)
+{
+  pythonout=pythonout_;
+}
+
+//-----------------------------------------------------------------------------
 char *IndexParam::get_if() {return(ifile);}
 
 //-----------------------------------------------------------------------------
@@ -447,3 +456,6 @@ long IndexParam::get_nseed() {return(nseed);}
 
 //-----------------------------------------------------------------------------
 double IndexParam::get_fscale() {return(fscale);}
+
+//-----------------------------------------------------------------------------
+bool IndexParam::get_pythonout() {return(pythonout);}

@@ -55,6 +55,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
                const long &plotmode, const long &plottype,
                const double &xmin_user, const double &xmax_user,
                const double &ymin_user, const double &ymax_user,
+               const bool &pythonout,
                bool &out_of_limits, bool &negative_error,
                double &findex, double &eindex, double &sn)
 {
@@ -85,6 +86,14 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
   negative_error=false;
 
   //---------------------------------------------------------------------------
+  if (pythonout)
+  {
+    cout << "python> index type: " << myindex.gettype() << endl;
+    cout << "python> nbands: " << myindex.getnbands() << endl;
+    cout << "python> nconti: " << myindex.getnconti() << endl;
+    cout << "python> nlines: " << myindex.getnlines() << endl;
+  }
+  //---------------------------------------------------------------------------
   //calculamos parametros de cada banda a medir
   const long nbands = myindex.getnbands();
   double *ca = new double [nbands];
@@ -101,6 +110,8 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
   {
     ca[nb] = myindex.getldo1(nb)*rcvel1;             //redshifted wavelength
     cb[nb] = myindex.getldo2(nb)*rcvel1;             //redshifted wavelength
+    if(pythonout)
+      cout << "python> w1, w2: " << ca[nb] << " " << cb[nb] << endl;
     c3[nb] = (ca[nb]-wlmin)/cdelt1+1.0;              //band limit (channel)
     c4[nb] = (cb[nb]-wlmin)/cdelt1;                  //band limit (channel)
     if ( (c3[nb] < 1.0) || (c4[nb] > static_cast<double>(naxis1)) )
@@ -618,6 +629,11 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     mwb*=rcvel1;
     double mwr = (myindex.getldo1(2)+myindex.getldo2(2))/2.0;
     mwr*=rcvel1;
+    if(pythonout)
+    {
+      cout << "python> w_blue_center: " << mwb << endl;
+      cout << "python> w_red_center : " << mwr << endl;
+    }
     //declaramos las variables en las que incluiremos el pseudo-continuo
     //evaluado en la banda central
     double *sc = new double [naxis1];
@@ -1032,6 +1048,11 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       {
         esr2*=cdelt1*cdelt1;
         esr2/=(rl[2]*rl[2]);
+      }
+      if(pythonout)
+      {
+        cout << "python> f_blue_center: " << sb*smean << endl;
+        cout << "python> f_red_center : " << sr*smean << endl;
       }
     }
     //calculamos pseudo-continuo como una recta uniendo los flujos "promedio"

@@ -52,6 +52,7 @@ bool mideindex(const bool &, const double *, const double *,
                const long &, const long &,
                const double &, const double &, 
                const double &, const double &,
+               const bool &,
                bool &, bool &,
                double &, double &, double &);
 
@@ -149,6 +150,7 @@ bool measuresp(SciData *imagePtr, IndexParam &param, IndexDef &myindex)
     const double xmax = param.get_xmax();
     const double ymin = param.get_ymin();
     const double ymax = param.get_ymax();
+    const bool  pythonout = param.get_pythonout();
     bool lfindex = mideindex(lerr,sp_data,sp_error,imagePtr->getnaxis1(),
                              crval1,cdelt1,crpix1,myindex,
                              contperc,boundfit,
@@ -157,6 +159,7 @@ bool measuresp(SciData *imagePtr, IndexParam &param, IndexDef &myindex)
                              plotmode,plottype,
                              xmin, xmax,
                              ymin, ymax,
+                             pythonout,
                              out_of_limits,negative_error,
                              findex,eindex,sn);
 #ifdef HAVE_CPGPLOT_H
@@ -208,6 +211,7 @@ bool measuresp(SciData *imagePtr, IndexParam &param, IndexDef &myindex)
                     0,plottype, //no queremos plots (salvo continuo)
                     xmin, xmax,
                     ymin, ymax,
+                    false, //no queremos python output aqui
                     out_of_limits_sim,negative_error_sim,
                     findex_sim[nsimul-1],eindex_sim,sn_sim);
       }
@@ -266,6 +270,7 @@ bool measuresp(SciData *imagePtr, IndexParam &param, IndexDef &myindex)
                       0,0, //no queremos plots
                       xmin, xmax,
                       ymin, ymax,
+                      false, //no queremos python output aqui
                       out_of_limits_sim,negative_error_sim,
                       findex_sim[nsimul-1],eindex_sim,sn_sim);
           delete [] sp_data_eff;
