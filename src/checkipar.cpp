@@ -60,7 +60,7 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
   bool logfile_if;
   maxfileSize=strlen(valuePtr);
   char *filePtr = new char[maxfileSize+1];
-  if(!extract_file_2long(valuePtr,filePtr,logfile_if,ns1, ns2))
+  if(!extract_file_2long(valuePtr,filePtr,logfile_if,ns1,ns2))
   {
     cout << "FATAL ERROR: <" << valuePtr
          << "> is an invalid argument for the keyword <" << labelPtr
@@ -796,24 +796,35 @@ bool extract_file_2long(const char *valuePtr,
                        char *filePtr, bool &logfile, long &long1, long &long2)
 {
   //separamos el nombre del fichero de los indicadores de primer y ultimo
-  //numero entero
+  //numero entero; si no se indican numeros, se asumen 0,0
+  bool lnumbers = true;
   const char *comaPtr = strchr(valuePtr,',');  //primera coma
   if (comaPtr == NULL) //error: no hay coma al final del nombre de fichero
   {
-    cout << "FATAL ERROR: expected \",\" character is not present" << endl;
-    return(false);
+    lnumbers = false;
+    //cout << "FATAL ERROR: expected \",\" character is not present" << endl;
+    //return(false);
   }
-  //hemos encontrado la coma; extraemos el nombre del fichero
-  const long fileSize=strlen(valuePtr)-strlen(comaPtr);
+  //extraemos el nombre del fichero
+  long fileSize=strlen(valuePtr);
+  if (lnumbers) fileSize-=strlen(comaPtr);
   strncpy(filePtr,valuePtr,fileSize);
   filePtr[fileSize] = '\0';
   //comprobamos que el fichero existe
   ifstream infile(filePtr, ios::in); //abrimos en modo solo lectura
   logfile=infile;
-  const char *numbersPtr = comaPtr+1;
-  if (!extract_2numbers(numbersPtr, long1, long2))
+  if(lnumbers)
   {
-    return(false);
+    const char *numbersPtr = comaPtr+1;
+    if (!extract_2numbers(numbersPtr, long1, long2))
+    {
+      return(false);
+    }
+  }
+  else
+  {
+    long1=0;
+    long2=0;
   }
   return(true);
 }
