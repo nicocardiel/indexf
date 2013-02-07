@@ -26,4 +26,4 @@ xlim      0,0       #minimum & maximum X in plots (0,0=automatic)
 ylim      0,0       #minimum & maximum Y in plots (0,0=automatic)
 nseed     0         #seed for random numbers (0=use computer time)
 fscale    1.0       #flux scale factor (measured spectrum = original/fscale)
-pythonout no        #echo data for communication with python scripts
+pyndexf   no        #echo data for communication with pyndexf (python script)

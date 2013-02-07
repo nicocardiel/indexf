@@ -150,7 +150,7 @@ bool measuresp(SciData *imagePtr, IndexParam &param, IndexDef &myindex)
     const double xmax = param.get_xmax();
     const double ymin = param.get_ymin();
     const double ymax = param.get_ymax();
-    const bool  pythonout = param.get_pythonout();
+    const bool  pyndexf = param.get_pyndexf();
     bool lfindex = mideindex(lerr,sp_data,sp_error,imagePtr->getnaxis1(),
                              crval1,cdelt1,crpix1,myindex,
                              contperc,boundfit,
@@ -159,7 +159,7 @@ bool measuresp(SciData *imagePtr, IndexParam &param, IndexDef &myindex)
                              plotmode,plottype,
                              xmin, xmax,
                              ymin, ymax,
-                             pythonout,
+                             pyndexf,
                              out_of_limits,negative_error,
                              findex,eindex,sn);
 #ifdef HAVE_CPGPLOT_H
