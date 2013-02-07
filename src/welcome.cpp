@@ -12,10 +12,11 @@ void welcome()
   extern const char *versionPtr;
 
   cout << "#\n#Using indexf version: " << versionPtr 
+       << " (pyndexf compatible, "
 #ifdef HAVE_CPGPLOT_H
-       << " (PGPLOT enabled)"
+       << "PGPLOT enabled)"
 #else
-       << " (PGPLOT disabled)"
+       << "PGPLOT disabled)"
 #endif /* HAVE_CPGPLOT_H */
        << "\n#" << endl;
 }

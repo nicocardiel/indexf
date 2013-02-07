@@ -90,7 +90,7 @@ class IndexParam{
     void set_ymax(const double);
     void set_nseed(const long);
     void set_fscale(const double);
-    void set_pythonout(const bool);
+    void set_pyndexf(const bool);
     char *get_if();
     long get_ns1();
     long get_ns2();
@@ -128,7 +128,7 @@ class IndexParam{
     double get_ymax();
     long get_nseed();
     double get_fscale();
-    bool get_pythonout();
+    bool get_pyndexf();
   private:
     char ifile[256];
     char index[9];;
@@ -161,7 +161,7 @@ class IndexParam{
     double ymax;
     long nseed;
     double fscale;
-    bool pythonout;
+    bool pyndexf;
 };
 
 #endif

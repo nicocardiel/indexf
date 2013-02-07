@@ -773,11 +773,11 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
   valuePtr = cl[nextParameter].getvalue();
   if ((strcmp(valuePtr,"yes") == 0)||(strcmp(valuePtr,"y") == 0))
   {
-    param.set_pythonout(true);
+    param.set_pyndexf(true);
   }
   else if ((strcmp(valuePtr,"no") == 0)||(strcmp(valuePtr,"n") == 0))
   {
-    param.set_pythonout(false);
+    param.set_pyndexf(false);
   }
   else
   {
