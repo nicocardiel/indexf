@@ -50,7 +50,7 @@ int main (const int argc, const char *argv[])
   IndexParam param;
   
   if(!loadidef(id)) return(1); //......read index definitions from indexdef.dat
-  if(argc == 1) {showindex(id); return(0);} //...................show help info
+  if(argc == 1) {welcome(true); showindex(id); return(0);} //....show help info
   if(!loaddpar(cl)) return(1);  //read default keywords:values from inputcl.dat
   if(!loadipar(argv,argc,cl)) return(1); //.........read user's keywords:values
   if(!checkipar(cl, param, id)) return(1); //.......check final keywords:values
