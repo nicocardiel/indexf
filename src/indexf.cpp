@@ -50,15 +50,15 @@ int main (const int argc, const char *argv[])
   IndexParam param;
   
   welcome();
-  if( !loadidef(id) ) return(1);
-  if( argc == 1 ) { showindex(id); return(0); }
-  if( !loaddpar(cl) ) return(1);
-  if( !loadipar(argv,argc,cl) ) return(1);
-  if( !checkipar(cl, param, id) ) return(1);
-  SciData image(param);
-  IndexDef myindex = id[param.get_nindex()-1];
-  updatebands(param,myindex);
-  if (param.get_verbose()) verbose(param,myindex,&image);
-  if( !measuresp(&image,param,myindex) ) return(1);
+  if(!loadidef(id)) return(1); //......read index definitions from indexdef.dat
+  if(argc == 1) {showindex(id); return(0);} //...................show help info
+  if(!loaddpar(cl)) return(1);  //read default keywords:values from inputcl.dat
+  if(!loadipar(argv,argc,cl)) return(1); //.........read user's keywords:values
+  if(!checkipar(cl, param, id)) return(1); //.......check final keywords:values
+  SciData image(param); //..........SciData object: spectra and associated data
+  IndexDef myindex = id[param.get_nindex()-1]; //IndexDef object: spec. feature
+  updatebands(param,myindex); //......correct wavelengths to vacuum if required
+  if(param.get_verbose()) verbose(param,myindex,&image); //....output verbosity
+  if(!measuresp(&image,param,myindex)) return(1); //......measure spec. feature
   return(0);
 }
