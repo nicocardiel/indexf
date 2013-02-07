@@ -31,12 +31,12 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 //prototipos de funciones
-void welcome();
 bool loadidef(vector< IndexDef > &);
 void showindex(vector< IndexDef > &);
 bool loaddpar(vector< CommandToken > &);
 bool loadipar(const char *[], const int, vector< CommandToken > &);
 bool checkipar(vector< CommandToken > &, IndexParam &, vector< IndexDef > &);
+void welcome(const bool);
 void updatebands(IndexParam &, IndexDef &);
 void verbose(IndexParam &, IndexDef &, SciData *);
 bool measuresp(SciData *, IndexParam &, IndexDef &);
@@ -49,12 +49,12 @@ int main (const int argc, const char *argv[])
   vector< IndexDef > id;
   IndexParam param;
   
-  welcome();
   if(!loadidef(id)) return(1); //......read index definitions from indexdef.dat
   if(argc == 1) {showindex(id); return(0);} //...................show help info
   if(!loaddpar(cl)) return(1);  //read default keywords:values from inputcl.dat
   if(!loadipar(argv,argc,cl)) return(1); //.........read user's keywords:values
   if(!checkipar(cl, param, id)) return(1); //.......check final keywords:values
+  welcome(param.get_verbose()); //..........welcome message with version number
   SciData image(param); //..........SciData object: spectra and associated data
   IndexDef myindex = id[param.get_nindex()-1]; //IndexDef object: spec. feature
   updatebands(param,myindex); //......correct wavelengths to vacuum if required
