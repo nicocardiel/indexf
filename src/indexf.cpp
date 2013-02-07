@@ -36,7 +36,7 @@ void showindex(vector< IndexDef > &);
 bool loaddpar(vector< CommandToken > &);
 bool loadipar(const char *[], const int, vector< CommandToken > &);
 bool checkipar(vector< CommandToken > &, IndexParam &, vector< IndexDef > &);
-void welcome(const bool);
+void welcome(bool);
 void updatebands(IndexParam &, IndexDef &);
 void verbose(IndexParam &, IndexDef &, SciData *);
 bool measuresp(SciData *, IndexParam &, IndexDef &);

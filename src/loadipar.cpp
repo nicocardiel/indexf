@@ -110,23 +110,43 @@ bool loadipar(const char *argv[], const int argc,vector< CommandToken > &cl)
     //indicado en la linea de comandos es uno de dichos label esperados
     bool labelfound=false;
     for (unsigned long i = 1; i <= cl.size(); i++)
+    {
       if (strcmp(cl[i-1].getlabel(),keylabelPtr) == 0)
       {
         labelfound=true;
         cl[i-1].setvalue(keyvaluePtr);
       }
+    }
     if(!labelfound)
     {
-      cout << "FATAL ERROR: invalid keyword label <" 
-           << keylabelPtr << ">" << endl;
-      cout << "Valid keywords are only: ";
-      for (unsigned long i = 1; i <= cl.size(); i++)
-        cout << "<" << cl[i-1].getlabel() << "> ";
-      cout << endl;
-      delete [] keylabelPtr;
-      delete [] keyvaluePtr;
-      delete [] listPtr;
-      return(false);
+      //comprobamos si es "infile", un alias de "if" que introducimos para
+      //facilitar la compatibilidad con pyndexf (mejor generar un alias que
+      //cambiar "if" por "infile" y no mantener la compatibilidad hacia atras
+      //de indexf)
+      if (strcmp(keylabelPtr, "infile") == 0)
+      {
+        for (unsigned long i = 1; i <= cl.size(); i++)
+        {
+          if (strcmp(cl[i-1].getlabel(),"if") == 0)
+          {
+            labelfound=true;
+            cl[i-1].setvalue(keyvaluePtr);
+          }
+        }
+      }
+      else
+      {
+        cout << "FATAL ERROR: invalid keyword label <" 
+             << keylabelPtr << ">" << endl;
+        cout << "Valid keywords are only: ";
+        for (unsigned long i = 1; i <= cl.size(); i++)
+          cout << "<" << cl[i-1].getlabel() << "> ";
+        cout << endl;
+        delete [] keylabelPtr;
+        delete [] keyvaluePtr;
+        delete [] listPtr;
+        return(false);
+      }
     }
 #ifndef HAVE_CPGPLOT_H
     else
