@@ -46,10 +46,6 @@ bool loaddpar(vector< CommandToken > &cl)
     delete [] infilenamePtr;
     return(false);
   }
-  else
-  {
-    cout <<"#Keyword definitions: " << infilenamePtr << "\n#" << endl;
-  }
   //leemos el fichero
   string s;
   char *labelPtr, *valuePtr;

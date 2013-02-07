@@ -156,8 +156,11 @@ SciData::SciData(IndexParam &param)
     {
       strncpy(ctype1,"WAVE-LOG",8);
       ctype1[8]='\0';
-      cout << "#WARNING: keyword DC-FLAG found. Assuming CTYPE1=" 
-           << ctype1 << endl;
+      if(param.get_verbose())
+      {
+        cout << "#WARNING: keyword DC-FLAG found. Assuming CTYPE1=" 
+             << ctype1 << endl;
+      }
     }
   }
   //---------------------------------------------------------------------------
@@ -194,7 +197,11 @@ SciData::SciData(IndexParam &param)
   crval1 = crval1_;
   if ( fits_read_key(fptr, TDOUBLE, "CDELT1", &cdelt1_, NULL, &status) )
   {
-    cout << "#WARNING: keyword CDELT1 not found. Looking for CD1_1..." << endl;
+    if(param.get_verbose())
+    {
+      cout << "#WARNING: keyword CDELT1 not found. Looking for CD1_1..." 
+           << endl;
+    }
     int status_bis=0;
     if ( fits_read_key(fptr, TDOUBLE, "CD1_1", &cdelt1_, NULL, &status_bis) )
     {
@@ -331,8 +338,11 @@ SciData::SciData(IndexParam &param)
       {
         strncpy(ctype1_,"WAVE-LOG",8);
         ctype1_[8]='\0';
-        cout << "#WARNING: keyword DC-FLAG found. Assuming CTYPE1=" 
-             << ctype1_ << endl;
+        if(param.get_verbose())
+        {
+          cout << "#WARNING: keyword DC-FLAG found. Assuming CTYPE1=" 
+               << ctype1_ << endl;
+        }
       }
     }
     //-------------------------------------------------------------------------
@@ -554,12 +564,15 @@ SciData::SciData(IndexParam &param)
     crval1=stwv2;
     cdelt1=disp2;
     crpix1=1.0;
-    cout << "#WARNING: the spectra have been transformed to a lineal wavelength"
-         << "\n#         calibration (assuming base-10 logarithm) with:" 
-         << "\n#         > CRVAL1=" << crval1 
-         << "\n#         > CDELT1=" << cdelt1
-         << "\n#         > CRPIX1=" << crpix1
-         << "\n#         and preserving the flux/pixel!" << endl;
+    if(param.get_verbose())
+    {
+      cout << "#WARNING: spectra transformed to a linear wavelength"
+           << "\n#         calibration (assuming base-10 logarithm) with:" 
+           << "\n#         > CRVAL1=" << crval1 
+           << "\n#         > CDELT1=" << cdelt1
+           << "\n#         > CRPIX1=" << crpix1
+           << "\n#         and preserving the flux/pixel!" << endl;
+    }
   }
 
   //--------------------------------------------
