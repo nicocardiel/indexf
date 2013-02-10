@@ -28,9 +28,12 @@
 #include "scidata.h"
 
 using namespace std;
+bool pyndexf_global;
 
 //-----------------------------------------------------------------------------
 //prototipos de funciones
+bool checkpynd(const char *[], const int);
+int  pyexit(const int);
 bool loadidef(vector< IndexDef > &);
 void showindex(vector< IndexDef > &);
 bool loaddpar(vector< CommandToken > &);
@@ -48,17 +51,20 @@ int main (const int argc, const char *argv[])
   vector< CommandToken > cl;
   vector< IndexDef > id;
   IndexParam param;
+
+  pyndexf_global=checkpynd(argv,argc);
   
-  if(!loadidef(id)) return(1); //......read index definitions from indexdef.dat
+  if(!loadidef(id)) return(pyexit(1)); //................read index definitions
   if(argc == 1) {welcome(true); showindex(id); return(0);} //....show help info
-  if(!loaddpar(cl)) return(1);  //read default keywords:values from inputcl.dat
-  if(!loadipar(argv,argc,cl)) return(1); //.........read user's keywords:values
-  if(!checkipar(cl, param, id)) return(1); //.......check final keywords:values
+  if(!loaddpar(cl)) return(pyexit(1));  //read keywords:values from inputcl.dat
+  if(!loadipar(argv,argc,cl)) return(pyexit(1));  //read user's keywords:values
+  if(!checkipar(cl, param, id)) return(pyexit(1)); //.....check keywords:values
+  if(param.get_checkkeys()) return(0); //...check only keywords=values and exit
   welcome(param.get_verbose()); //..........welcome message with version number
   SciData image(param); //..........SciData object: spectra and associated data
   IndexDef myindex = id[param.get_nindex()-1]; //IndexDef object: spec. feature
   updatebands(param,myindex); //......correct wavelengths to vacuum if required
   if(param.get_verbose()) verbose(param,myindex,&image); //....output verbosity
-  if(!measuresp(&image,param,myindex)) return(1); //......measure spec. feature
+  if(!measuresp(&image,param,myindex)) return(pyexit(1)); //....measure spectra
   return(0);
 }
