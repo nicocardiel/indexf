@@ -66,6 +66,7 @@ IndexParam::IndexParam()
   ymax = 0;
   nseed = 0;
   fscale = 1.0;
+  checkkeys = false;
   pyndexf = false;
 }
 
@@ -100,6 +101,7 @@ IndexParam::IndexParam(
   double ymax_,                 //ymax for plots
   long nseed_,                  //seed for random numbers (0=use computer time)
   double fscale_,     //flux scale factor (measured spectrum = original/fscale)
+  bool checkkeys_,              //check only keywords=values and exit program
   bool pyndexf_)              //echo data for communication with python scripts
 {
   set_if(ifile_);
@@ -133,6 +135,7 @@ IndexParam::IndexParam(
   set_ymax(ymax_);
   set_nseed(nseed_);
   set_fscale(fscale_);
+  set_checkkeys(checkkeys_);
   set_pyndexf(pyndexf_);
 }
 
@@ -341,6 +344,12 @@ void IndexParam::set_fscale(const double fscale_)
 }
 
 //-----------------------------------------------------------------------------
+void IndexParam::set_checkkeys(const bool checkkeys_)
+{
+  checkkeys=checkkeys_;
+}
+
+//-----------------------------------------------------------------------------
 void IndexParam::set_pyndexf(const bool pyndexf_)
 {
   pyndexf=pyndexf_;
@@ -456,6 +465,9 @@ long IndexParam::get_nseed() {return(nseed);}
 
 //-----------------------------------------------------------------------------
 double IndexParam::get_fscale() {return(fscale);}
+
+//-----------------------------------------------------------------------------
+bool IndexParam::get_checkkeys() {return(checkkeys);}
 
 //-----------------------------------------------------------------------------
 bool IndexParam::get_pyndexf() {return(pyndexf);}

@@ -27,7 +27,7 @@
 
 using namespace std;
 
-//lee las definiciones de los indices del fichero indexdef.dat
+//lee las definiciones de los indices del fichero myindexdef.dat o indexdef.dat
 bool loadidef(vector< IndexDef > &id)
 {
   //el directorio de instalacion esta definido como variable global
