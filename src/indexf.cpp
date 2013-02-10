@@ -59,7 +59,11 @@ int main (const int argc, const char *argv[])
   if(!loaddpar(cl)) return(pyexit(1));  //read keywords:values from inputcl.dat
   if(!loadipar(argv,argc,cl)) return(pyexit(1));  //read user's keywords:values
   if(!checkipar(cl, param, id)) return(pyexit(1)); //.....check keywords:values
-  if(param.get_checkkeys()) return(0); //...check only keywords=values and exit
+  if(param.get_checkkeys()) //......check only keywords=values and exit program
+  {
+    if(pyndexf_global) cout << "python> ended with checkkeys=yes";
+    return(0);
+  }
   welcome(param.get_verbose()); //..........welcome message with version number
   SciData image(param); //..........SciData object: spectra and associated data
   IndexDef myindex = id[param.get_nindex()-1]; //IndexDef object: spec. feature
