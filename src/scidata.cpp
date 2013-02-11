@@ -561,18 +561,21 @@ SciData::SciData(IndexParam &param)
     delete [] tempsp;
     delete [] tempesp;
     //mostramos el efecto del nuevo cambio de escala
-    crval1=stwv2;
-    cdelt1=disp2;
-    crpix1=1.0;
     if(param.get_verbose())
     {
       cout << "#WARNING: spectra transformed to a linear wavelength"
            << "\n#         calibration (assuming base-10 logarithm) with:" 
-           << "\n#         > CRVAL1=" << crval1 
-           << "\n#         > CDELT1=" << cdelt1
-           << "\n#         > CRPIX1=" << crpix1
+           << "\n#         > CRVAL1 (log. scale)=" << crval1
+           << "\n#         > CD1_1  (log. scale)=" << cdelt1
+           << "\n#         > CRPIX1 (log. scale)=" << crpix1
+           << "\n#         > CRVAL1 (lin. scale)=" << stwv2
+           << "\n#         > CDELT1 (lin. scale)=" << disp2
+           << "\n#         > CRPIX1 (lin. scale)=" << 1.0
            << "\n#         and preserving the flux/pixel!" << endl;
     }
+    crval1=stwv2;
+    cdelt1=disp2;
+    crpix1=1.0;
   }
 
   //--------------------------------------------
