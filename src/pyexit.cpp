@@ -28,8 +28,8 @@ using namespace std;
 //Retorna 0 si estamos ejecutando indexf desde python o value en caso contrario
 int pyexit(const int value)
 {
-  extern bool pyndexf_global;
-  if (pyndexf_global)
+  extern bool pyindexf_global;
+  if (pyindexf_global)
   {
     cout << "python> pyexit activated" << endl;
     return(0);

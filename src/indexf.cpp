@@ -28,11 +28,11 @@
 #include "scidata.h"
 
 using namespace std;
-bool pyndexf_global;
+bool pyindexf_global;
 
 //-----------------------------------------------------------------------------
 //prototipos de funciones
-bool checkpynd(const char *[], const int);
+bool checkpyind(const char *[], const int);
 int  pyexit(const int);
 bool loadidef(vector< IndexDef > &);
 void showindex(vector< IndexDef > &);
@@ -52,7 +52,7 @@ int main (const int argc, const char *argv[])
   vector< IndexDef > id;
   IndexParam param;
 
-  pyndexf_global=checkpynd(argv,argc);
+  pyindexf_global=checkpyind(argv,argc);
   
   if(!loadidef(id)) return(pyexit(1)); //................read index definitions
   if(argc == 1) {welcome(true); showindex(id); return(0);} //....show help info

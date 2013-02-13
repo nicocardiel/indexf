@@ -120,7 +120,7 @@ bool loadipar(const char *argv[], const int argc,vector< CommandToken > &cl)
     if(!labelfound)
     {
       //comprobamos si es "infile", un alias de "if" que introducimos para
-      //facilitar la compatibilidad con pyndexf (mejor generar un alias que
+      //facilitar la compatibilidad con pyindexf (mejor generar un alias que
       //cambiar "if" por "infile" y no mantener la compatibilidad hacia atras
       //de indexf)
       if (strcmp(keylabelPtr, "infile") == 0)
