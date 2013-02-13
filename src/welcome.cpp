@@ -37,7 +37,7 @@ void welcome(bool verbose)
   //la version esta definida como variable global
   extern const char *versionPtr;
   cout << "#\n#Using indexf version: " << versionPtr 
-       << " (pyndexf compatible, "
+       << " (pyindexf compatible, "
 #ifdef HAVE_CPGPLOT_H
        << "PGPLOT enabled)"
 #else

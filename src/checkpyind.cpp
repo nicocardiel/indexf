@@ -26,9 +26,9 @@
 
 using namespace std;
 
-//hace una busqueda inicial del keyword pyndexf para saber pronto si, en caso
+//hace una busqueda inicial del keyword pyindexf para saber pronto si, en caso
 //de error, el programa debe salir o no con exit(1) o exit(0)
-bool checkpynd(const char *argv[], const int argc)
+bool checkpyind(const char *argv[], const int argc)
 {
   if (argc == 1)
   {
@@ -51,6 +51,6 @@ bool checkpynd(const char *argv[], const int argc)
   }
   //el metodo find() the string retorna string::npos si no encuentra la cadena
   //que estamos buscando
-  bool pyndexf = (list_of_parameters.find("pyndexf=yes") != string::npos);
-  return pyndexf;
+  bool pyindexf = (list_of_parameters.find("pyindexf=yes") != string::npos);
+  return pyindexf;
 }

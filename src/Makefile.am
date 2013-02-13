@@ -1,6 +1,6 @@
 #
 
-BASEFILES= boundaryfit.cpp c123.cpp checkipar.cpp checkpynd.cpp \
+BASEFILES= boundaryfit.cpp c123.cpp checkipar.cpp checkpyind.cpp \
 commandtok.cpp commandtok.h fmean.cpp fpercent.cpp \
 ftovacuum.cpp genericpixel.cpp genericpixel.h indexdef.cpp indexdef.h \
 indexf.cpp indexparam.cpp indexparam.h issdouble.cpp isslong.cpp \

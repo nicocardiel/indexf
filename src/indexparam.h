@@ -92,7 +92,7 @@ class IndexParam{
     void set_nseed(const long);
     void set_fscale(const double);
     void set_checkkeys(const bool);
-    void set_pyndexf(const bool);
+    void set_pyindexf(const bool);
     char *get_if();
     long get_ns1();
     long get_ns2();
@@ -131,7 +131,7 @@ class IndexParam{
     long get_nseed();
     double get_fscale();
     bool get_checkkeys();
-    bool get_pyndexf();
+    bool get_pyindexf();
   private:
     char ifile[256];
     char index[9];;
@@ -165,7 +165,7 @@ class IndexParam{
     long nseed;
     double fscale;
     bool checkkeys;
-    bool pyndexf;
+    bool pyindexf;
 };
 
 #endif
