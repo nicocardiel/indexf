@@ -27,4 +27,4 @@ ylim      0,0       #minimum & maximum Y in plots (0,0=automatic)
 nseed     0         #seed for random numbers (0=use computer time)
 fscale    1.0       #flux scale factor (measured spectrum = original/fscale)
 checkkeys no        #check only keywords=values and exit program
-pyndexf   no        #echo data for communication with pyndexf (python script)
+pyindexf  no        #echo data for communication with pyndexf (python script)
