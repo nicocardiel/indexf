@@ -126,6 +126,15 @@ bool measuresp(SciData *imagePtr, IndexParam &param, IndexDef &myindex)
     }
   }
 #endif /* HAVE_CPGPLOT_H */
+  const bool  pyindexf = param.get_pyindexf();
+  if (pyindexf) //generamos diccionario con parametros del indice a medir
+  {
+    cout << "python> {'indextype': " << myindex.gettype() << ", "
+         << "'nbands': " << myindex.getnbands() << ", "
+         << "'nconti': " << myindex.getnconti() << ", "
+         << "'nlines': " << myindex.getnlines() << "}" << endl;
+  }
+  //bucle para la medida de los diferentes espectros
   for (long ns = param.get_ns1(); ns <= param.get_ns2(); ns++)
   {
     bool out_of_limits,negative_error;
@@ -150,7 +159,6 @@ bool measuresp(SciData *imagePtr, IndexParam &param, IndexDef &myindex)
     const double xmax = param.get_xmax();
     const double ymin = param.get_ymin();
     const double ymax = param.get_ymax();
-    const bool  pyindexf = param.get_pyindexf();
     bool lfindex = mideindex(lerr,sp_data,sp_error,imagePtr->getnaxis1(),
                              crval1,cdelt1,crpix1,myindex,
                              contperc,boundfit,
