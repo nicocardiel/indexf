@@ -516,6 +516,11 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       {
         s[j-1]+=sc*biaserr/100.0;
       }
+      if (pyindexf)
+      {
+        cout << "python> {'biaserrfactor': " << sc*biaserr/100.0
+             << "}" << endl;
+      }
     }
     //D4000
     else if ( myindex.gettype() == 3)
@@ -558,6 +563,11 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       {
         s[j-1]+=sc*biaserr/100.0;
       }
+      if (pyindexf)
+      {
+        cout << "python> {'biaserrfactor': " << sc*biaserr/100.0
+             << "}" << endl;
+      }
     }
     //indices para los cuales no se ha incluido el efecto de biaserr
     else
@@ -565,6 +575,13 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       cout << "FATAL ERROR: biaserr=" << biaserr
            << " cannot be handled for this type of index." << endl;
       exit(1);
+    }
+  }
+  else
+  {
+    if (pyindexf)
+    {
+      cout << "python> {'biaserrfactor': 0.0}" << endl;
     }
   }
 
