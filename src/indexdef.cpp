@@ -74,8 +74,8 @@ IndexDef::IndexDef(const char *idlabel, const long &idtype)
   }
   else if( (type >= 11) && (type <= 99) ) //discontinuidad generica
   {
-    nconti=type/10;        //number of blue bands
-    nlines=type-nconti*10; //number of red bands
+    nconti=type/10;        //number of bands for denominator
+    nlines=type-nconti*10; //number of bands for numerator
     nbands=nconti+nlines;
   }
   else if( (type >= 101) && (type <= 9999) ) //indices genericos
