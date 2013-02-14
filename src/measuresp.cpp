@@ -130,6 +130,7 @@ bool measuresp(SciData *imagePtr, IndexParam &param, IndexDef &myindex)
   if (pyindexf) //generamos diccionario con parametros del indice a medir
   {
     cout << "python> {'indextype': " << myindex.gettype() << ", "
+         << "'indexname': '" << myindex.getlabel() << "', "
          << "'nbands': " << myindex.getnbands() << ", "
          << "'nconti': " << myindex.getnconti() << ", "
          << "'nlines': " << myindex.getnlines() << "}" << endl;
