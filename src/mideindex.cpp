@@ -523,8 +523,10 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
              << "}" << endl;
       }
     }
-    //D4000
-    else if ( (myindex.gettype() == 3) || (myindex.gettype() == 4) )
+    //D4000 o B4000
+    else if ( (myindex.gettype() == 3) || 
+              (myindex.gettype() == 4) ||
+              (myindex.gettype() == 5) )
     {
       //cuentas promedio en la banda azul
       double sb=0.0;
