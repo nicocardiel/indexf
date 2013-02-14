@@ -143,50 +143,6 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     if(wvmax < wv2temp) wvmax=wv2temp;
   }
 
-  //---------------------------------------------------------------------------
-  //fijamos los canales a usar para medir el indice (usando la variable
-  //logica evitamos el problema de la posible superposicion de las bandas)
-  bool *ifchan = new bool [naxis1];
-  for (long j=1; j <= naxis1; j++)
-  {
-    ifchan[j-1] = false;
-  }
-  for (long nb=0; nb < nbands; nb++)
-  {
-    for (long j=j1[nb]; j <= j2[nb]+1; j++)
-    {
-      ifchan[j-1]=true;
-    }
-  }
-  long nceff=0;
-  for (long j=1; j <= naxis1; j++)
-  {
-    if (ifchan[j-1]) nceff++;
-  }
-
-  //---------------------------------------------------------------------------
-  //normalizamos datos usando la senal solo en la region del indice a medir
-  double *s = new double [naxis1];
-  double *es = new double [naxis1];
-  double smean=0.0;
-  for (long j=1; j <= naxis1; j++)
-  {
-    if (ifchan[j-1]) smean+=sp_data[j-1];
-  }
-  smean/=static_cast<double>(nceff);
-  smean = ( smean != 0 ? smean : 1.0); //evitamos division por cero
-  for (long j=1; j <= naxis1; j++)
-  {
-    s[j-1]=sp_data[j-1]/smean;
-  }
-  if(lerr)
-  {
-    for (long j=1; j <= naxis1; j++)
-    {
-      es[j-1]=sp_error[j-1]/smean;
-    }
-  }
-
   //===========================================================================
   //dibujamos
 #ifdef HAVE_CPGPLOT_H
@@ -428,6 +384,51 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     delete [] x;
   }//==========================================================================
 #endif /* HAVE_CPGPLOT_H */
+
+  //---------------------------------------------------------------------------
+  //fijamos los canales a usar para medir el indice (usando la variable
+  //logica evitamos el problema de la posible superposicion de las bandas)
+  bool *ifchan = new bool [naxis1];
+  for (long j=1; j <= naxis1; j++)
+  {
+    ifchan[j-1] = false;
+  }
+  for (long nb=0; nb < nbands; nb++)
+  {
+    for (long j=j1[nb]; j <= j2[nb]+1; j++)
+    {
+      ifchan[j-1]=true;
+    }
+  }
+  long nceff=0;
+  for (long j=1; j <= naxis1; j++)
+  {
+    if (ifchan[j-1]) nceff++;
+  }
+
+  //---------------------------------------------------------------------------
+  //normalizamos datos usando la senal solo en la region del indice a medir
+  double *s = new double [naxis1];
+  double *es = new double [naxis1];
+  double smean=0.0;
+  for (long j=1; j <= naxis1; j++)
+  {
+    if (ifchan[j-1]) smean+=sp_data[j-1];
+  }
+  smean/=static_cast<double>(nceff);
+  smean = ( smean != 0 ? smean : 1.0); //evitamos division por cero
+  for (long j=1; j <= naxis1; j++)
+  {
+    s[j-1]=sp_data[j-1]/smean;
+  }
+  if(lerr)
+  {
+    for (long j=1; j <= naxis1; j++)
+    {
+      es[j-1]=sp_error[j-1]/smean;
+    }
+  }
+
   //---------------------------------------------------------------------------
   //senal/ruido promedio en las bandas del indice (vigilando que no haya
   //valores de error <= 0)
@@ -609,11 +610,11 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     {
       if (s[j-1] >= 0.0 )
       {
-        scale_factor=pow(s[j-1],linearerr);
+        scale_factor=pow(s[j-1],linearerr)*pow(smean,linearerr);
       }
       else
       {
-        scale_factor=pow(-s[j-1],linearerr);
+        scale_factor=pow(-s[j-1],linearerr)*pow(smean,linearerr);
       }
       s[j-1]*=scale_factor;
       es[j-1]*=scale_factor;
