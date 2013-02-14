@@ -1187,7 +1187,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
         for(long j=1; j<=naxis1; j++)
         {
           x[j-1] = static_cast<double>(j);
-          s_[j-1]=s[j]*smean;
+          s_[j-1]=s[j-1]*smean;
         }
         cpgsci(15);
         cpgbin_d(naxis1,x,s_,true);
