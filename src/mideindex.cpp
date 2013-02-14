@@ -104,11 +104,19 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     ca[nb] = myindex.getldo1(nb)*rcvel1;             //redshifted wavelength
     cb[nb] = myindex.getldo2(nb)*rcvel1;             //redshifted wavelength
     if(pyindexf)
+    {
       cout << "python> {'w_ini" << setw(3) << setfill('0') << nb+1 << "': " 
            <<           ca[nb] << ", "
            <<          "'w_end" << setw(3) << setfill('0') << nb+1 << "': " 
            <<           cb[nb] << "}"
            << endl;
+      if (myindex.gettype() == 10)
+      {
+        cout << "python> {'factor" << setw(3) << setfill('0') << nb+1 << "': "
+             <<           myindex.getfactor_el(nb) << "}"
+             << endl;
+      }
+    }
     c3[nb] = (ca[nb]-wlmin)/cdelt1+1.0;              //band limit (channel)
     c4[nb] = (cb[nb]-wlmin)/cdelt1;                  //band limit (channel)
     if ( (c3[nb] < 1.0) || (c4[nb] > static_cast<double>(naxis1)) )
@@ -1300,6 +1308,24 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     delete [] wl2;
     delete [] fx;
     delete [] efx;
+    // generate output for pyindexf
+    if(pyindexf)
+    {
+      double sb = 0.0;
+      for (long j=j1[0];j<=j2[0]+1;j++)
+      {
+        sb +=s[j-1];
+      }
+      sb /= static_cast<double>(j2[0]-j1[0]+2);
+      double sr = 0.0;
+      for (long j=j1[1];j<=j2[1]+1;j++)
+      {
+        sr +=s[j-1];
+      }
+      sr /= static_cast<double>(j2[1]-j1[1]+2);
+      cout << "python> {'f_mean_blue': " << sb*smean << ", "
+           <<          "'f_mean_red': "  << sr*smean << "}" << endl;
+    }
 #ifdef HAVE_CPGPLOT_H
     //=========================================================================
     //dibujamos
@@ -1400,6 +1426,13 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     for (long j = j1min; j <= j2max+1; j++)
     {
       sc[j-1] = amc*static_cast<double>(j)+bmc;
+    }
+    // generate output for pyindexf
+    if(pyindexf)
+    {
+      cout << "python> {'f_cont_bluest': " << sc[j1min-1]*smean << ", "
+           <<          "'f_cont_reddest': "  << sc[j2max]*smean << "}"
+           << endl;
     }
 #ifdef HAVE_CPGPLOT_H
     //=======================================================================
@@ -1632,6 +1665,13 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       eindex=cte_log_exp*eindex/findex;
       findex=2.5*log10(findex);
     }
+    // generate output for pyindexf
+    if(pyindexf)
+    {
+      cout << "python> {'f_mean_denominator': " << fconti*smean << ", "
+           <<          "'f_mean_numerator': "  << flines*smean << "}"
+           << endl;
+    }
 #ifdef HAVE_CPGPLOT_H
     //=========================================================================
     //dibujamos
@@ -1820,6 +1860,19 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     }
     delete [] sc;
     delete [] esc2;
+    if(pyindexf)
+    {
+      const double wla=wvmin*rcvel1;
+      const double wlb=wvmax*rcvel1;
+      const double xca=(wla-crval1)/cdelt1+crpix1;
+      const double xcb=(wlb-crval1)/cdelt1+crpix1;
+      const double yduma=amc*static_cast<double>(xca)+bmc;
+      const double ydumb=amc*static_cast<double>(xcb)+bmc;
+      cout << "python> {'w_min_cont': " << wla << ", "
+                       "'w_max_cont': " << wlb << "}" << endl;
+      cout << "python> {'f_min_cont': " << yduma*smean << ", "
+                       "'f_max_cont': " << ydumb*smean << "}" << endl;
+    }
 #ifdef HAVE_CPGPLOT_H
     //=========================================================================
     //dibujamos
@@ -1830,8 +1883,8 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       const double wlb=wvmax*rcvel1;
       const double xca=(wla-crval1)/cdelt1+crpix1;
       const double xcb=(wlb-crval1)/cdelt1+crpix1;
-      const double yduma=amc*static_cast<double>(xca)+bmc; 
-      const double ydumb=amc*static_cast<double>(xcb)+bmc; 
+      const double yduma=amc*static_cast<double>(xca)+bmc;
+      const double ydumb=amc*static_cast<double>(xcb)+bmc;
       cpgmove_d(xca,yduma*smean);
       cpgdraw_d(xcb,ydumb*smean);
       cpgsci(1);
@@ -1929,6 +1982,19 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     {
       eindex=cte_log_exp*eindex/findex;
       findex=2.5*log10(findex);
+    }
+    if(pyindexf)
+    {
+      const double wla=wvmin*rcvel1;
+      const double wlb=wvmax*rcvel1;
+      const double xca=(wla-crval1)/cdelt1+crpix1;
+      const double xcb=(wlb-crval1)/cdelt1+crpix1;
+      const double yduma=amc*static_cast<double>(xca)+bmc;
+      const double ydumb=amc*static_cast<double>(xcb)+bmc;
+      cout << "python> {'w_min_cont': " << wla << ", "
+                       "'w_max_cont': " << wlb << "}" << endl;
+      cout << "python> {'f_min_cont': " << yduma*smean << ", "
+                       "'f_max_cont': " << ydumb*smean << "}" << endl;
     }
 #ifdef HAVE_CPGPLOT_H
     //=========================================================================
