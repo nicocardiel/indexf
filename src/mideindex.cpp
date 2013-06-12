@@ -130,6 +130,23 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     d2[nb] = c4[nb]-static_cast<double>(j2[nb]);//fraction (defect right chan.)
     rl[nb] = cb[nb]-ca[nb];                 //redshifted band width (angstroms)
     rg[nb] = c4[nb]-c3[nb]+1;               //redshifted band width (channels)
+    if(pyindexf)
+    {
+      double meansn = 0;
+      for (long j=j1[nb]; j <= j2[nb]+1; j++)
+      {
+        if (sp_error[j-1] <= 0)
+        {
+          negative_error=true;
+          return(false);
+        }
+        meansn+=sp_data[j-1]/sp_error[j-1];
+      }
+      meansn/=static_cast<double>(j2[nb]-j1[nb]+2);
+      meansn/=sqrt(cdelt1); //calculamos senal/ruido por angstrom
+      cout << "python> {'meansn" << setw(3) << setfill('0') << nb+1 << "': "
+           <<           meansn << "}" << endl;
+    }
   }
   //calculamos limites en j1 y j2, por si las bandas no estan en orden
   long j1min = j1[0];
