@@ -133,17 +133,20 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     if(pyindexf)
     {
       double meansn = 0;
-      for (long j=j1[nb]; j <= j2[nb]+1; j++)
+      if(lerr)
       {
-        if (sp_error[j-1] <= 0)
+        for (long j=j1[nb]; j <= j2[nb]+1; j++)
         {
-          negative_error=true;
-          return(false);
+          if (sp_error[j-1] <= 0)
+          {
+            negative_error=true;
+            return(false);
+          }
+          meansn+=sp_data[j-1]/sp_error[j-1];
         }
-        meansn+=sp_data[j-1]/sp_error[j-1];
+        meansn/=static_cast<double>(j2[nb]-j1[nb]+2);
+        meansn/=sqrt(cdelt1); //calculamos senal/ruido por angstrom
       }
-      meansn/=static_cast<double>(j2[nb]-j1[nb]+2);
-      meansn/=sqrt(cdelt1); //calculamos senal/ruido por angstrom
       cout << "python> {'meansn" << setw(3) << setfill('0') << nb+1 << "': "
            <<           meansn << "}" << endl;
     }
