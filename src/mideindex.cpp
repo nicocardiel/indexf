@@ -144,18 +144,25 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       if(lerr)
       {
         if (!out_of_limits)
-          {
+        {
+          //comprobamos que no hay errores negativos ni nulos
           for (long j=j1[nb]; j <= j2[nb]+1; j++)
           {
             if (sp_error[j-1] <= 0)
             {
               negative_error=true;
-              return(false);
             }
-            meansn+=sp_data[j-1]/sp_error[j-1];
           }
-          meansn/=static_cast<double>(j2[nb]-j1[nb]+2);
-          meansn/=sqrt(cdelt1); //calculamos senal/ruido por angstrom
+          //si no hay errores negativos ni nulos, calculamos S/N_A
+          if (!negative_error)
+          {
+            for (long j=j1[nb]; j <= j2[nb]+1; j++)
+            {
+              meansn+=sp_data[j-1]/sp_error[j-1];
+            }
+            meansn/=static_cast<double>(j2[nb]-j1[nb]+2);
+            meansn/=sqrt(cdelt1); //calculamos senal/ruido por angstrom
+          }
         }
       }
       cout << "python> {'meansn" << setw(3) << setfill('0') << nb+1 << "': "
@@ -164,6 +171,11 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
   }
   // si el indice cae fuera de limites, no se puede medir
   if (out_of_limits)
+  {
+    return(false);
+  }
+  // si hemos encontrado errores negativos o nulos, no medimos el índice
+  if (negative_error)
   {
     return(false);
   }
