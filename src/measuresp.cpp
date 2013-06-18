@@ -47,13 +47,13 @@ bool mideindex(const bool &, const double *, const double *,
                const long &,
                const long &,
                const bool &,
-               const double &, const double &,
+               const double &,
                const double &, const double &,
                const long &, const long &,
                const double &, const double &, 
                const double &, const double &,
                const bool &,
-               bool &, bool &,
+               bool &, bool &, bool &,
                double &, double &, double &);
 
 bool fmean(const long, const double *, const bool *, double *, double *);
@@ -66,7 +66,7 @@ void outmeasurement(const long &,
                     const char *,
                     const bool &,
                     const bool &, const bool &,
-                    const bool &, const bool &);
+                    const bool &, const bool &, const bool &);
 
 bool measuresp(SciData *imagePtr, IndexParam &param, IndexDef &myindex)
 {
@@ -138,7 +138,7 @@ bool measuresp(SciData *imagePtr, IndexParam &param, IndexDef &myindex)
   //bucle para la medida de los diferentes espectros
   for (long ns = param.get_ns1(); ns <= param.get_ns2(); ns++)
   {
-    bool out_of_limits,negative_error;
+    bool out_of_limits,negative_error,log_negative;
     long i1=(ns-1)*imagePtr->getnaxis1()+1;
     long i2=i1+imagePtr->getnaxis1()-1;
     for ( long i = i1; i <= i2; i++ )
@@ -163,13 +163,14 @@ bool measuresp(SciData *imagePtr, IndexParam &param, IndexDef &myindex)
     bool lfindex = mideindex(lerr,sp_data,sp_error,imagePtr->getnaxis1(),
                              crval1,cdelt1,crpix1,myindex,
                              contperc,boundfit,
-                             logindex,rvel,rvelerr,
+                             logindex,
+                             rvel,
                              biaserr,linearerr,
                              plotmode,plottype,
                              xmin, xmax,
                              ymin, ymax,
                              pyindexf,
-                             out_of_limits,negative_error,
+                             out_of_limits,negative_error,log_negative,
                              findex,eindex,sn);
 #ifdef HAVE_CPGPLOT_H
     if ((plotmode != 0) && (plottype >= 1))
@@ -210,18 +211,19 @@ bool measuresp(SciData *imagePtr, IndexParam &param, IndexDef &myindex)
         const double rvel_eff = rvel+delta_rvel;
         const bool logindex = param.get_logindex();
         double eindex_sim,sn_sim;
-        bool out_of_limits_sim,negative_error_sim;
+        bool out_of_limits_sim,negative_error_sim,log_negative_sim;
         iffindex_sim[nsimul-1]=
           mideindex(lerr,sp_data,sp_error,imagePtr->getnaxis1(),
                     crval1,cdelt1,crpix1,myindex,
                     contperc,boundfit,
-                    logindex,rvel_eff,rvelerr,
+                    logindex,
+                    rvel_eff,
                     biaserr,linearerr,
                     0,plottype, //no queremos plots (salvo continuo)
                     xmin, xmax,
                     ymin, ymax,
                     false, //no queremos python output aqui
-                    out_of_limits_sim,negative_error_sim,
+                    out_of_limits_sim,negative_error_sim,log_negative_sim,
                     findex_sim[nsimul-1],eindex_sim,sn_sim);
       }
       leindex_rv=fmean(param.get_nsimul(),findex_sim,iffindex_sim,
@@ -232,7 +234,8 @@ bool measuresp(SciData *imagePtr, IndexParam &param, IndexDef &myindex)
     const char* labelsp = imagePtr->getlabelsp()[ns-1];
     outmeasurement(ns,findex,eindex,sn,
                    rvel,rvelerr,findex_rv,eindex_rv,labelsp,
-                   lfindex,lerr,leindex_rv,out_of_limits,negative_error);
+                   lfindex,lerr,leindex_rv,
+                   out_of_limits,negative_error,log_negative);
     //si se ha solicitado, se realizan las simulaciones con S/N variable
     //(usamos escala logaritmica en S/N para tener una distribucion
     //homogenea de puntos al calcular las constantes de los errores)
@@ -269,18 +272,19 @@ bool measuresp(SciData *imagePtr, IndexParam &param, IndexDef &myindex)
           }
           const bool logindex = param.get_logindex();
           double eindex_sim,sn_sim;
-          bool out_of_limits_sim,negative_error_sim;
+          bool out_of_limits_sim,negative_error_sim,log_negative_sim;
           iffindex_sim[nsimul-1]=
             mideindex(lerr,sp_data_eff,sp_error,imagePtr->getnaxis1(),
                       crval1,cdelt1,crpix1,myindex,
                       contperc,boundfit,
-                      logindex,rvel,rvelerr,
+                      logindex,
+                      rvel,
                       biaserr,linearerr,
                       0,0, //no queremos plots
                       xmin, xmax,
                       ymin, ymax,
                       false, //no queremos python output aqui
-                      out_of_limits_sim,negative_error_sim,
+                      out_of_limits_sim,negative_error_sim,log_negative_sim,
                       findex_sim[nsimul-1],eindex_sim,sn_sim);
           delete [] sp_data_eff;
         }
@@ -290,7 +294,7 @@ bool measuresp(SciData *imagePtr, IndexParam &param, IndexDef &myindex)
         cout << endl;
         outmeasurement(-nsimulsn,findex_sn,eindex_sn,sn_Ang_simul,
                        rvel,0.0,0.0,0.0,label_false_NULL,
-                       lfindex,true,false,false,false);
+                       lfindex,true,false,false,false,false);
         delete [] findex_sim;
         delete [] iffindex_sim;
       }
@@ -327,7 +331,9 @@ void outmeasurement(const long & ns,
                     const char * labelsp,
                     const bool & lfindex,
                     const bool & lerr, const bool & leindex_rv,
-                    const bool & out_of_limits, const bool & negative_error)
+                    const bool & out_of_limits, 
+                    const bool & negative_error,
+                    const bool & log_negative)
 {
   //formateamos la salida
   ostringstream srvel, srvelerr;
@@ -396,6 +402,8 @@ void outmeasurement(const long & ns,
       strcpy(tipo_error,"undef2");
     else if(negative_error)
       strcpy(tipo_error,"undef3");
+    else if(log_negative)
+      strcpy(tipo_error,"undef5");
     sfindex << setw(10) << tipo_error;
     seindex << setw(10) << tipo_error;
     sfindex_rv << setw(10) << tipo_error;

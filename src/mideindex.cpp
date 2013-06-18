@@ -51,13 +51,13 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
                const long &contperc,
                const long &boundfit,
                const bool &logindex,
-               const double &rvel, const double &rvelerr,
+               const double &rvel,
                const double &biaserr, const double &linearerr,
                const long &plotmode, const long &plottype,
                const double &xmin_user, const double &xmax_user,
                const double &ymin_user, const double &ymax_user,
                const bool &pyindexf,
-               bool &out_of_limits, bool &negative_error,
+               bool &out_of_limits, bool &negative_error, bool &log_negative,
                double &findex, double &eindex, double &sn)
 {
   //---------------------------------------------------------------------------
@@ -67,6 +67,21 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     cout << "ERROR: contperc and boundfit cannot be used simultaneously"
          << endl;
     exit(1);
+  }
+  //---------------------------------------------------------------------------
+  //mientras no se demuestre lo contario, no hay problemas al medir
+  out_of_limits=false;
+  negative_error=false;
+  log_negative=false;
+  findex=0;
+  eindex=0;
+  sn=0;
+  //---------------------------------------------------------------------------
+  //proteccion para velocidades radiales superiores a c
+  if (rvel > 2.9979240E+5)
+  {
+    out_of_limits=true;
+    return(false);
   }
   //---------------------------------------------------------------------------
   //constantes numericas
@@ -81,11 +96,6 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
   //se calcula como:
   //lambda=crval1+(j-crpix1)*cdelt1
   //con j definido en el intervalo [1,NAXIS1]
-
-  //mientras no se demuestre lo contario, no hay problemas al medir
-  out_of_limits=false;
-  negative_error=false;
-
   //---------------------------------------------------------------------------
   //calculamos parametros de cada banda a medir
   const long nbands = myindex.getnbands();
@@ -119,7 +129,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     }
     c3[nb] = (ca[nb]-wlmin)/cdelt1+1.0;              //band limit (channel)
     c4[nb] = (cb[nb]-wlmin)/cdelt1;                  //band limit (channel)
-    if ( (c3[nb] < 1.0) || (c4[nb] > static_cast<double>(naxis1)) )
+    if ( (c3[nb] < 1.0) || (c4[nb] > static_cast<double>(naxis1-1)) )
     {
       out_of_limits=true;          //indice fuera de limites: no se puede medir
     }
@@ -133,9 +143,27 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       rg[nb] = c4[nb]-c3[nb]+1;             //redshifted band width (channels)
     }
   }
+  //comprobamos que al usar errores no hay errores negativos ni nulos
+  if(lerr)
+  {
+    if (!out_of_limits)
+    {
+      for (long nb=0; nb < nbands; nb++)
+      {
+        for (long j=j1[nb]; j <= j2[nb]+1; j++)
+        {
+          if (sp_error[j-1] <= 0)
+          {
+            negative_error=true;
+          }
+        }
+      }
+    }
+  }
   //calculamos S/N_A promedio en cada banda por separado (solo cuando
   //ejecutamos el programa a traves de pyindexf y no se ha producido el error
-  //debido a que el indice cae fuera de limites)
+  //debido a que el indice cae fuera de limites o a que existan errores
+  //negativos o nulos)
   if(pyindexf)
   {
     for (long nb=0; nb < nbands; nb++)
@@ -145,15 +173,6 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       {
         if (!out_of_limits)
         {
-          //comprobamos que no hay errores negativos ni nulos
-          for (long j=j1[nb]; j <= j2[nb]+1; j++)
-          {
-            if (sp_error[j-1] <= 0)
-            {
-              negative_error=true;
-            }
-          }
-          //si no hay errores negativos ni nulos, calculamos S/N_A
           if (!negative_error)
           {
             for (long j=j1[nb]; j <= j2[nb]+1; j++)
@@ -495,11 +514,12 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     {
       if (ifchan[j-1])
       {
-        if (sp_error[j-1] <= 0)
-        {
-          negative_error=true;
-          return(false);
-        }
+        ////The next lines are no longer required
+        ////if (sp_error[j-1] <= 0)
+        ////{
+        ////  negative_error=true;
+        ////  return(false);
+        ////}
         sn+=s[j-1]/es[j-1];
       }
     }
@@ -1202,6 +1222,13 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     etc=sqrt(etc2)*cdelt1;
     if (myindex.gettype() == 1) //indice molecular
     {
+      if (tc/rl[1] <= 0.0)
+      {
+        log_negative=true;
+        findex=0.0;
+        eindex=0.0;
+        return(false);
+      }
       findex = -2.5*log10(tc/rl[1]);
       if(lerr) eindex = cte_log_exp/pow(10,-0.4*findex)*etc/rl[1];
     }
@@ -1209,6 +1236,13 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     {
       if(logindex) //indice atomico medido en magnitudes
       {
+        if (tc/rl[1] <= 0.0)
+        {
+          log_negative=true;
+          findex=0.0;
+          eindex=0.0;
+          return(false);
+        }
         findex = -2.5*log10(tc/rl[1]);
         if(lerr) eindex = cte_log_exp/pow(10,-0.4*findex)*etc/rl[1];
       }
@@ -1350,6 +1384,13 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     if(logindex) //si medimos en escala logaritmica
     {
       eindex= cte_log_exp*eindex/findex;
+      if (findex <= 0.0)
+      {
+        log_negative=true;
+        findex=0.0;
+        eindex=0.0;
+        return(false);
+      }
       findex=2.5*log10(findex);
     }
     delete [] wl;
@@ -1711,6 +1752,13 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     if(logindex) //si medimos en escala logaritmica
     {
       eindex=cte_log_exp*eindex/findex;
+      if (findex <= 0.0)
+      {
+        log_negative=true;
+        findex=0.0;
+        eindex=0.0;
+        return(false);
+      }
       findex=2.5*log10(findex);
     }
     // generate output for pyindexf
@@ -1898,6 +1946,13 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     }
     if(logindex) //indice generico medido en magnitudes
     {
+      if (tc*cdelt1/sumrl <= 0.0)
+      {
+        log_negative=true;
+        findex=0.0;
+        eindex=0.0;
+        return(false);
+      }
       findex=-2.5*log10(tc*cdelt1/sumrl);
       if(lerr) eindex=cte_log_exp/pow(10,-0.4*findex)*sqrt(etc)*cdelt1/sumrl;
     }
@@ -2029,6 +2084,13 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     if(logindex) //indice pendiente medido en magnitudes
     {
       eindex=cte_log_exp*eindex/findex;
+      if (findex <= 0.0)
+      {
+        log_negative=true;
+        findex=0.0;
+        eindex=0.0;
+        return(false);
+      }
       findex=2.5*log10(findex);
     }
     if(pyindexf)
