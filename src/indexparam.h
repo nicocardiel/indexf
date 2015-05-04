@@ -33,6 +33,7 @@ class IndexParam{
       char *,           //input error file
       long,             //percentile for continuum (-1=use mean fluxes)
       long,             //boundary fit for continuum (0=use mean fluxes)
+      bool,             //assume continuum level equal to 1.0
       char *,           //sn estimation file
       double,double,    //radial velocity and error
       char *,long,long, //rad. vel. file name, column data & error
@@ -65,6 +66,7 @@ class IndexParam{
     void set_ief(const char *);
     void set_contperc(const long);
     void set_boundfit(const long);
+    void set_flattened(const bool);
     void set_snf(const char *);
     void set_rv(const double, const double);
     void set_rvf(const char *,const long, const long);
@@ -100,6 +102,7 @@ class IndexParam{
     char *get_ief();
     long get_contperc();
     long get_boundfit();
+    bool get_flattened();
     char *get_snf();
     double get_rv();
     double get_rve();
@@ -139,6 +142,7 @@ class IndexParam{
     char iefile[256];
     long contperc;
     long boundfit;
+    bool flattened;
     char snfile[256];
     double rv,rve;
     char rvfile[256];

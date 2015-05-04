@@ -47,6 +47,7 @@ bool mideindex(const bool &, const double *, const double *,
                const long &,
                const long &,
                const bool &,
+               const bool &,
                const double &,
                const double &, const double &,
                const long &, const long &,
@@ -97,6 +98,7 @@ bool measuresp(SciData *imagePtr, IndexParam &param, IndexDef &myindex)
   //definimos parametros adicionales
   const long contperc = param.get_contperc();
   const long boundfit = param.get_boundfit();
+  const bool flattened = param.get_flattened();
   const long plotmode = param.get_plotmode();
   const long plottype = param.get_plottype();
   //recorremos, extraemos y medimos los espectros requeridos
@@ -162,7 +164,7 @@ bool measuresp(SciData *imagePtr, IndexParam &param, IndexDef &myindex)
     const double ymax = param.get_ymax();
     bool lfindex = mideindex(lerr,sp_data,sp_error,imagePtr->getnaxis1(),
                              crval1,cdelt1,crpix1,myindex,
-                             contperc,boundfit,
+                             contperc,boundfit,flattened,
                              logindex,
                              rvel,
                              biaserr,linearerr,
@@ -215,7 +217,7 @@ bool measuresp(SciData *imagePtr, IndexParam &param, IndexDef &myindex)
         iffindex_sim[nsimul-1]=
           mideindex(lerr,sp_data,sp_error,imagePtr->getnaxis1(),
                     crval1,cdelt1,crpix1,myindex,
-                    contperc,boundfit,
+                    contperc,boundfit,flattened,
                     logindex,
                     rvel_eff,
                     biaserr,linearerr,
@@ -276,7 +278,7 @@ bool measuresp(SciData *imagePtr, IndexParam &param, IndexDef &myindex)
           iffindex_sim[nsimul-1]=
             mideindex(lerr,sp_data_eff,sp_error,imagePtr->getnaxis1(),
                       crval1,cdelt1,crpix1,myindex,
-                      contperc,boundfit,
+                      contperc,boundfit,flattened,
                       logindex,
                       rvel,
                       biaserr,linearerr,
