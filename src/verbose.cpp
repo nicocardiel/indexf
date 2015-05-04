@@ -367,6 +367,16 @@ void verbose(IndexParam &param, IndexDef &myindex, SciData *imagePtr)
   cout << "#Percentile for continuum (%)..: " << param.get_contperc() << endl;
   //boundary fit for continuum estimation
   cout << "#Boundary fit for continuum....: " << param.get_boundfit() << endl;
+  //flattened (no/yes): assume continuum level equal to 1.0
+  cout << "#Flattened spectrum (flux=1.0).: ";
+  if (param.get_flattened())
+  {
+    cout << "yes" << endl;
+  }
+  else
+  {
+    cout << "no" << endl;
+  }
   //systematic error (additive % of the continuum level)
   cout << "#Systematic error (additive %).: " << param.get_biaserr() << endl;
   //linearity error
