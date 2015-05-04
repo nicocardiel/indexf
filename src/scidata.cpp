@@ -938,10 +938,10 @@ SciData::SciData(IndexParam &param)
           {
             double w1r2=snregion[nr2-1].getwave1();
             double w2r2=snregion[nr2-1].getwave2();
-            if ( (w1r1 >= w1r2) && (w1r1 <= w2r2) || //w1r1 dentro de r2
-                 (w2r1 >= w1r2) && (w2r1 <= w2r2) || //w2r1 dentro de r2
-                 (w1r2 >= w1r1) && (w1r2 <= w2r1) || //w1r2 dentro de r1
-                 (w2r2 >= w1r1) && (w2r2 <= w2r1) )  //w2r2 dentro de r1
+            if ( ((w1r1 >= w1r2) && (w1r1 <= w2r2)) || //w1r1 dentro de r2
+                 ((w2r1 >= w1r2) && (w2r1 <= w2r2)) || //w2r1 dentro de r2
+                 ((w1r2 >= w1r1) && (w1r2 <= w2r1)) || //w1r2 dentro de r1
+                 ((w2r2 >= w1r1) && (w2r2 <= w2r1)) )  //w2r2 dentro de r1
             {
               cout << "FATAL ERROR: reading the file " 
                    << filename_error << endl;

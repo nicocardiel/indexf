@@ -227,7 +227,29 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
   //[temporal] (fin)
   param.set_boundfit(boundfit);
 
-  //---------------------------------
+  //----------------------------------------------
+  //flattened (assume continuum level equal to 1.0
+  //----------------------------------------------
+  nextParameter++;
+  labelPtr = cl[nextParameter].getlabel();
+  valuePtr = cl[nextParameter].getvalue();
+  if ((strcmp(valuePtr,"yes") == 0)||(strcmp(valuePtr,"y") == 0))
+  {
+    param.set_flattened(true);
+  }
+  else if ((strcmp(valuePtr,"no") == 0)||(strcmp(valuePtr,"n") == 0))
+  {
+    param.set_flattened(false);
+  }
+  else
+  {
+    cout << "FATAL ERROR: <" << valuePtr
+         << "> is an invalid argument for the keyword <" << labelPtr
+         << ">" << endl;
+    return(false);
+  }
+ 
+   //---------------------------------
   //estimate S/N from rms in spectrum
   //---------------------------------
   nextParameter++;

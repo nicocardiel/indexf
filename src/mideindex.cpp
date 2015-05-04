@@ -50,6 +50,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
                const IndexDef &myindex,
                const long &contperc,
                const long &boundfit,
+               const bool &flattened,
                const bool &logindex,
                const double &rvel,
                const double &biaserr, const double &linearerr,
@@ -65,6 +66,18 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
   if ( (contperc >= 0) && (boundfit != 0) )
   {
     cout << "ERROR: contperc and boundfit cannot be used simultaneously"
+         << endl;
+    exit(1);
+  }
+  if ( (contperc >= 0) && (flattened) )
+  {
+    cout << "ERROR: contperc and flattened cannot be used simultaneously"
+         << endl;
+    exit(1);
+  }
+  if ( (boundfit != 0) && (flattened) )
+  {
+    cout << "ERROR: boundfit and flattened cannot be used simultaneously"
          << endl;
     exit(1);
   }
@@ -483,15 +496,24 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
 
   //---------------------------------------------------------------------------
   //normalizamos datos usando la senal solo en la region del indice a medir
+  //(si flattened=true, no lo hacemos)
   double *s = new double [naxis1];
   double *es = new double [naxis1];
-  double smean=0.0;
-  for (long j=1; j <= naxis1; j++)
+  double smean;
+  if (flattened)
   {
-    if (ifchan[j-1]) smean+=sp_data[j-1];
+    smean=1.0;
   }
-  smean/=static_cast<double>(nceff);
-  smean = ( smean != 0 ? smean : 1.0); //evitamos division por cero
+  else
+  {
+    smean=0.0;
+    for (long j=1; j <= naxis1; j++)
+    {
+      if (ifchan[j-1]) smean+=sp_data[j-1];
+    }
+    smean/=static_cast<double>(nceff);
+    smean = ( smean != 0 ? smean : 1.0); //evitamos division por cero
+  }
   for (long j=1; j <= naxis1; j++)
   {
     s[j-1]=sp_data[j-1]/smean;
@@ -543,6 +565,12 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     if ( boundfit != 0 )
     {
       cout << "ERROR: biaserr and boundfit cannot be used simultaneously"
+           << endl;
+      exit(1);
+    }
+    if ( flattened )
+    {
+      cout << "ERROR: biaserr and flattened cannot be used simultaneously"
            << endl;
       exit(1);
     }
@@ -683,6 +711,12 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
            << endl;
       exit(1);
     }
+    if ( flattened )
+    {
+      cout << "ERROR: linearerr and flattened cannot be used simultaneously"
+           << endl;
+      exit(1);
+    }
     double scale_factor;
     for (long j=1; j <= naxis1; j++)
     {
@@ -736,6 +770,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     double esb2=0.0;               //error en el flujo anterior
     double sr=0.0;                 //flujo "promedio" para centro de banda roja
     double esr2=0.0;               //error en el flujo anterior
+    //-------------------------------------------------------------------------
     if(boundfit == 1) //....boundary fit independiente a cada banda de continuo
     {
       //...................................................incluimos banda azul
@@ -1103,44 +1138,60 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     else //...............................................usamos metodo clasico
     {
       //banda azul
-      for (long j=j1[0]; j<=j2[0]+1; j++)
+      if (flattened)
       {
-        double f;
-        if (j == j1[0])
-          f=1.0-d1[0];
-        else if (j == j2[0]+1)
-          f=d2[0];
-        else
-          f=1.0;
-        sb+=f*s[j-1];
-        if(lerr) esb2+=f*f*es[j-1]*es[j-1];
+        sb = 1.0;
+        esb2 = 0.0;
       }
-      sb*=cdelt1;
-      sb/=rl[0];
-      if(lerr)
+      else
       {
-        esb2*=cdelt1*cdelt1;
-        esb2/=(rl[0]*rl[0]);
+        for (long j=j1[0]; j<=j2[0]+1; j++)
+        {
+          double f;
+          if (j == j1[0])
+            f=1.0-d1[0];
+          else if (j == j2[0]+1)
+            f=d2[0];
+          else
+            f=1.0;
+          sb+=f*s[j-1];
+          if(lerr) esb2+=f*f*es[j-1]*es[j-1];
+        }
+        sb*=cdelt1;
+        sb/=rl[0];
+        if(lerr)
+        {
+          esb2*=cdelt1*cdelt1;
+          esb2/=(rl[0]*rl[0]);
+        }
       }
       //banda roja
-      for (long j=j1[2]; j<=j2[2]+1; j++)
+      if (flattened)
       {
-        double f;
-        if (j == j1[2])
-          f=1.0-d1[2];
-        else if (j == j2[2]+1)
-          f=d2[2];
-        else
-          f=1.0;
-        sr+=f*s[j-1];
-        if(lerr) esr2+=f*f*es[j-1]*es[j-1];
+        sr = 1.0;
+        esr2 = 0.0;
       }
-      sr*=cdelt1;
-      sr/=rl[2];
-      if(lerr)
+      else
       {
-        esr2*=cdelt1*cdelt1;
-        esr2/=(rl[2]*rl[2]);
+        for (long j=j1[2]; j<=j2[2]+1; j++)
+        {
+          double f;
+          if (j == j1[2])
+            f=1.0-d1[2];
+          else if (j == j2[2]+1)
+            f=d2[2];
+          else
+            f=1.0;
+          sr+=f*s[j-1];
+          if(lerr) esr2+=f*f*es[j-1]*es[j-1];
+        }
+        sr*=cdelt1;
+        sr/=rl[2];
+        if(lerr)
+        {
+          esr2*=cdelt1*cdelt1;
+          esr2/=(rl[2]*rl[2]);
+        }
       }
       if(pyindexf)
       {
@@ -1328,6 +1379,12 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
            << endl;
       exit(1);
     }
+    if ( flattened )
+    {
+      cout << "ERROR: flattened has not been implemented yet for this index"
+           << endl;
+      exit(1);
+    }
     //pesos para la discontinuidad
     double *wl = new double [naxis1];
     double *wl2 = new double [naxis1];
@@ -1466,6 +1523,12 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     if ( boundfit > 0 )
     {
       cout << "ERROR: boundfit has not been implemented yet for this index"
+           << endl;
+      exit(1);
+    }
+    if ( flattened )
+    {
+      cout << "ERROR: flattened has not been implemented yet for this index"
            << endl;
       exit(1);
     }
@@ -1687,6 +1750,12 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
            << endl;
       exit(1);
     }
+    if ( flattened )
+    {
+      cout << "ERROR: flattened has not been implemented yet for this index"
+           << endl;
+      exit(1);
+    }
     long nconti = myindex.getnconti();
     long nlines = myindex.getnlines();
     //calculamos flujo promedio en las bandas de continuo
@@ -1827,6 +1896,12 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     if ( boundfit > 0 )
     {
       cout << "ERROR: boundfit has not been implemented yet for this index"
+           << endl;
+      exit(1);
+    }
+    if ( flattened )
+    {
+      cout << "ERROR: flattened has not been implemented yet for this index"
            << endl;
       exit(1);
     }
@@ -2009,6 +2084,12 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     if ( boundfit > 0 )
     {
       cout << "ERROR: boundfit has not been implemented yet for this index"
+           << endl;
+      exit(1);
+    }
+    if ( flattened )
+    {
+      cout << "ERROR: flattened has not been implemented yet for this index"
            << endl;
       exit(1);
     }
