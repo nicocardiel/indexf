@@ -208,12 +208,12 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
     }
   }
   const long boundfit = atol(valuePtr);
-  if( (boundfit < 0) || (boundfit > 5) )
+  if( (boundfit < -5) || (boundfit > 5) )
   {
     cout << "FATAL ERROR: <" << valuePtr
          << "> is an invalid argument for the keyword <" << labelPtr
          << ">" << endl;
-    cout << "> This number must satisfy 0 <= boundfit <= 5" << endl;
+    cout << "> This number must satisfy -5 <= boundfit <= 5" << endl;
     return(false);
   }
   //[temporal] (inicio)

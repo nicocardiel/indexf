@@ -39,7 +39,7 @@ using namespace std;
 
 bool fpercent(vector <GenericPixel> &, const long, const bool, 
               double *, double *);
-bool boundaryfit(vector <GenericPixel> &, const bool, 
+bool boundaryfit(const long , vector <GenericPixel> &, const bool, 
                  vector <GenericPixel> &, vector <GenericPixel> &);
 
 bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error, 
@@ -765,7 +765,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     double sr=0.0;                 //flujo "promedio" para centro de banda roja
     double esr2=0.0;               //error en el flujo anterior
     //-------------------------------------------------------------------------
-    if(boundfit == 1) //....boundary fit independiente a cada banda de continuo
+    if(fabs(boundfit) == 1) //..boundfit independiente a cada banda de continuo
     {
       //...................................................incluimos banda azul
       vector <GenericPixel> fluxpix_blue;  //datos a ajustar
@@ -791,7 +791,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       vector <GenericPixel> evaluate_blue; //vector de pixeles a evaluar
       evalpix.setwave(mwb);
       evaluate_blue.push_back(evalpix);
-      if(!boundaryfit(fluxpix_blue,lerr,boundfit_blue,evaluate_blue))
+      if(!boundaryfit(boundfit,fluxpix_blue,lerr,boundfit_blue,evaluate_blue))
       {
         cout << "ERROR: while computing boundary fit in blue band" << endl;
         exit(1);
@@ -842,7 +842,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       vector <GenericPixel> evaluate_red; //vector de pixeles a evaluar
       evalpix.setwave(mwr);
       evaluate_red.push_back(evalpix);
-      if(!boundaryfit(fluxpix_red,lerr,boundfit_red,evaluate_red))
+      if(!boundaryfit(boundfit,fluxpix_red,lerr,boundfit_red,evaluate_red))
       {
         cout << "ERROR: while computing boundary fit in red band" << endl;
         exit(1);
@@ -872,7 +872,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
 #endif /* HAVE_CPGPLOT_H */
     }
     else 
-    if( (boundfit == 2) || (boundfit == 3) ) //dos o tres bandas
+    if( (fabs(boundfit) == 2) || (fabs(boundfit) == 3) ) //dos o tres bandas
     {
       //...................................................incluimos banda azul
       vector <GenericPixel> fluxpix_all;  //datos a ajustar
@@ -894,7 +894,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
         temppix.seteflux(0.0);
         boundfit_all.push_back(temppix);
       }
-      if(boundfit == 3) //..............incluimos en el ajuste la banda central
+      if(fabs(boundfit) == 3) //........incluimos en el ajuste la banda central
       {
         for (long j=j1[1]; j<=j2[1]+1; j++)
         {
@@ -938,7 +938,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       evaluate.push_back(evalpix);
       evalpix.setwave(mwr);
       evaluate.push_back(evalpix);
-      if(!boundaryfit(fluxpix_all,lerr,boundfit_all,evaluate))
+      if(!boundaryfit(boundfit,fluxpix_all,lerr,boundfit_all,evaluate))
       {
         cout << "ERROR: while computing boundary fit in several bands" << endl;
         exit(1);
@@ -973,7 +973,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     //..................................desde la primera hasta la tercera banda
     //boundfit=4 calcula recta entre valores medios en bandas laterales
     //boundfit=5 calcula integral entre el boundary fit y el espectro
-    else if( (boundfit == 4) || (boundfit == 5) )
+    else if( (fabs(boundfit) == 4) || (fabs(boundfit) == 5) )
     {
       vector <GenericPixel> fluxpix_all;  //datos a ajustar
       vector <GenericPixel> boundfit_all; //ajuste a los datos
@@ -996,14 +996,14 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       }
       GenericPixel evalpix; //pixel puntual a ser evaluado
       vector <GenericPixel> evaluate; //vector de pixeles a evaluar
-      if (boundfit == 4) //evaluamos los puntos centrales de bandas laterales
+      if (fabs(boundfit) == 4) //evaluamos puntos centrales de bandas laterales
       {
         evalpix.setwave(mwb);
         evaluate.push_back(evalpix);
         evalpix.setwave(mwr);
         evaluate.push_back(evalpix);
       }
-      else if (boundfit == 5) //evaluamos todos los puntos de la banda central
+      else if (fabs(boundfit) == 5) //evaluamos los puntos de la banda central
       {
         for (long j=j1[1]; j<=j2[1]+1; j++)
         {
@@ -1023,12 +1023,12 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
           evaluate.push_back(evalpix);
         }
       }
-      if(!boundaryfit(fluxpix_all,lerr,boundfit_all,evaluate))
+      if(!boundaryfit(boundfit,fluxpix_all,lerr,boundfit_all,evaluate))
       {
         cout << "ERROR: while computing boundary fit in several bands" << endl;
         exit(1);
       }
-      if (boundfit == 4)
+      if (fabs(boundfit) == 4)
       {
         sb=evaluate[0].getflux();
         esb2=evaluate[0].geteflux();
@@ -1037,7 +1037,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
         esr2=evaluate[1].geteflux();
         esr2*=esr2;
       }
-      else if (boundfit == 5)
+      else if (fabs(boundfit) == 5)
       {
         for (long j=j1[1]; j<=j2[1]+1; j++)
         {
@@ -1198,7 +1198,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     }
     //calculamos pseudo-continuo como una recta uniendo los flujos "promedio"
     //en las bandas de continuo
-    if (boundfit != 5) //calculamos la recta
+    if (fabs(boundfit) != 5) //calculamos la recta
     {
       for (long j = j1min; j <= j2max+1; j++)
       {
@@ -1370,7 +1370,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
            << endl;
       exit(1);
     }
-    if ( boundfit > 0 )
+    if ( boundfit != 0 )
     {
       cout << "ERROR: boundfit has not been implemented yet for this index"
            << endl;
@@ -1517,7 +1517,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
            << endl;
       exit(1);
     }
-    if ( boundfit > 0 )
+    if ( boundfit != 0 )
     {
       cout << "ERROR: boundfit has not been implemented yet for this index"
            << endl;
@@ -1741,7 +1741,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
            << endl;
       exit(1);
     }
-    if ( boundfit > 0 )
+    if ( boundfit != 0 )
     {
       cout << "ERROR: boundfit has not been implemented yet for this index"
            << endl;
@@ -1890,7 +1890,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
            << endl;
       exit(1);
     }
-    if ( boundfit > 0 )
+    if ( boundfit != 0 )
     {
       cout << "ERROR: boundfit has not been implemented yet for this index"
            << endl;
@@ -2078,7 +2078,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
            << endl;
       exit(1);
     }
-    if ( boundfit > 0 )
+    if ( boundfit != 0 )
     {
       cout << "ERROR: boundfit has not been implemented yet for this index"
            << endl;

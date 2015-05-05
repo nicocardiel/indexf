@@ -41,12 +41,20 @@ using std::vector;
 //Finalmente tambien se evalua el boundary fit en todos los pixeles contenidos
 //en el vector eval. De esta forma, este vector puede usarse para calcular un
 //unico valor en el centro de una banda, o todo un conjunto de valores.
-bool boundaryfit(vector <GenericPixel> &vec, const bool lerr,
+//Si boundfit > 0, el ajuste es polinomico.
+//Si boundfit < 0, el ajuste se realiza con splines.
+bool boundaryfit(const long boundfit, 
+                 vector <GenericPixel> &vec, const bool lerr,
                  vector <GenericPixel> &fit,
                  vector <GenericPixel> &eval)
 {
   //---------------------------------------------------------------------------
   //protecciones
+  if (boundfit == 0)
+  {
+    cout << "ERROR in function boundaryfit: boundfit = 0" << endl;
+    return(false);
+  }
   long num=vec.size();
   if (num <= 0)
   {
@@ -86,7 +94,14 @@ bool boundaryfit(vector <GenericPixel> &vec, const bool lerr,
   }
   outdatafile.close();
   //calculamos ajuste
-  system("./boundfit_pol.sh > boundfit_pol.log");
+  if (boundfit > 0)
+  {
+    system("./boundfit_pol.sh > boundfit_pol.log");
+  }
+  else
+  {
+    system("./boundfit_spl.sh > boundfit_spl.log");
+  }
   //leemos el ajuste
   ifstream inputfitfile("boundfit.out",ios::in);
   if(!inputfitfile)
@@ -104,41 +119,106 @@ bool boundaryfit(vector <GenericPixel> &vec, const bool lerr,
     fit[i].setpixelfraction(vec[i].getpixelfraction());
   }
   inputfitfile.close();
-  //leemos grado y coeficientes del ajuste polinomico
-  ifstream inputcoeff("boundfit.coeff",ios::in);
-  if(!inputcoeff)
+  //---------------------------------------------------------------------------
+  //evaluamos el ajuste en los puntos solicitados
+  if (boundfit > 0) //........................................ajuste polinomico
   {
-    cerr << "File boundfit.coeff could not be opened" << endl;
-    return(false);
-  }
-  long polydeg;
-  inputcoeff >> polydeg;
-  double * polycoeff = new double [polydeg+1];
-  long idum;
-  for (long i=0; i<=polydeg; i++)
-  {
-    inputcoeff >> idum >> polycoeff[i];
-  }
-  inputcoeff.close();
-  //evaluamos el polinomio ajustado en los pixeles solicitados
-  long num_eval=eval.size();
-  if(num_eval > 0)
-  {
-    for (long i=0; i<num_eval; i++)
+    //leemos grado y coeficientes del ajuste polinomico
+    ifstream inputcoeff("boundfit.coeff",ios::in);
+    if(!inputcoeff)
     {
-      double tempwave=eval[i].getwave()/wnorm;
-      double tempflux=polycoeff[polydeg];
-      if(polydeg > 0)
-      {
-        for (long k=polydeg; k>=1; k--)
-        {
-          tempflux=tempflux*tempwave+polycoeff[k-1];
-        }
-      }
-      eval[i].setflux(tempflux);
-      eval[i].seteflux(0.01); //ToDo: calcular errores
+      cerr << "File boundfit.coeff could not be opened" << endl;
+      return(false);
     }
+    long polydeg;
+    inputcoeff >> polydeg;
+    double * polycoeff = new double [polydeg+1];
+    long idum;
+    for (long i=0; i<=polydeg; i++)
+    {
+      inputcoeff >> idum >> polycoeff[i];
+    }
+    inputcoeff.close();
+    //evaluamos el polinomio ajustado en los pixeles solicitados
+    long num_eval=eval.size();
+    if(num_eval > 0)
+    {
+      for (long i=0; i<num_eval; i++)
+      {
+        double tempwave=eval[i].getwave()/wnorm;
+        double tempflux=polycoeff[polydeg];
+        if(polydeg > 0)
+        {
+          for (long k=polydeg; k>=1; k--)
+          {
+            tempflux=tempflux*tempwave+polycoeff[k-1];
+          }
+        }
+        eval[i].setflux(tempflux);
+        eval[i].seteflux(0.01); //ToDo: calcular errores
+      }
+    }
+    delete [] polycoeff;
   }
-  delete [] polycoeff;
+  else //...............................................ajuste mediante splines
+  {
+    //leemos numero de knots, posicion de los knots y coeficientes de los 
+    //splines
+    ifstream inputcoeff("boundfit.coeff",ios::in);
+    if(!inputcoeff)
+    {
+      cerr << "File boundfit.coeff could not be opened" << endl;
+      return(false);
+    }
+    long nknots;
+    inputcoeff >> nknots;
+    double * xknot = new double [nknots];
+    double * yknot = new double [nknots];
+    double * s1 = new double [nknots-1];
+    double * s2 = new double [nknots-1];
+    double * s3 = new double [nknots-1];
+    long idum;
+    for (long i=0; i<nknots; i++)
+    {
+      inputcoeff >> idum >> xknot[i] >> yknot[i];
+    }
+    for (long i=0; i<nknots-1; i++)
+    {
+      inputcoeff >> idum >> s3[i] >> s2[i] >> s1[i];
+    }
+    inputcoeff.close();
+    //evaluamos el spline ajustado en los pixeles solicitados
+    long num_eval=eval.size();
+    if(num_eval > 0)
+    {
+      for (long i=0; i<num_eval; i++)
+      {
+        double tempwave=eval[i].getwave()/wnorm;
+        long i0 = 0;
+        for (long i=0; i<nknots; i++)
+        {
+          if (tempwave >= xknot[i]) 
+          {
+            i0 = i;
+          }
+        }
+        if (i0 == nknots-1)
+        {
+          i0 = nknots-2;
+        }
+        double dx = tempwave-xknot[i0];
+        double tempflux=yknot[i0];
+        tempflux += dx*(s1[i0]+dx*(s2[i0]+dx*s3[i0]));
+        eval[i].setflux(tempflux);
+        eval[i].seteflux(0.01); //ToDo: calcular errores
+      }
+    }
+    delete [] xknot;
+    delete [] yknot;
+    delete [] s1;
+    delete [] s2;
+    delete [] s3;
+  }
+  //---------------------------------------------------------------------------
   return(true);
 }
