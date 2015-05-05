@@ -78,7 +78,7 @@ bool boundaryfit(vector <GenericPixel> &vec, const bool lerr,
   }
   outdatafile.close();
   //calculamos ajuste
-  system("source boundfit_pol.tcsh > boundfit_pol.log");
+  system("./boundfit_pol.sh > boundfit_pol.log");
   //leemos el ajuste
   ifstream inputfitfile("boundfit.out",ios::in);
   if(!inputfitfile)

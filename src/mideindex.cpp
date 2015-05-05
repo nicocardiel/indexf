@@ -231,9 +231,9 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     if(wvmax < wv2temp) wvmax=wv2temp;
   }
 
+#ifdef HAVE_CPGPLOT_H
   //===========================================================================
   //dibujamos
-#ifdef HAVE_CPGPLOT_H
   bool xlim_auto = ((xmin_user == 0) && (xmax_user == 0));
   bool ylim_auto = ((ymin_user == 0) && (ymax_user == 0));
   if(plotmode != 0)
@@ -527,8 +527,8 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
   }
 
   //---------------------------------------------------------------------------
-  //senal/ruido promedio en las bandas del indice (vigilando que no haya
-  //valores de error <= 0)
+  //senal/ruido promedio en las bandas del indice (ya hemos vigilado antes de
+  //que no haya valores de error <= 0)
   sn=0.0;
   if(lerr)
   {
@@ -536,12 +536,6 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     {
       if (ifchan[j-1])
       {
-        ////The next lines are no longer required
-        ////if (sp_error[j-1] <= 0)
-        ////{
-        ////  negative_error=true;
-        ////  return(false);
-        ////}
         sn+=s[j-1]/es[j-1];
       }
     }
@@ -742,14 +736,14 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     //protecciones
     if ( contperc >= 0 )
     {
-      cout << "WARNING: contperc is being implemented for this index"
+      cout << "#WARNING: contperc is being implemented for this index"
            << endl;
     }
     if ( boundfit != 0 )
     {
-      cout << "WARNING: boundfit is being implemented for this index"
+      cout << "#WARNING: boundfit is being implemented for this index"
            << endl;
-      cout << "smean: " << smean << endl;
+      cout << "#smean: " << smean << endl;
     }
     //calculamos longitudes de onda en el centro de las bandas de continuo
     double mwb = (myindex.getldo1(0)+myindex.getldo2(0))/2.0;
@@ -805,9 +799,9 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       sb=evaluate_blue[0].getflux();
       esb2=evaluate_blue[0].geteflux();
       esb2*=esb2;
+#ifdef HAVE_CPGPLOT_H
       //=======================================================================
       //dibujamos boundary fit de la banda azul
-#ifdef HAVE_CPGPLOT_H
       if((plotmode != 0) && (plottype == 2))
       {
         long npixels = boundfit_blue.size();
@@ -856,9 +850,9 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       sr=evaluate_red[0].getflux();
       esr2=evaluate_red[0].geteflux();
       esr2*=esr2;
+#ifdef HAVE_CPGPLOT_H
       //=======================================================================
       //dibujamos boundary fit de la banda roja
-#ifdef HAVE_CPGPLOT_H
       if((plotmode != 0) && (plottype == 2))
       {
         long npixels = boundfit_red.size();
@@ -955,8 +949,8 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       sr=evaluate[1].getflux();
       esr2=evaluate[1].geteflux();
       esr2*=esr2;
-      //=======================================================================
 #ifdef HAVE_CPGPLOT_H
+      //=======================================================================
       //dibujamos boundary fit
       if((plotmode != 0) && (plottype == 2))
       {
@@ -1013,6 +1007,8 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       {
         for (long j=j1[1]; j<=j2[1]+1; j++)
         {
+          //las lineas que siguen no son necesarias si no queremos usar "f"
+          /*
           double f;
           if (j == j1[1])
             f=1.0-d1[1];
@@ -1020,6 +1016,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
             f=d2[1];
           else
             f=1.0;
+          */
           double wave=static_cast<double>(j-1)*cdelt1+
                       crval1-(crpix1-1.0)*cdelt1;
           evalpix.setwave(wave);
@@ -1049,8 +1046,8 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
           esc2[j-1]*=esc2[j-1];
         }
       }
-      //=======================================================================
 #ifdef HAVE_CPGPLOT_H
+      //=======================================================================
       //dibujamos boundary fit
       if((plotmode != 0) && (plottype == 2))
       {
@@ -1321,8 +1318,8 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
         wdum[1]=(mwr-crval1)/cdelt1+crpix1;
         ydum[1]=sr*smean;
         cpgpt_d(2,wdum,ydum,17);
-        cout << "Continuum, point #1: " << mwb << ", " << ydum[0] << endl;
-        cout << "Continuum, point #2: " << mwr << ", " << ydum[1] << endl;
+        cout << "#Continuum, point #1: " << mwb << ", " << ydum[0] << endl;
+        cout << "#Continuum, point #2: " << mwr << ", " << ydum[1] << endl;
         delete [] wdum;
         delete [] ydum;
       }
