@@ -216,6 +216,7 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
   }
   //[temporal] (inicio)
   //eliminar las siguientes lineas para trabajar con boundfit
+  /*
   if(  boundfit != 0 )
   {
     cout << "FATAL ERROR: <" << valuePtr
@@ -224,6 +225,7 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
     cout << "> This option is still under development." << endl;
     return(false);
   }
+  */
   //[temporal] (fin)
   param.set_boundfit(boundfit);
 
