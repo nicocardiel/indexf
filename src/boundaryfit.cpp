@@ -45,7 +45,6 @@ bool boundaryfit(vector <GenericPixel> &vec, const bool lerr,
                  vector <GenericPixel> &fit,
                  vector <GenericPixel> &eval)
 {
-  const double magicfactor = 1000.0;
   //---------------------------------------------------------------------------
   //protecciones
   long num=vec.size();
@@ -62,6 +61,15 @@ bool boundaryfit(vector <GenericPixel> &vec, const bool lerr,
     cout << "size(fit): " << fit.size() << endl;
     return(false);
   }
+  
+  //---------------------------------------------------------------------------
+  //normalizamos la longitud de onda
+  double wnorm = 0.0;
+  for (long i=0; i<num; i++)
+  {
+    wnorm += vec[i].getwave();
+  }
+  wnorm /= static_cast<double>(num);
 
   //---------------------------------------------------------------------------
   //generamos un fichero ASCII con los datos a ajustar
@@ -73,7 +81,7 @@ bool boundaryfit(vector <GenericPixel> &vec, const bool lerr,
   }
   for (long i=0; i<num; i++)
   {
-    outdatafile << vec[i].getwave()/magicfactor 
+    outdatafile << vec[i].getwave()/wnorm
                 << "   " << vec[i].getflux() << endl;
   }
   outdatafile.close();
@@ -90,7 +98,7 @@ bool boundaryfit(vector <GenericPixel> &vec, const bool lerr,
   {
     double tempwave,tempflux;
     inputfitfile >> tempwave >> tempflux;
-    fit[i].setwave(tempwave*magicfactor);
+    fit[i].setwave(tempwave*wnorm);
     fit[i].setflux(tempflux);
     fit[i].seteflux(0.0);
     fit[i].setpixelfraction(vec[i].getpixelfraction());
@@ -118,7 +126,7 @@ bool boundaryfit(vector <GenericPixel> &vec, const bool lerr,
   {
     for (long i=0; i<num_eval; i++)
     {
-      double tempwave=eval[i].getwave()/magicfactor;
+      double tempwave=eval[i].getwave()/wnorm;
       double tempflux=polycoeff[polydeg];
       if(polydeg > 0)
       {
