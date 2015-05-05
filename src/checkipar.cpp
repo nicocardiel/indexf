@@ -178,6 +178,7 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
   }
   //[temporal] (inicio)
   //eliminar las siguientes lineas para trabajar con contperc
+  /*
   if(  contperc != -1 )
   {
     cout << "FATAL ERROR: <" << valuePtr
@@ -186,6 +187,7 @@ bool checkipar(vector< CommandToken > &cl, IndexParam &param,
     cout << "> This option is still under development." << endl;
     return(false);
   }
+  */
   //[temporal] (fin)
   param.set_contperc(contperc);
 
