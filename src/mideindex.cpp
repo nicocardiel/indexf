@@ -1409,7 +1409,8 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     double *fx = new double [nbands];
     double *efx = new double [nbands];
     //.........................................................................
-    if (fabs(boundfit) == 1)  //...........boundfit independiente en cada banda
+    //boundfit independiente en cada banda
+    if (fabs(boundfit) == 1)
     {
       for (long nb=0; nb < nbands; nb++)
       {
@@ -1432,9 +1433,9 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
           temppix.seteflux(0.0);
           boundfit_band.push_back(temppix);
         }
-        vector <GenericPixel> evaluate_band; //vector de pixeles a evaluar
+        vector <GenericPixel> evaluate; //vector de pixeles a evaluar
         //el vector anterior estara vacio en este caso
-        if(!boundaryfit(boundfit,fluxpix_band,lerr,boundfit_band,evaluate_band))
+        if(!boundaryfit(boundfit,fluxpix_band,lerr,boundfit_band,evaluate))
         {
           cout << "ERROR: while computing boundary fit in band" << endl;
           exit(1);
@@ -1487,11 +1488,108 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       }
     }
     //.........................................................................
+    //boundfit con los datos de las dos bandas
+    else if (fabs(boundfit) == 2)
+    {
+      vector <GenericPixel> fluxpix_all;  //datos a ajustar
+      vector <GenericPixel> boundfit_all; //ajuste a los datos
+      for (long nb=0; nb < nbands; nb++)
+      {
+        for (long j=j1[nb]; j<=j2[nb]+1; j++)
+        {
+          double f;
+          if (j == j1[nb])
+            f=1.0-d1[nb];
+          else if (j == j2[nb]+1)
+            f=d2[nb];
+          else
+            f=1.0;
+          double wave=static_cast<double>(j-1)*cdelt1+
+                      crval1-(crpix1-1.0)*cdelt1;
+          GenericPixel temppix(wave,s[j-1],es[j-1],f);
+          fluxpix_all.push_back(temppix);
+          temppix.setflux(0.0);
+          temppix.seteflux(0.0);
+          boundfit_all.push_back(temppix);
+        }
+      }
+      for (long nb=0; nb < nbands; nb++)
+      {
+        GenericPixel evalpix; //pixel puntual a ser evaluado
+        vector <GenericPixel> evaluate; //vector de pixeles a evaluar
+        for (long j=j1[nb]; j<=j2[nb]+1; j++)
+        {
+          /*
+          double f;
+          if (j == j1[nb])
+            f=1.0-d1[nb];
+          else if (j == j2[nb]+1)
+            f=d2[nb];
+          else
+            f=1.0;
+          */
+          double wave=static_cast<double>(j-1)*cdelt1+
+                      crval1-(crpix1-1.0)*cdelt1;
+          evalpix.setwave(wave);
+          evaluate.push_back(evalpix);
+        }
+        if(!boundaryfit(boundfit,fluxpix_all,lerr,boundfit_all,evaluate))
+        {
+          cout << "ERROR: while computing boundary fit in band" << endl;
+          exit(1);
+        }
+#ifdef HAVE_CPGPLOT_H
+        //=====================================================================
+        //dibujamos boundary fit de la banda considerada
+        if((plotmode != 0) && (plottype ==2))
+        {
+          long npixels = evaluate.size();
+          double *x_  = new double [npixels];
+          double *fit_ = new double [npixels];
+          for(long j=0; j<npixels; j++)
+          {
+            x_[j] = (evaluate[j].getwave()-crval1)/cdelt1+crpix1;
+            fit_[j]=evaluate[j].getflux()*smean;
+          }
+          if (nb == 0)
+          {
+            cpgsci(4);
+          }
+          else
+          {
+            cpgsci(2);
+          }
+          cpgbin_d(npixels,x_,fit_,true);
+          cpgsci(1);
+          delete [] x_;
+          delete [] fit_;
+        }
+        //=====================================================================
+#endif /* HAVE_CPTPLOT_H */
+        double tc=0.0;
+        double etc=0.0;
+        for (long j=j1[nb]; j<=j2[nb]+1; j++)
+        {
+          double f;
+          if (j == j1[nb])
+            f=1.0-d1[nb];
+          else if (j == j2[nb]+1)
+            f=d2[nb];
+          else
+            f=1.0;
+          tc+=evaluate[j-j1[nb]].getflux()*wl[j-1];
+          if(lerr) etc+=f*f*evaluate[j-j1[nb]].geteflux()*
+                            evaluate[j-j1[nb]].geteflux()*wl2[j-1];
+        }
+        fx[nb]=tc;
+        if(lerr) efx[nb]=etc;
+      }
+    }
+    //.........................................................................
     //Valores adicionales de boundfit estan pendientes
     else if (fabs(boundfit) != 0)
     {
-      cout << "ERROR: this value of boundfit has not been implemented "
-           << "yet for this index"
+      cout << "ERROR: this value of boundfit is not implemented for this index"
            << endl;
       exit(1);
     }
@@ -1636,7 +1734,15 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       }
       else if (fabs(boundfit) == 1)
       {
-        //do nothing; we have already plotted the percentiles
+        //do nothing; we have already plotted the boundary fits
+      }
+      else if (fabs(boundfit) == 2)
+      {
+        //do nothing; we have already plotted the boundary fits
+      }
+      else if (fabs(boundfit) == 4)
+      {
+        //do nothing; we have already plotted the boundary fits
       }
       else
       {
