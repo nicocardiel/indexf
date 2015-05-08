@@ -871,8 +871,8 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
       }//======================================================================
 #endif /* HAVE_CPGPLOT_H */
     }
-    else 
-    if( (fabs(boundfit) == 2) || (fabs(boundfit) == 3) ) //dos o tres bandas
+    //dos o tres bandas
+    else if( (fabs(boundfit) == 2) || (fabs(boundfit) == 3) )
     {
       //...................................................incluimos banda azul
       vector <GenericPixel> fluxpix_all;  //datos a ajustar
@@ -1127,7 +1127,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
         }
         if(!fpercent(fluxpix_red,contperc,lerr,&sr,&esr2))
         {
-          cout << "ERROR: while computing boundary fit" << endl;
+          cout << "ERROR: while computing percentile" << endl;
           exit(1);
         }
       }
@@ -1196,6 +1196,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
              <<          "'f_red_center': "  << sr*smean << "}" << endl;
       }
     }
+    //.........................................................................
     //calculamos pseudo-continuo como una recta uniendo los flujos "promedio"
     //en las bandas de continuo
     if (fabs(boundfit) != 5) //calculamos la recta
@@ -1366,9 +1367,8 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     //protecciones
     if ( contperc >= 0 )
     {
-      cout << "ERROR: contperc has not been implemented yet for this index"
+      cout << "#WARNING: contperc is being implemented for this index"
            << endl;
-      exit(1);
     }
     if ( boundfit != 0 )
     {
@@ -1405,28 +1405,93 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
         if (lerr) wl2[j-1] = 1.0;
       }
     }
+    //-------------------------------------------------------------------------
     //calculamos las integrales
     double *fx = new double [nbands];
     double *efx = new double [nbands];
-    for (long nb=0; nb < nbands; nb++)
+    if (contperc >= 0) //......................................usamos percentil
     {
-      double tc=0.0;
-      double etc=0.0;
-      for (long j=j1[nb]; j<=j2[nb]+1; j++)
+      for (long nb=0; nb < nbands; nb++)
       {
-        double f;
-        if (j == j1[nb])
-          f=1.0-d1[nb];
-        else if (j == j2[nb]+1)
-          f=d2[nb];
-        else
-          f=1.0;
-        tc+=f*s[j-1]*wl[j-1];
-        if(lerr) etc+=f*f*es[j-1]*es[j-1]*wl2[j-1];
+        if (j2[nb]-j1[nb] < 2)
+        {
+          cout << "ERROR: number of pixels in bandpass too low "
+               << "to use contperc"
+               << endl;
+          exit(1);
+        }
+        double sdum=0.0;
+        double esdum2=0.0;
+        vector <GenericPixel> fluxpix_band;
+        for (long j=j1[nb]; j<=j2[nb]+1; j++)
+        {
+          double f;
+          if (j == j1[nb])
+            f=1.0-d1[nb];
+          else if (j == j2[nb]+1)
+            f=d2[nb];
+          else
+            f=1.0;
+          double wave=static_cast<double>(j-1)*cdelt1+
+                      crval1-(crpix1-1.0)*cdelt1;
+          GenericPixel temppix(wave,s[j-1],es[j-1],f);
+          fluxpix_band.push_back(temppix);
+        }
+        if(!fpercent(fluxpix_band,contperc,lerr,&sdum,&esdum2))
+        {
+          cout << "ERROR: while computing percentile" << endl;
+          exit(1);
+        }
+#ifdef HAVE_CPGPLOT_H
+        //dibujamos percentil
+        if(plotmode != 0)
+        {
+          cpgsci(6);
+          cpgmove_d(static_cast<double>(j1[nb]),sdum*smean);
+          cpgdraw_d(static_cast<double>(j2[nb]+1),sdum*smean);
+        }
+#endif /* HAVE_CPGPLOT_H */
+        double tc=0.0;
+        double etc=0.0;
+        for (long j=j1[nb]; j<=j2[nb]+1; j++)
+        {
+          double f;
+          if (j == j1[nb])
+            f=1.0-d1[nb];
+          else if (j == j2[nb]+1)
+            f=d2[nb];
+          else
+            f=1.0;
+          tc+=f*sdum*wl[j-1];
+          if(lerr) etc+=f*f*esdum2*wl2[j-1];
+        }
+        fx[nb]=tc;
+        if(lerr) efx[nb]=etc;
       }
-      fx[nb]=tc;
-      if(lerr) efx[nb]=etc;
     }
+    else //...............................................usamos metodo clasico
+    {
+      for (long nb=0; nb < nbands; nb++)
+      {
+        double tc=0.0;
+        double etc=0.0;
+        for (long j=j1[nb]; j<=j2[nb]+1; j++)
+        {
+          double f;
+          if (j == j1[nb])
+            f=1.0-d1[nb];
+          else if (j == j2[nb]+1)
+            f=d2[nb];
+          else
+            f=1.0;
+          tc+=f*s[j-1]*wl[j-1];
+          if(lerr) etc+=f*f*es[j-1]*es[j-1]*wl2[j-1];
+        }
+        fx[nb]=tc;
+        if(lerr) efx[nb]=etc;
+      }
+    }
+    //.........................................................................
     findex=fx[1]/fx[0];
     if(lerr) eindex=sqrt(fx[0]*fx[0]*efx[1]+fx[1]*fx[1]*efx[0])/
                     (fx[0]*fx[0]);
@@ -1474,34 +1539,41 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     //dibujamos
     if(plotmode !=0)
     {
-      cpgsci(6);
-      //continuo en banda azul
-      const double wla=myindex.getldo1(0)*rcvel1;
-      double yduma=0.0;
-      for (long j=j1[0];j<=j2[0]+1;j++)
+      if (contperc >= 0)
       {
-        yduma+=s[j-1];
+        //do nothing; we have already plotted the percentiles
       }
-      yduma/=static_cast<double>(j2[0]-j1[0]+2);
-      const double xca=(wla-crval1)/cdelt1+crpix1;
-      cpgmove_d(xca,yduma*smean);
-      const double wlb=myindex.getldo2(0)*rcvel1;
-      const double xcb=(wlb-crval1)/cdelt1+crpix1;
-      cpgdraw_d(xcb,yduma*smean);
-      //continuo en banda roja
-      const double wlc=myindex.getldo1(1)*rcvel1;
-      double ydumb=0.0;
-      for (long j=j1[1];j<=j2[1]+1;j++)
+      else
       {
-        ydumb+=s[j-1];
+        cpgsci(6);
+        //continuo en banda azul
+        const double wla=myindex.getldo1(0)*rcvel1;
+        double yduma=0.0;
+        for (long j=j1[0];j<=j2[0]+1;j++)
+        {
+          yduma+=s[j-1];
+        }
+        yduma/=static_cast<double>(j2[0]-j1[0]+2);
+        const double xca=(wla-crval1)/cdelt1+crpix1;
+        cpgmove_d(xca,yduma*smean);
+        const double wlb=myindex.getldo2(0)*rcvel1;
+        const double xcb=(wlb-crval1)/cdelt1+crpix1;
+        cpgdraw_d(xcb,yduma*smean);
+        //continuo en banda roja
+        const double wlc=myindex.getldo1(1)*rcvel1;
+        double ydumb=0.0;
+        for (long j=j1[1];j<=j2[1]+1;j++)
+        {
+          ydumb+=s[j-1];
+        }
+        ydumb/=static_cast<double>(j2[1]-j1[1]+2);
+        const double xcc=(wlc-crval1)/cdelt1+crpix1;
+        cpgmove_d(xcc,ydumb*smean);
+        const double wld=myindex.getldo2(1)*rcvel1;
+        const double xcd=(wld-crval1)/cdelt1+crpix1;
+        cpgdraw_d(xcd,ydumb*smean);
+        cpgsci(1);
       }
-      ydumb/=static_cast<double>(j2[1]-j1[1]+2);
-      const double xcc=(wlc-crval1)/cdelt1+crpix1;
-      cpgmove_d(xcc,ydumb*smean);
-      const double wld=myindex.getldo2(1)*rcvel1;
-      const double xcd=(wld-crval1)/cdelt1+crpix1;
-      cpgdraw_d(xcd,ydumb*smean);
-      cpgsci(1);
     }//========================================================================
 #endif /* HAVE_CPGPLOT_H */  
   }
