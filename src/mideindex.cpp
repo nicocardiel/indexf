@@ -1372,9 +1372,8 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     }
     if ( boundfit != 0 )
     {
-      cout << "ERROR: boundfit has not been implemented yet for this index"
+      cout << "#WARNING: boundfit is being implemented for this index"
            << endl;
-      exit(1);
     }
     if ( flattened )
     {
@@ -1409,7 +1408,97 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     //calculamos las integrales
     double *fx = new double [nbands];
     double *efx = new double [nbands];
-    if (contperc >= 0) //......................................usamos percentil
+    //.........................................................................
+    if (fabs(boundfit) == 1)  //...........boundfit independiente en cada banda
+    {
+      for (long nb=0; nb < nbands; nb++)
+      {
+        vector <GenericPixel> fluxpix_band;  //datos a ajustar
+        vector <GenericPixel> boundfit_band; //ajuste a los datos
+        for (long j=j1[nb]; j<=j2[nb]+1; j++)
+        {
+          double f;
+          if (j == j1[nb])
+            f=1.0-d1[nb];
+          else if (j == j2[nb]+1)
+            f=d2[nb];
+          else
+            f=1.0;
+          double wave=static_cast<double>(j-1)*cdelt1+
+                      crval1-(crpix1-1.0)*cdelt1;
+          GenericPixel temppix(wave,s[j-1],es[j-1],f);
+          fluxpix_band.push_back(temppix);
+          temppix.setflux(0.0);
+          temppix.seteflux(0.0);
+          boundfit_band.push_back(temppix);
+        }
+        vector <GenericPixel> evaluate_band; //vector de pixeles a evaluar
+        //el vector anterior estara vacio en este caso
+        if(!boundaryfit(boundfit,fluxpix_band,lerr,boundfit_band,evaluate_band))
+        {
+          cout << "ERROR: while computing boundary fit in band" << endl;
+          exit(1);
+        }
+#ifdef HAVE_CPGPLOT_H
+        //=====================================================================
+        //dibujamos boundary fit de la banda considerada
+        if((plotmode != 0) && (plottype ==2))
+        {
+          long npixels = boundfit_band.size();
+          double *x_  = new double [npixels];
+          double *fit_ = new double [npixels];
+          for(long j=0; j<npixels; j++)
+          {
+            x_[j] = (boundfit_band[j].getwave()-crval1)/cdelt1+crpix1;
+            fit_[j]=boundfit_band[j].getflux()*smean;
+          }
+          if (nb == 0)
+          {
+            cpgsci(4);
+          }
+          else
+          {
+            cpgsci(2);
+          }
+          cpgbin_d(npixels,x_,fit_,true);
+          cpgsci(1);
+          delete [] x_;
+          delete [] fit_;
+        }
+        //=====================================================================
+#endif /* HAVE_CPTPLOT_H */
+        double tc=0.0;
+        double etc=0.0;
+        for (long j=j1[nb]; j<=j2[nb]+1; j++)
+        {
+          double f;
+          if (j == j1[nb])
+            f=1.0-d1[nb];
+          else if (j == j2[nb]+1)
+            f=d2[nb];
+          else
+            f=1.0;
+          tc+=boundfit_band[j-j1[nb]].getflux()*wl[j-1];
+          if(lerr) etc+=f*f*boundfit_band[j-j1[nb]].geteflux()*
+                            boundfit_band[j-j1[nb]].geteflux()*wl2[j-1];
+        }
+        fx[nb]=tc;
+        if(lerr) efx[nb]=etc;
+      }
+    }
+    //.........................................................................
+    //Valores adicionales de boundfit estan pendientes
+    else if (fabs(boundfit) != 0)
+    {
+      cout << "ERROR: this value of boundfit has not been implemented "
+           << "yet for this index"
+           << endl;
+      exit(1);
+    }
+    else if (contperc >= 0) //.................................usamos percentil
+    //En este caso, imponemos que el flujo en cada banda sea igual al percentil
+    //solicitado (constante en todos los pixels de la banda). Esto puede no
+    //tener mucho sentido, pero aqui esta.
     {
       for (long nb=0; nb < nbands; nb++)
       {
@@ -1443,6 +1532,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
           exit(1);
         }
 #ifdef HAVE_CPGPLOT_H
+        //=====================================================================
         //dibujamos percentil
         if(plotmode != 0)
         {
@@ -1450,6 +1540,7 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
           cpgmove_d(static_cast<double>(j1[nb]),sdum*smean);
           cpgdraw_d(static_cast<double>(j2[nb]+1),sdum*smean);
         }
+        //=====================================================================
 #endif /* HAVE_CPGPLOT_H */
         double tc=0.0;
         double etc=0.0;
@@ -1540,6 +1631,10 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
     if(plotmode !=0)
     {
       if (contperc >= 0)
+      {
+        //do nothing; we have already plotted the percentiles
+      }
+      else if (fabs(boundfit) == 1)
       {
         //do nothing; we have already plotted the percentiles
       }

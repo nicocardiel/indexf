@@ -121,28 +121,28 @@ bool boundaryfit(const long boundfit,
   inputfitfile.close();
   //---------------------------------------------------------------------------
   //evaluamos el ajuste en los puntos solicitados
-  if (boundfit > 0) //........................................ajuste polinomico
+  long num_eval=eval.size();
+  if(num_eval > 0)
   {
-    //leemos grado y coeficientes del ajuste polinomico
-    ifstream inputcoeff("boundfit.coeff",ios::in);
-    if(!inputcoeff)
+    if (boundfit > 0) //......................................ajuste polinomico
     {
-      cerr << "File boundfit.coeff could not be opened" << endl;
-      return(false);
-    }
-    long polydeg;
-    inputcoeff >> polydeg;
-    double * polycoeff = new double [polydeg+1];
-    long idum;
-    for (long i=0; i<=polydeg; i++)
-    {
-      inputcoeff >> idum >> polycoeff[i];
-    }
-    inputcoeff.close();
-    //evaluamos el polinomio ajustado en los pixeles solicitados
-    long num_eval=eval.size();
-    if(num_eval > 0)
-    {
+      //leemos grado y coeficientes del ajuste polinomico
+      ifstream inputcoeff("boundfit.coeff",ios::in);
+      if(!inputcoeff)
+      {
+        cerr << "File boundfit.coeff could not be opened" << endl;
+        return(false);
+      }
+      long polydeg;
+      inputcoeff >> polydeg;
+      double * polycoeff = new double [polydeg+1];
+      long idum;
+      for (long i=0; i<=polydeg; i++)
+      {
+        inputcoeff >> idum >> polycoeff[i];
+      }
+      inputcoeff.close();
+      //evaluamos el polinomio ajustado en los pixeles solicitados
       for (long i=0; i<num_eval; i++)
       {
         double tempwave=eval[i].getwave()/wnorm;
@@ -157,40 +157,36 @@ bool boundaryfit(const long boundfit,
         eval[i].setflux(tempflux);
         eval[i].seteflux(0.01); //ToDo: calcular errores
       }
+      delete [] polycoeff;
     }
-    delete [] polycoeff;
-  }
-  else //...............................................ajuste mediante splines
-  {
-    //leemos numero de knots, posicion de los knots y coeficientes de los 
-    //splines
-    ifstream inputcoeff("boundfit.coeff",ios::in);
-    if(!inputcoeff)
+    else //.............................................ajuste mediante splines
     {
-      cerr << "File boundfit.coeff could not be opened" << endl;
-      return(false);
-    }
-    long nknots;
-    inputcoeff >> nknots;
-    double * xknot = new double [nknots];
-    double * yknot = new double [nknots];
-    double * s1 = new double [nknots-1];
-    double * s2 = new double [nknots-1];
-    double * s3 = new double [nknots-1];
-    long idum;
-    for (long i=0; i<nknots; i++)
-    {
-      inputcoeff >> idum >> xknot[i] >> yknot[i];
-    }
-    for (long i=0; i<nknots-1; i++)
-    {
-      inputcoeff >> idum >> s3[i] >> s2[i] >> s1[i];
-    }
-    inputcoeff.close();
-    //evaluamos el spline ajustado en los pixeles solicitados
-    long num_eval=eval.size();
-    if(num_eval > 0)
-    {
+      //leemos numero de knots, posicion de los knots y coeficientes de los 
+      //splines
+      ifstream inputcoeff("boundfit.coeff",ios::in);
+      if(!inputcoeff)
+      {
+        cerr << "File boundfit.coeff could not be opened" << endl;
+        return(false);
+      }
+      long nknots;
+      inputcoeff >> nknots;
+      double * xknot = new double [nknots];
+      double * yknot = new double [nknots];
+      double * s1 = new double [nknots-1];
+      double * s2 = new double [nknots-1];
+      double * s3 = new double [nknots-1];
+      long idum;
+      for (long i=0; i<nknots; i++)
+      {
+        inputcoeff >> idum >> xknot[i] >> yknot[i];
+      }
+      for (long i=0; i<nknots-1; i++)
+      {
+        inputcoeff >> idum >> s3[i] >> s2[i] >> s1[i];
+      }
+      inputcoeff.close();
+      //evaluamos el spline ajustado en los pixeles solicitados
       for (long i=0; i<num_eval; i++)
       {
         double tempwave=eval[i].getwave()/wnorm;
@@ -212,12 +208,12 @@ bool boundaryfit(const long boundfit,
         eval[i].setflux(tempflux);
         eval[i].seteflux(0.01); //ToDo: calcular errores
       }
+      delete [] xknot;
+      delete [] yknot;
+      delete [] s1;
+      delete [] s2;
+      delete [] s3;
     }
-    delete [] xknot;
-    delete [] yknot;
-    delete [] s1;
-    delete [] s2;
-    delete [] s3;
   }
   //---------------------------------------------------------------------------
   return(true);
