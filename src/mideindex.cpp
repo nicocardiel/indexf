@@ -139,6 +139,16 @@ bool mideindex(const bool &lerr, const double *sp_data, const double *sp_error,
              <<           myindex.getfactor_el(nb) << "}"
              << endl;
       }
+      else if ((myindex.gettype() >= 101) & (myindex.gettype() <= 9999))
+      {
+        long nconti = myindex.getnconti();
+        if (nb >= nconti)
+        {
+          cout << "python> {'factor" << setw(3) << setfill('0') << nb+1 << "': "
+               <<           myindex.getfactor(nb-nconti) << "}"
+               << endl;
+        }
+      }
     }
     c3[nb] = (ca[nb]-wlmin)/cdelt1+1.0;              //band limit (channel)
     c4[nb] = (cb[nb]-wlmin)/cdelt1;                  //band limit (channel)
