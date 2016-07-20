@@ -860,7 +860,7 @@ bool extract_file_2long(const char *valuePtr,
   filePtr[fileSize] = '\0';
   //comprobamos que el fichero existe
   ifstream infile(filePtr, ios::in); //abrimos en modo solo lectura
-  logfile=infile;
+  logfile=infile.good();
   if(lnumbers)
   {
     const char *numbersPtr = comaPtr+1;
