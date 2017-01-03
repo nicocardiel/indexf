@@ -5,7 +5,6 @@ compile
 config.h
 config.log
 config.status
-depcomp
 src/.deps/
 src/Makefile
 src/version.h
