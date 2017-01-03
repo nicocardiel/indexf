@@ -180,7 +180,9 @@ The following list gives a more detailed description of the keywords:
 
 .. option:: logindex=<str>
 
-    Indicates whether the indices must be measured in logarithmic units (i.e., atomic indices are measured like the molecular indices), following :cite:`Colles1999`.
+    Indicates whether the indices must be measured in logarithmic units (i.e.,
+    atomic indices are measured like the molecular indices), following
+    :cite:`Colless1999`.
 
     Mandatory: no
     

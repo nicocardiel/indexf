@@ -28,28 +28,28 @@ Index definitions
 
 The line-strength indices that can be measured with **indexf** are those defined in the file *indexdef.dat*, located in the *auxdir/* subdirectory of the distribution source code. The first column in this file is the identification name of each index (maximum 8 characters), as recognized by **indexf**. The second column, labeled as ``code``, is an integer number that allows the identification of the type of line-strength feature. The code used in this column is the following:
 
-+--------------+-----------------+-------------------------------------------------+
-| index code   | type of index   | examples                                        |
-|              |                 |                                                 |
-+==============+=================+=================================================+
-| 1            | molecular       | CN1, CN2, Mg1, Mg2, TiO1, TiO2,...              |
-+--------------+-----------------+-------------------------------------------------+
-| 2            | atomic          | Ca4227, G4300, Fe4668, Hbeta, Fe5270, Fe5335,...|
-+--------------+-----------------+-------------------------------------------------+
-| 3            |  D4000-like     |               D4000                             |   
-+--------------+-----------------+-------------------------------------------------+
-| 4            |  B4000-like     |               B4000                             |
-+--------------+-----------------+-------------------------------------------------+
-| 5            |  Color-like     |           infrared CO_KH                        |
-+--------------+-----------------+-------------------------------------------------+
-| 10           |   Emission line |              OII3727e                           |
-+--------------+-----------------+-------------------------------------------------+
-| :math:`11 \le n \le 99` |  Generic discontinuity |   D_CO,...                    |
-+--------------+-----------------+-------------------------------------------------+
-| :math:`101 \le n \le 9999` |  Generic index      |    CaT, PaT, CaT*,...         |
-+--------------+-----------------+-------------------------------------------------+
-| :math:`-99 \le n \le -2`   | Slope index         |   sTiO                        |
-+--------------+-----------------+-------------------------------------------------+
++--------------+------------------------+-------------------------------------------------+
+| index code   | type of index          | examples                                        |
+|              |                        |                                                 |
++==============+========================+=================================================+
+| 1            | molecular              | CN1, CN2, Mg1, Mg2, TiO1, TiO2,...              |
++--------------+------------------------+-------------------------------------------------+
+| 2            | atomic                 | Ca4227, G4300, Fe4668, Hbeta, Fe5270, Fe5335,...|
++--------------+------------------------+-------------------------------------------------+
+| 3            |  D4000-like            |               D4000                             |   
++--------------+------------------------+-------------------------------------------------+
+| 4            |  B4000-like            |               B4000                             |
++--------------+------------------------+-------------------------------------------------+
+| 5            |  Color-like            |           infrared CO_KH                        |
++--------------+------------------------+-------------------------------------------------+
+| 10           |   Emission line        |              OII3727e                           |
++--------------+------------------------+-------------------------------------------------+
+| [11..99]     |  Generic discontinuity |   D_CO,...                                      |
++--------------+------------------------+-------------------------------------------------+
+| [101..9999]  |  Generic index         |    CaT, PaT, CaT*,...                           |
++--------------+------------------------+-------------------------------------------------+
+| [-99..-2]    | Slope index            |   sTiO                                          |
++--------------+------------------------+-------------------------------------------------+
 
 
  An example of some of the definitions that can be found in the file *indexdef.dat* is the following (the list shown here is not complete!): 
@@ -97,7 +97,7 @@ The line-strength indices that can be measured with **indexf** are those defined
 
 .. math::
 
-    \integral{\mathit{Flux(\nu)} \delta(\lambda)} = \integral{\lambda^2 \cdot \mathit{Flux(\lambda)} \delta(\lambda)} 
+    \int{\mathit{Flux(\nu)} \delta(\lambda)} = \int{\lambda^2 \cdot \mathit{Flux(\lambda)} \delta(\lambda)} 
     
 extended over the wavelength range of the considered bandpass.
 
@@ -105,7 +105,7 @@ On the other hand, the total flux in each band of the B4000-like indices are obt
 
 .. math::
 
-    \integral{\mathit{Flux(\lambda)} \delta(\lambda)}
+    \int{\mathit{Flux(\lambda)} \delta(\lambda)}
     
 * The color-like index (``index code = 5``), defined with two bandpasses as :math:`−2.5 log10[\mathit{Flux_{blue}/Flux_{red}}]`, is exemplified by the CO index at 2.1 microns CO_KH (e.g. :cite:`Kleinmann_Hall1986`).
 
@@ -127,8 +127,7 @@ where NC and NA are, respectively, the number of continuum and absorption spectr
 
 where NC and NF are, respectively, the number of continuum and spectral-feature bandpasses. For this kind of index, the wavelengths which define each bandpass are given in different rows in the file *indexdef.dat*, with the continuum bandpasses first. Note that the rows defining the spectral-feature bandpasses also contain, as a third column, the corresponding coefficient that should be applied to each of these bandpasses.
 
-* The slope indices are derived through the fit of a straight line to an arbitrary number of bandpasses (ranging from 2 to 99). The integer value of ``code`` in *indexdef.dat* indicates the number of bandpasses with a negative sign. The derived indices correspond to the
-ratio of two fluxes, evaluated at the central wavelength of the reddest and bluest bandpasses.    
+* The slope indices are derived through the fit of a straight line to an arbitrary number of bandpasses (ranging from 2 to 99). The integer value of ``code`` in *indexdef.dat* indicates the number of bandpasses with a negative sign. The derived indices correspond to the ratio of two fluxes, evaluated at the central wavelength of the reddest and bluest bandpasses.    
 
 Although the file *indexdef.da*t can be easily edited and modified by any program user to include new index definitions (of the type previously described), it is important to keep the file format in order to guarantee that **indexf** works properly. In order to facilitate this edition, since version 4.1.2 **indexf** looks first for a file called *myindexdef.dat* in the current (working) directory. If this file exists, the original *indexdef.dat* is ignored. So, I recommend the user to create a copy of the original *indexdef.dat* as *myindexdef.dat* in the working directory, and to modify the latter when necessary.
 
