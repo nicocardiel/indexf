@@ -7,4 +7,5 @@ The software is released under the GPL version 3.
 
 Send questions and suggestions to cardiel[at]ucm.es.
 
-Please, acknowledge the use of this program by citing this reference.
+Please, acknowledge the use of this program by citing this `reference
+<http://adsabs.harvard.edu/abs/2010ascl.soft10046C>`_.

@@ -17,8 +17,8 @@ fully calibrated FITS spectra.
    :maxdepth: 2
 
    description
-   installation
    license
+   installation
    using
    examples
    zreferences
