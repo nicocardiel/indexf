@@ -1,5 +1,8 @@
 .. _install:
 
+Installation
+============
+
 Before you install **indexf**, make sure that ``CFITSIO`` is already installed in your computer. If, in addition, you want the program to generate graphical output, ``PGPLOT`` must also be installed. Note that since version ``4.2.0``, the by default installation procedure will not try to install **indexf** with ``PGPLOT``. If this graphical library is available and you want **indexf** to use it, you should explicitly indicate that option during the installation procedure.
 
 Some details about how I do typically install these packages under ``Linux`` and ``Mac OS X`` are given here for ``CFITSIO`` and ``PGPLOT``.
