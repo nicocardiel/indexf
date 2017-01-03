@@ -1,5 +1,8 @@
 .. _using:
 
+Using the program
+=================
+
 With the aim of facilitating the inclusion of this program in scripts, **indexf** has been written assuming that all the information is transferred to the program through the command line via pairs ``keyword=keyvalue``:
 
 ::
