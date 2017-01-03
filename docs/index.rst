@@ -6,15 +6,20 @@
 Welcome to indexf's documentation!
 ==================================
 
-Contents:
+**indexf** is a program written in C++ to measure line-strength indices in
+fully calibrated FITS spectra.
+
+.. image:: images/kenn92.gif
+   :scale: 70%
+   :align: center
 
 .. toctree::
    :maxdepth: 2
 
-
    description
    installation
    license
+   using
    examples
    zreferences
    
