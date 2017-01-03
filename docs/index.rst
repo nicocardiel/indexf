@@ -13,6 +13,9 @@ fully calibrated FITS spectra.
    :scale: 70%
    :align: center
 
+Documentation outline
+---------------------
+
 .. toctree::
    :maxdepth: 2
 
@@ -22,6 +25,3 @@ fully calibrated FITS spectra.
    using
    examples
    zreferences
-   
-
-
