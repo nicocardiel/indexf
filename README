@@ -2,7 +2,8 @@ This is indexf, a program that measures line-strength indices in wavelength
 calibrated FITS spectra.
 
 Maintainer: cardiel@ucm.es
-Webpage: http://guaix.fis.ucm.es/projects/indexf
+Webpage (documentation): http://indexf.readthedocs.io/
+Webpage (source code): https://github.com/nicocardiel/indexf
 
 This software is distributed under GPL , either version 3 of the License, or
 (at your option) any later version. See the file COPYING for details.
