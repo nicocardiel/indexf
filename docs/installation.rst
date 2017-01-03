@@ -19,7 +19,8 @@ To install **indexf** you need to perform the following steps:
 2. Enter into the directory *indexf* and prepare the code to be compiled
 
 ::
-
+    
+    $ autoreconf -s -i -f
     $ ./configure
 
 The above command will install the program without ``PGPLOT``. If you want **indexf** to generate graphical output with the help of that graphical library, you should use instead
