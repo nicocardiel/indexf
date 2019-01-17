@@ -50,7 +50,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'indexf'
-copyright = u'2017, Nicolás Cardiel'
+copyright = u'2018, Nicolás Cardiel'
 author = u'Nicolás Cardiel'
 
 # The version info for the project you're documenting, acts as replacement for
