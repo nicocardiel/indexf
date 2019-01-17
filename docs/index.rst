@@ -6,7 +6,8 @@
 Welcome to indexf's documentation!
 ==================================
 
-**indexf** is a program written in C++ to measure line-strength indices in
+**indexf** is a program written in C++ by Nicolás Cardiel (Universidad
+Complutense de Madrid) to measure line-strength indices in
 fully calibrated FITS spectra.
 
 .. image:: images/kenn92.gif
