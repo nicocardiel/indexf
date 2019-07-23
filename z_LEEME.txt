@@ -1,3 +1,7 @@
+ToDo:
+Hay que proteger la ejecución del programa cuando el número de puntos en cada
+bandpass es menor que 2 o 3.
+
 #------------------------------------------------------------------------------
 [Antiguo]
 
