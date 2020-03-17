@@ -164,10 +164,22 @@ The following list gives a more detailed description of the keywords:
 
 .. option:: vacuum=<int>
 
-    Integer number indicating whether the wavelength calibration of the spectra is given in air (default :option:`vacuum` = 0), or in vacuum (integer *1,2,3*). At present three possible corrections can be employed:
+    Integer number indicating whether the wavelength calibration of the spectra
+    is given in air (default :option:`vacuum` = 0), or in vacuum (integer
+    *1,2,3*).  Note that wavelengths in *indexdef.dat* are given in the air. If
+    your spectra have been reduced using a wavelength calibration in vacuum,
+    you can handle this by setting the parameter `vacuum` to 1, 2 or 3 when
+    running the program:
+
         :option:`vacuum` = 1: Eq. 65 from Greisen et al. 2006 (A&A, 446, 747)
+
         :option:`vacuum` = 2: Eq. 3 from Morton (1991, ApJS, 77, 119)
+
         :option:`vacuum` = 3: Equation quoted by the `SDSS <http://www.sdss.org/dr7/products/spectra/vacwavelength.html>`_ team 
+
+    If `vacuum` is different from zero, the bandpasses given in *indexdef.dat*
+    are transformed to vacuum prior to the measurement of the line-strength
+    indices.
 
     Mandatory: no
     

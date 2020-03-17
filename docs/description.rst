@@ -79,6 +79,12 @@ in this column is the following:
 +--------------+------------------------+-------------------------------------------------+
 
 
+.. warning::
+
+   Wavelengths in *indexdef.dat* are given in the air. If your spectra have
+   been reduced using a wavelength calibration in vacuum, you can handle this
+   by setting the parameter ``vacuum`` to 1, 2 or 3 when running the program.
+
 An example of some of the definitions that can be found in the file
 *indexdef.dat* is the following (the list shown here is not complete!): 
 
@@ -151,7 +157,8 @@ An example of some of the definitions that can be found in the file
     \int{\mathit{Flux(\lambda)} \; \mbox{d}\lambda}
     
 * The color-like index (``index code = 5``), defined with two bandpasses as 
-  :math:`−2.5 \log_{10}[\mathit{Flux_{blue}/Flux_{red}}]`, is exemplified by
+  :math:`-2.5\log_{10}[\mathit{Flux_{\rm blue}/Flux_{\rm red}}]`, is 
+  exemplified by
   the CO index at 2.1 microns CO_KH (e.g. :cite:`Kleinmann_Hall1986`).
 
 * Emission line features (``index code = 10``) are measured by defining an 

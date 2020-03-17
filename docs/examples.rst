@@ -159,7 +159,7 @@ In the case of the existence of an error FITS frame corresponding to the unbiase
         6     0.1979     0.0136    14.14       0.0       0.0    undef4     undef4  
         7     0.2107     0.0136    14.14       0.0       0.0    undef4     undef4  
 
-In this example we have employed a scaled version of the original FITS image to simulate an associated error frame (:download:`kenn92e.fits`). For this reason the signal-to-noise per Angstrom is constant. The random errors are the same in all the spectra because in the case of molecular indices (like Mg2) these errors are quite independent of absolute value of the indices. As shown in :cite:`Cardiel1998`, the error on a molecular index can be estimated as
+In this example we have employed a scaled version of the original FITS image to simulate an associated error frame (:download:`kenn92e.fits <data/kenn92e.fits>`). For this reason the signal-to-noise per Angstrom is constant. The random errors are the same in all the spectra because in the case of molecular indices (like Mg2) these errors are quite independent of absolute value of the indices. As shown in :cite:`Cardiel1998`, the error on a molecular index can be estimated as
 
 
                                             σ[Index]≈c3/SN(A),
