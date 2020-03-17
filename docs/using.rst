@@ -39,7 +39,7 @@ A full list of the available ``keyword=keyvalue`` pairs (as well as the list of 
     snf       undef     #S/N estimation file (incompatible with "ief")
     rv        0,0       #radial velocity (km/s),radial velocity error
     rvf       undef,1,0 #radial velocity file name, column data, column error
-    vacuum    0         #wavelength scale (0=air, 1=vacuum1, 2=vacuum2)
+    vacuum    0         #wavelength scale (0=air, 1=vacuum1, 2=vacuum2,...)
     nsimul    100       #number of simulations to estimate radial velocity error
     logindex  no        #measure indices in logarithmic units
     verb      yes       #display intermediate information
