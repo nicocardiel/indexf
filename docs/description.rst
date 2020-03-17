@@ -81,9 +81,12 @@ in this column is the following:
 
 .. warning::
 
-   Wavelengths in *indexdef.dat* are given in the air. If your spectra have
+   Wavelengths in *indexdef.dat* in most indices are given in the air (except
+   for those in the near-IR, like the D_CO). If your spectra have
    been reduced using a wavelength calibration in vacuum, you can handle this
-   by setting the parameter ``vacuum`` to 1, 2 or 3 when running the program.
+   by setting the parameter ``vacuum`` to 1, 2 or 3 when running the program
+   (for the D_CO index you do not need to introduce a vacuum correction). See
+   the use of ``vacuum`` in section :ref:`using` for details.
 
 An example of some of the definitions that can be found in the file
 *indexdef.dat* is the following (the list shown here is not complete!): 

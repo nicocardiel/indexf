@@ -166,7 +166,9 @@ The following list gives a more detailed description of the keywords:
 
     Integer number indicating whether the wavelength calibration of the spectra
     is given in air (default :option:`vacuum` = 0), or in vacuum (integer
-    *1,2,3*).  Note that wavelengths in *indexdef.dat* are given in the air. If
+    *1,2,3*).  Note that for most line-strength indices wavelengths in
+    *indexdef.dat* are given in the air (exceptions are near-IR indices, 
+    like D_CO, which bandpasses are expressed as vacuum wavelengths). If
     your spectra have been reduced using a wavelength calibration in vacuum,
     you can handle this by setting the parameter `vacuum` to 1, 2 or 3 when
     running the program:
@@ -178,8 +180,11 @@ The following list gives a more detailed description of the keywords:
         :option:`vacuum` = 3: Equation quoted by the `SDSS <http://www.sdss.org/dr7/products/spectra/vacwavelength.html>`_ team 
 
     If `vacuum` is different from zero, the bandpasses given in *indexdef.dat*
-    are transformed to vacuum prior to the measurement of the line-strength
-    indices.
+    are transformed from air to vacuum prior to the measurement of the
+    line-strength indices. If the wavelengths in *indexdef.dat* are already in
+    vacuum, you do not need to use any vacuum correction (`vacuum` = 0 is fine
+    in this case), although your spectra should have been reduced with a
+    wavelength calibration in vacuum.
 
     Mandatory: no
     
