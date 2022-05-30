@@ -83,7 +83,7 @@ in this column is the following:
 
    Wavelengths in *indexdef.dat* in most indices are given in the air (except
    for those in the near-IR, like the D_CO; note however that the near-IR
-   indices defined by Eftekhari et al. 2021 are given in the air). 
+   indices defined by :cite:`Eftekhari2021` are given in the air). 
    If your spectra have
    been reduced using a wavelength calibration in vacuum, you can handle this
    by setting the parameter ``vacuum`` to 1, 2 or 3 when running the program
