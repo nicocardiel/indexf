@@ -32,7 +32,7 @@
 extensions = ['sphinxcontrib.bibtex', 'sphinx.ext.autodoc', 
               'sphinx.ext.doctest', 'sphinx.ext.imgmath',
               'sphinx.ext.coverage', 'sphinx.ext.intersphinx',
-              'sphinx.ext.napoleon']
+              'sphinx.ext.napoleon', 'sphinx_rtd_theme']
 
 bibtex_bibfiles = ["references.bib"]
 
@@ -71,7 +71,7 @@ release = u'4.3'
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = 'en'
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
@@ -125,7 +125,8 @@ todo_include_todos = False
 # a list of builtin themes.
 #
 #html_theme = 'alabaster'
-html_theme = 'default'
+#html_theme = 'default'
+html_theme = 'sphinx_rtd_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
