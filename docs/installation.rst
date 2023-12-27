@@ -38,6 +38,14 @@ If ``PGPLOT`` is in fact installed in your computer, but ``configure`` is not ab
 
     $ ./configure LDFLAGS=-L/usr/local/pgplot
 
+If the last command does not work as expected, you can try to specify the C and
+C++ compilers explicitly:
+
+::
+
+
+    $ ./configure --with-pgplot CXX=g++-mp-13 CC=gcc-mp-13 LDFLAGS=-L/usr/local/pgplot
+
 By default, the executable *indexf* file is installed under */usr/local/bin/*, whereas additional auxiliary files (like *indexdef.dat* and *inputcl.dat*) are installed under */usr/local/share/indexf*. If you need a personalized directory installation (for example when you do not have write access to */usr/local/...*), you can use ``--bindir`` to specify the location of the executable file, and ``--datadir`` to indicate the directory where the auxiliary files must be installed. For example:
 
 ::
